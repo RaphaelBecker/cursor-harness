@@ -1,0 +1,26 @@
+---
+description: Example project-local doc routing — copy and rename; do not overwrite harness doc-routing.mdc
+alwaysApply: true
+---
+
+# Local doc routing
+
+Harness `doc-routing.mdc` provides portable defaults. Add **project-specific** keyword →
+doc mappings here. Prefer this file over editing harness-managed `doc-routing.mdc`.
+
+Suggested filename in the consumer repo: `.cursor/rules/doc-routing.local.mdc`
+
+## Project documentation roots
+
+| Area | Path |
+| :--- | :--- |
+| Specs | `docs/specs/` |
+| Architecture | `docs/architecture/` |
+| <!-- Add your roots --> | |
+
+## Keyword table (project overrides)
+
+| If the prompt mentions… | Read first… |
+| :--- | :--- |
+| Example feature X | `docs/specs/example-x.md` |
+| <!-- Add your rows --> | |

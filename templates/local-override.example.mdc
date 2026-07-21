@@ -1,0 +1,14 @@
+---
+description: Example project-local override — rename and keep outside harness-managed filenames
+alwaysApply: true
+---
+
+# Local Project Override
+
+Use this file as a template for project-specific guidance that should not live in cursor-harness.
+
+- Copy to `.cursor/rules/<your-project>-local.mdc` in the consumer repo
+- Do not name it the same as a harness-managed rule (e.g. avoid `core-principles.mdc`,
+  `doc-routing.mdc`, `code-quality.mdc`, `testing.mdc`, `security-basics.mdc`)
+- Keep it short and actionable
+- Put stack-specific conventions here (frameworks, folder layout, deploy scripts)

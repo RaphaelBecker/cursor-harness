@@ -1,0 +1,70 @@
+---
+description: Master routing — map prompts to docs by keyword; update existing docs before adding new ones.
+alwaysApply: true
+---
+
+# AI directive — master doc routing
+
+## Documentation ideology
+
+- **This file is the keyword router.** Match the user prompt to a row below (or a
+  project-local override) and read those doc paths directly. Do not chain through other
+  Cursor rules or sprawling "see also" trees for topic context.
+- **Update existing docs first.** Prefer editing the canonical file for the topic before
+  creating a new markdown file.
+- **Add new docs only when necessary.** Create a new file when the topic is genuinely new,
+  large, or owned by a separate subsystem and cannot fit cleanly in an existing canonical doc.
+- **Avoid doc sprawl.** One source of truth per topic; cross-link briefly if needed.
+- **Do not add new `alwaysApply` topic rules** for product/architecture policies. Put policy
+  in the correct doc and extend the keyword map via a **non-colliding local override**
+  (see `templates/doc-routing.local.example.mdc` in cursor-harness).
+
+## Default documentation roots
+
+| Area | Typical location | Scope |
+| :--- | :--- | :--- |
+| Project overview | `README.md`, `AGENTS.md` | Orientation, commands, owners |
+| Specs / architecture | `docs/`, `docs/specs/`, `docs/architecture/` | Feature and system contracts |
+| Changelog / releases | `CHANGELOG.md`, `docs/changelog.md` | Release notes |
+| Project memory | `project_memory.md` | Bounded learning overlay (not SSOT) |
+
+If the consumer project uses different roots, prefer those paths when discoverable from
+`README.md` / `AGENTS.md` / a local doc-routing override.
+
+## Default keyword table
+
+Before starting any feature, bug fix, or optimization, identify the core topic and read the
+mapped file(s). **Project-local overrides win** when present under `.cursor/rules/` with a
+non-harness filename (e.g. `doc-routing.local.mdc`).
+
+| If the prompt mentions… | Read first… | Focus |
+| :--- | :--- | :--- |
+| Architecture overview, system overview, codebase map, how the app works | `README.md`, `docs/architecture/**`, `docs/**/overview*` | Whole-system mental model |
+| Project memory, lessons learned, retrospective, Phase 7, `project_memory.md` | `project_memory.md`, `.cursor/skills/project-memory/SKILL.md` | Bounded learning overlay |
+| Vision, goals, product north star | `docs/vision/**`, `README.md` | Product intent |
+| Scope, new feature boundaries | `docs/specs/**`, `docs/scope*` | Supported vs unsupported |
+| Tests, coverage, mocks, E2E | `docs/testing/**`, `testing` rule, CI config | Testing standards and gates |
+| Deploy, CI/CD, production, release | `docs/deployment/**`, `.github/workflows/**`, `README.md` | Ship workflow |
+| Environment variables, secrets, `.env` | `docs/**/environment*`, `*.env.example`, `README.md` | Env SSOT and rotation |
+| Backend / API | `docs/backend/**`, `docs/api/**`, OpenAPI/spec files | Server contracts |
+| Frontend / UI | `docs/frontend/**`, design docs | UI structure |
+| Database / schema / migrations | `docs/database/**`, migration folder README | Schema workflow |
+| Backlog, tech debt, future work | `docs/backlog.md`, issue tracker links in README | Deferred work |
+| Changelog, versioning, SemVer | `CHANGELOG.md`, versioning docs | Release impact |
+
+When no row matches: search under `docs/` (and README) for the closest SSOT; read that file
+only. Do not invent parallel documentation.
+
+## Spec updates
+
+Update docs in the **same area** you changed before considering the task complete.
+
+| You changed… | Update… |
+| :--- | :--- |
+| Feature behavior / API / UX contract | Matching file under `docs/specs/` or equivalent |
+| System structure, data flow, boundaries | Matching file under `docs/architecture/` or equivalent |
+| Public release-facing behavior | `CHANGELOG.md` (or project changelog) when the project uses one |
+| Agent lifecycle / memory skill schema | `project_memory.md` scaffold notes if the format changes |
+
+If no canonical doc exists and the change is material, create the smallest necessary doc in
+the project's existing docs layout — do not invent a new top-level docs tree.

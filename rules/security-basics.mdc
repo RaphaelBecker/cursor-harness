@@ -1,0 +1,32 @@
+---
+description: Baseline security hygiene — secrets, boundaries, least privilege, no silent destructive ops.
+alwaysApply: true
+---
+
+# Security basics
+
+## Secrets and credentials
+
+- NEVER hardcode credentials, API keys, tokens, or private keys in source, docs, or commits.
+- Reference secrets via environment variables or the project's secret manager.
+- Server-only secrets MUST NOT reach client bundles, public repos, or logs.
+- Prefer `.env.example` (placeholders only) over committing real env files.
+- If a secret may have been exposed, stop and tell the developer to rotate it.
+
+## Boundaries and validation
+
+- Validate and sanitize untrusted input at system boundaries.
+- Handle failures explicitly; no silent swallowing of security-relevant errors.
+- Enforce least privilege for roles, tokens, and database access.
+- Do not weaken auth, authorization, RLS/ACL, or CSRF/CORS controls without an explicit,
+  reviewed request.
+
+## Operations
+
+- Never run irreversible/destructive production operations, real payments, or privileged
+  infrastructure access without an explicit human request.
+- Never use `--no-verify` (or equivalent) to bypass git hooks that protect secrets or quality.
+- Prefer confirmation for destructive database resets, force-pushes to protected branches,
+  and remote schema pushes (see harness `guard-destructive-shell` hook when installed).
+- Do not invent deploy shortcuts that sync production secrets or skip the project's documented
+  release path.

@@ -1,0 +1,43 @@
+---
+description: Portable test discipline — regression-first bugs, acceptance design for features, no weakened gates.
+alwaysApply: true
+---
+
+# Testing
+
+## Definition of done
+
+- Behavior changes require automated coverage when the project has a test suite.
+- Never skip, mute, quarantine, weaken, or rewrite a test merely to make a gate pass.
+- Never use `--no-verify`, reduced coverage thresholds, focused-only suites, unreviewed
+  snapshots, or CI exclusions as "repairs."
+- Never hide pre-existing failures. Record them; hard-stop if they prevent proving the
+  contract.
+- Mock external boundaries (network, paid APIs, production DBs). NEVER hit live production
+  services from tests.
+
+## Phase 2 — test design
+
+- **Bug fix:** write a failing regression test FIRST in the correct layer (unit /
+  integration / UI / E2E per project layout). Name it after the bug. If the bug reveals a
+  systemic gap, propose the accompanying rule/doc change alongside the test — do not fix
+  silently.
+- **Feature:** design acceptance criteria or BDD-style scenarios (Given/When/Then) before
+  writing implementation tests. Cover happy path, failure, and material edge cases named in
+  the implementation contract.
+
+## Phase 4 — verify
+
+- Discover verification commands from the project's existing sources: `README.md`,
+  `package.json` scripts, `Makefile`, `justfile`, `pyproject.toml`, or CI workflows.
+  Prefer the project's documented fast/local gate for iteration and its full/CI-parity gate
+  before finalizing an approved-plan run. Never invent script names from another project.
+- Record the exact commands used in the implementation contract and handoff.
+- After runtime-affecting review fixes (Phase 4b), re-run affected targeted tests and the
+  relevant project gates.
+
+## Gate hygiene
+
+- Treat the project's pre-commit / CI gates as authoritative when present.
+- If no automated suite exists, state that explicitly in the handoff and propose the smallest
+  useful test addition — do not claim green gates that were never run.

@@ -1,0 +1,20 @@
+# cursor-harness pack registry — install.sh reads this file
+version: 1
+defaults:
+  mode: symlink
+packs:
+  rules:
+    - core-principles.mdc
+    - doc-routing.mdc
+    - code-quality.mdc
+    - testing.mdc
+    - security-basics.mdc
+  skills:
+    - implementation-plan-review
+    - grill-me
+    - execute-approved-plan
+    - project-memory
+    - review-code
+    - sync-spec-docs
+  hooks:
+    enabled: true

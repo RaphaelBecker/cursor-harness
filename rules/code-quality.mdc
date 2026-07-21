@@ -1,0 +1,50 @@
+---
+description: Architecture and clean-code standards for readable, maintainable changes
+alwaysApply: true
+---
+
+# Code quality
+
+## Architecture
+
+- Prefer small, composable modules with clear boundaries over monolithic files.
+- Keep business logic out of UI and transport layers; isolate side effects at the edges.
+- Do not introduce new frameworks, ORMs, or infra services without an explicit request.
+- Match the project's existing stack, naming, and folder conventions before inventing new ones.
+- Prefer explicit configuration and typed interfaces over implicit globals.
+- Prefer extend over rewrite unless the current design is clearly wrong.
+- Keep public APIs stable; if you must break them, call out migration steps.
+- Leave the tree cleaner than you found it, but avoid drive-by refactors outside the task.
+
+## General craft
+
+- SOLID, DRY, KISS, YAGNI. One responsibility per module; never duplicate logic; simplest
+  readable solution; do not build what is not needed yet.
+- Self-documenting code: names MUST state exact purpose. No vague names or intent-obscuring
+  abbreviations.
+- Comments explain WHY (business rule, edge case, trade-off), NEVER WHAT. Never narrate the
+  edit being made. Use `TODO:` for documented future work.
+- Write code for the next reader: clear names, small functions, obvious control flow.
+- Handle errors deliberately; never swallow exceptions without logging or rethrowing.
+- Avoid premature abstraction; duplicate twice before extracting once.
+- Prefer pure helpers for reusable logic; keep I/O at the boundary.
+
+## Language defaults (when the project uses them)
+
+### TypeScript / JavaScript
+
+- Prefer `strict` typing; avoid `any` unless temporarily bridging untyped code (and note why).
+- Use `async`/`await` over raw promise chains; propagate failures with useful context.
+- Colocate types with usage; export only what other modules need.
+
+### Python
+
+- Prefer type hints on public functions and return values.
+- Use context managers for resources; fail fast on invalid input.
+- Follow the project's formatter/linter; do not mix styles in one change.
+
+## Tests
+
+- Add or update tests when behavior changes and the project already has a test suite.
+- Prefer focused unit/integration coverage over brittle end-to-end snapshots for pure logic.
+- Full gate discipline lives in the `testing` rule.
