@@ -3,19 +3,23 @@ name: review-code
 description: >-
   Diff-scoped self code review against expert engineering principles (SOLID,
   DRY, KISS, YAGNI, cohesion/coupling, fail-fast, performance and security
-  hygiene). Runs as Phase 4b of the lifecycle after all test gates are green
-  and before Phase 5 documentation. Also use when reviewing pull requests or
-  diffs on request. Applies behavior-preserving fixes plus red-first corrections
-  expressly covered by an approved implementation contract; out-of-scope
-  behavior findings are reported.
+  hygiene). Runs as Phase 4b of the lifecycle after the verification ladder is
+  green and before Phase 5 documentation. Applies behavior-preserving fixes plus
+  red-first corrections expressly covered by an approved implementation contract;
+  out-of-scope behavior findings are reported. Independent bug/security pass is
+  Phase 4c via /review-bugbot and /review-security (report only).
 ---
 
 # Code review (Phase 4b — post-green, pre-docs)
 
 Act as a principal engineer reviewing a colleague's change set. When used inside
-the lifecycle, the test suite is already green — it is the safety net. The goal
+the lifecycle, the verification ladder is already green — it is the safety net. The goal
 is expert-level code quality: maintainable, modular, performant, scalable. Never
 a whole-codebase audit.
+
+Independent bug/security pass is **Phase 4c** via Cursor `/review-bugbot` /
+`/review-security` (report only — do not auto-fix). This skill stays the fix-capable
+maintainability review.
 
 ## Scope
 
@@ -39,6 +43,13 @@ Check the diff against each item; skip commentary on items that pass.
   the codebase.
 - **KISS / YAGNI:** simplest readable solution; no speculative abstraction,
   config, or flexibility for requirements that do not exist yet.
+- **Architectural reuse (late safety net):** if the diff adds a capability that is a
+  subset of an existing broader feature, flag parallel implementation as a **Blocker**
+  when a shared module should own both. (Primary catch is `implementation-plan-review`
+  Gate A — still verify the shipped diff.)
+- **Lifecycle / residual state:** for create/update/delete/archive/reset diffs, confirm
+  related rows and derived aggregates match the contract. Orphans and stale rollups are
+  Blockers when in contract scope.
 - **Structure:** high cohesion / low coupling, separation of concerns, Law of
   Demeter, composition over inheritance, small functions, guard clauses over
   deep nesting.
@@ -73,6 +84,8 @@ Check the diff against each item; skip commentary on items that pass.
    runtime-affecting fixes.
 6. Output a short review summary — findings, fixes applied, backlog entries —
    which feeds the Phase 5 readiness checklist ("code review clean").
+7. Remind that Phase 4c (`/review-bugbot`, optional `/review-security`) is report-only
+   and runs after this skill in night shift.
 
 ## Tone
 

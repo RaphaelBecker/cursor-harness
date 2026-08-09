@@ -1,0 +1,15 @@
+---
+description: Always speak to the developer in plain, short, human language.
+alwaysApply: true
+---
+
+# Developer communication
+
+When talking to the human developer:
+
+- Use short, plain sentences. Prefer everyday words over jargon.
+- Lead with what matters: result, risk, or next step.
+- If a term might be unclear, use the meaning from `@glossary` (or say it in one plain clause).
+- Do not dump tool names, MCP internals, proto enums, or raw CLI noise unless the developer asks.
+- Prefer “what / why / next” over long essays.
+- Keep lists scannable. Bold only the rare must-see word.

@@ -22,6 +22,18 @@ HTTPS remote alternative:
 git submodule add https://github.com/RaphaelBecker/cursor-harness.git vendor/cursor-harness
 ```
 
+## What gets installed
+
+| Source | Destination |
+|--------|-------------|
+| `HARNESS.md` | `.cursor/HARNESS.md` |
+| `rules/*.mdc` | `.cursor/rules/` |
+| `skills/**` | `.cursor/skills/` (including `workflows/`) |
+| `agents/*.md` | `.cursor/agents/` |
+| `automations/` | `.cursor/automations/` |
+| `hooks/scripts/*` + merge `hooks.json` | `.cursor/hooks/` + `.cursor/hooks.json` |
+| `templates/AGENTS.md` (optional) | project root `AGENTS.md` |
+
 ## install.sh flags
 
 | Flag | Description |
@@ -65,4 +77,6 @@ If the project committed symlinks, reinstall is only needed after harness update
 | `refusing to overwrite non-symlink path` | Happens in symlink mode when a real file replaced a harness link — move/rename it, or pass `--force`. Copy mode refreshes pack files on reinstall. |
 | Hooks not firing | Confirm `.cursor/hooks.json` paths; check Cursor Hooks output; ensure scripts are executable |
 | Skill not discovered | Ensure `.cursor/skills/<name>/SKILL.md` exists with `name` + `description` |
+| Workflow skill missing | Nested packs install under `.cursor/skills/workflows/<name>/` |
+| HARNESS map missing | Re-run install; check `packs.harness_map` in `manifest.yaml` |
 | Submodule empty | `git submodule update --init --recursive` |

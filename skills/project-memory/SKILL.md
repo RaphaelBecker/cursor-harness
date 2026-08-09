@@ -1,11 +1,12 @@
 ---
 name: project-memory
 description: >-
-  Loads domain-relevant entries from project_memory.md during Phase 1 planning
-  and consolidates post-CI lessons into that file during Phase 7. Auto-activate
-  when entering Phase 1 Understand & Plan, when reviewing an implementation plan,
-  or after the developer confirms a test-relevant CI/main cycle is green. Never
-  treat memory as authoritative over code, canonical docs, or Cursor rules.
+  Loads domain-relevant Architecture tips and scored Candidates from
+  project_memory.md in Phase 1; writes Candidates + cycle status in Phase 5;
+  consolidates soft Architecture and proposes staged harness promotions in
+  Phase 7 after watched-green remote ship. Auto-activate on Phase 1 planning,
+  plan review, Phase 5 candidate write, or post-CI Phase 7. Never treat memory
+  as authoritative over code, canonical docs, or Cursor rules.
 ---
 
 # Project memory
@@ -22,26 +23,85 @@ preventing context bloat and logic drift.
 - If a memory entry contradicts a canonical doc or rule, ignore it for planning
   and prune it during the next consolidation.
 
+## File sections
+
+1. **Architecture & Best Practices** — soft tips (not scored). Phase 7 may rewrite.
+2. **Candidates (scored)** — markdown table ladder toward harness solidification.
+3. **Cycle status** — compact end-of-cycle block (overwritten each Phase 5 / promote).
+
+### Candidates table columns
+
+`id` | `domain` | `lesson` | `added_at` | `help_count` | `last_helped_at` | `status`
+
+- **id:** stable short slug (`e2e-auth-storage-key`)
+- **domain:** one filter tag (`e2e`, `ci`, `billing`, `harness`, …)
+- **lesson:** max ~2 sentences; actionable; no stack traces
+- **added_at / last_helped_at:** `YYYY-MM-DD` (use `-` for never-helped)
+- **status:** `active` | `staged` | `retired`
+
+### Caps and staging
+
+- Max **30 `active`**. Before adding a 31st: drop lowest `help_count` (tie → oldest
+  `added_at`); never drop `staged`.
+- Max **10 `retired`** audit rows; FIFO-delete oldest retired.
+- **Stage** when `help_count >= 8` **and** age since `added_at` **>= 14 days**.
+- Phase 1 never loads `staged` or `retired` rows.
+
+## When agents may write this file
+
+| Section | Who may write | When |
+| --- | --- | --- |
+| Architecture | Phase 7 only | After watched-green test-relevant remote ship |
+| Candidates + Cycle status | Phase 5 (via this skill) and Phase 7 (stage/promote/retire) | After durable handoff lessons; after CI green for promote path |
+
+- Do **not** edit Architecture during Phases 1–5.
+- Commit/push of memory or harness promote edits require an explicit human instruction
+  (or `/ship-prod` Phase 7 path when the human invoked it).
+
 ## Phase 1 — load (before plan generation)
 
 1. Identify the request domain(s) from the user prompt and routed docs.
-2. Read only matching bullets from `Architecture & Best Practices` and
-   `Bug Fixes & Gotchas`. Do not load unrelated domains.
-3. If the file is missing or both sections are empty, continue planning with no
-   hard stop.
-4. Cross-check loaded entries against the routed canonical docs. Drop stale or
-   contradictory items from the working set; do not let them steer the plan.
-5. Proceed to plan generation / `@implementation-plan-review`. Memory load is not
-   plan approval.
+2. Prefer product stories / acceptance docs and `@glossary` for intent/language; use memory
+   only for durable process gotchas.
+3. Read matching bullets from **Architecture & Best Practices**.
+4. Read up to **8** domain-matched **`active`** Candidates rows. Ignore `staged`/`retired`.
+5. Record which candidate **ids** were loaded (for honest Phase 5 help bumps).
+6. If the file is missing or both sections are empty, continue planning with no hard stop.
+7. Cross-check loaded entries against routed canonical docs (and current code). Drop
+   stale or contradictory items from the working set; do not let them steer the plan.
+8. Proceed to `@grill-me` (auto at Phase 1 for non-trivial ideas), then draft the plan.
+   Do **not** auto-run `@implementation-plan-review`. Memory load is not plan approval.
 
-## Phase 7 — consolidate (after confirmed-green CI)
+## Phase 5 — candidates write (before `/ship-local`)
 
-Trigger only when a **test-relevant** CI/main (or equivalent merge) cycle reaches
-green and the developer confirms that state (or the agent has direct evidence of
-a watched-green run). Do **not** run after:
+Called from `@execute-approved-plan` after handoff `## Lessons learned` exists and before
+ship. Do not merge, push, or manage worktrees here.
+
+1. Keep `## Lessons learned` in the chat handoff (required).
+2. For each durable lesson: **upsert** a Candidates row (`active`, `help_count=0` if new,
+   `added_at=today`). Same domain+intent → rewrite in place; do not clone rows.
+3. For each loaded candidate **cited as used** this cycle: `help_count += 1`, set
+   `last_helped_at=today`. Max **+1 per id per cycle**. Cite those ids in the handoff.
+4. Run stage check → set qualifying rows to `status=staged`.
+5. Refresh **Cycle status** (overwrite the block):
+
+```markdown
+## Cycle status (YYYY-MM-DD · <feature-label>)
+- New: N · Helped this cycle: N · Active: N/30 · Staged for harness: N
+- Staged: `id1`, `id2` (or none)
+- Top helped: `id` (count) · …
+```
+
+6. Echo the same cycle status in the Phase 5 handoff.
+7. Do **not** edit Architecture here.
+
+## Phase 7 — consolidate + staged promote ask (after watched green CI)
+
+Trigger only when a **test-relevant** remote ship (project deploy/push path, including via
+`/ship-prod`) reaches a watched green terminal state. Do **not** run after:
 
 - local Phase 5 handoff,
-- docs/rules-only changes with no test pipeline,
+- docs/rules-only ship with no test pipeline,
 - a failed CI run that has not yet been repaired to green.
 
 At activation, output this exact message first:
@@ -51,37 +111,31 @@ At activation, output this exact message first:
 Then:
 
 1. Retrospect the cycle: architectural shifts, friction, recurring bugs, CI fixes.
-2. For each durable lesson, draft at most one entry in this exact format:
+2. For soft Architecture tips: draft at most one bullet per durable lesson:
    `* **[Domain/Module]** Actionable rule or root-cause solution. (Target file/folder)`
-   Maximum two sentences. No stack traces, raw code, or narrative history.
-3. Read the target section. Integrate by rewriting for extreme brevity — never
-   append to the bottom. Merge duplicates; delete obsolete or contradictory logic.
-4. Place new bug entries at the **top** of `Bug Fixes & Gotchas` (newest-first).
-5. Capacity for `Bug Fixes & Gotchas` is **20**:
-   - Before adding a 21st item, prefer **Promotion Protocol**: if multiple bugs
-     share a root cause, synthesize ONE overarching rule under
-     `Architecture & Best Practices` and delete the covered bug entries.
-   - Otherwise apply FIFO: delete the oldest entry (last list item), then insert
-     the new bug at the top.
-6. **Architecture safety gate:** if the new lesson contradicts an existing rule
-   in `Architecture & Best Practices`, stop and ask the user for explicit
-   confirmation before overwriting that rule.
-7. Leave `project_memory.md` **local and unstaged**. Do not commit or push.
-   Disclose the unstaged state in the handoff. An uneventful retrospective may
-   leave the file unchanged.
-
-## Manual capture (cross-session learning)
-
-When the user asks to persist a lesson outside Phase 7:
-
-1. Filter for durable, actionable guidance (not one-off chat noise).
-2. Choose storage: promote recurring themes into `Architecture & Best Practices`;
-   put concrete bug gotchas into `Bug Fixes & Gotchas`.
-3. Apply the same rewrite/capacity rules as Phase 7.
-4. Confirm with the user what was written; leave unstaged unless they ask to commit.
+   Maximum two sentences. Integrate by rewriting for extreme brevity — never append-only.
+   Merge duplicates; delete obsolete or contradictory logic.
+3. **Architecture safety gate:** if a new tip contradicts an existing Architecture rule,
+   stop and ask the user before overwriting.
+4. Prefer putting new scored process tips into **Candidates** (upsert) rather than growing
+   Architecture when the tip is still provisional.
+5. List every `status=staged` id. For each, **propose** a harness edit (target skill/rule/
+   HARNESS + one-line change + why: help_count + age). Do **not** auto-apply.
+6. On explicit human **approve**: apply the smallest harness edit; update HARNESS if
+   inventory changes; set candidate `retired`; **purge** any Architecture bullet that
+   restates the same tip; refresh cycle status. Do not retire until the harness edit landed
+   in the same change set.
+7. On explicit human **reject**: set candidate `retired` (brief reject note allowed in
+   lesson text); refresh cycle status.
+8. If `project_memory.md` and/or harness files changed: leave them local and disclose that
+   state unless the human (or `/ship-prod`) explicitly asks to commit/push via the project's
+   docs-only ship path. Do **not** re-enter Phase 7 after a docs-only push.
+9. If nothing durable and no staged asks, leave the file unchanged and do not commit/push.
 
 ## Non-goals
 
 - Do not duplicate canonical policy already owned by rules or docs.
-- Do not weaken merge/push/deploy safeguards.
-- Do not invent executable tests for this declarative policy.
+- Do not store long technical inventories or component trees in memory.
+- Do not auto-edit harness on SCORE threshold alone (stage only).
+- Do not weaken merge/push/deploy safeguards beyond human `/ship-local` / `/ship-prod`.
+- Do not remove Phase 5 `## Lessons learned` handoffs — they feed Candidates.

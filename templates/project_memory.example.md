@@ -5,12 +5,25 @@ rules take precedence. Keep entries short; rewrite in place (never append foreve
 
 ## Architecture & Best Practices
 
-<!-- Durable cross-cutting lessons. Format:
+<!-- Soft tips only. Phase 7 may rewrite. Format:
 * **[Domain/Module]** Actionable rule. (Target file/folder)
 -->
 
-## Bug Fixes & Gotchas
+## Candidates (scored)
 
-<!-- Newest first. Cap at 20; promote shared root causes into Architecture above.
-* **[Domain/Module]** Actionable root-cause solution. (Target file/folder)
+<!-- Ladder toward harness solidification. Phase 1 loads active rows only.
+Columns: id | domain | lesson | added_at | help_count | last_helped_at | status
+status = active | staged | retired
+-->
+
+| id | domain | lesson | added_at | help_count | last_helped_at | status |
+| --- | --- | --- | --- | --- | --- | --- |
+
+## Cycle status
+
+<!-- Overwritten each Phase 5 / Phase 7 promote. Example:
+## Cycle status (YYYY-MM-DD · <feature-label>)
+- New: 0 · Helped this cycle: 0 · Active: 0/30 · Staged for harness: 0
+- Staged: none
+- Top helped: —
 -->

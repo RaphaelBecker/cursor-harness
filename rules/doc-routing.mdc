@@ -7,6 +7,11 @@ alwaysApply: true
 
 ## Documentation ideology
 
+- **Product story / user acceptance first.** Prefer reading and updating the user-facing
+  acceptance or product-story doc before implementation details or file-tree inventories.
+- **Then the code.** Implementation follows the accepted behavior contract.
+- **Thin system contracts only when needed** — security, money, ingest, critical E2E, or
+  other high-risk seams the project already documents as contracts.
 - **This file is the keyword router.** Match the user prompt to a row below (or a
   project-local override) and read those doc paths directly. Do not chain through other
   Cursor rules or sprawling "see also" trees for topic context.
@@ -51,6 +56,9 @@ non-harness filename (e.g. `doc-routing.local.mdc`).
 | Database / schema / migrations | `docs/database/**`, migration folder README | Schema workflow |
 | Backlog, tech debt, future work | `docs/backlog.md`, issue tracker links in README | Deferred work |
 | Changelog, versioning, SemVer | `CHANGELOG.md`, versioning docs | Release impact |
+| Ship local, merge to main, worktree cleanup | `.cursor/skills/ship-local/SKILL.md` | Local merge protocol |
+| Ship prod, watched CI, deploy, Phase 7 | `.cursor/skills/workflows/ship-prod/SKILL.md`, `docs/deployment/**` | Remote ship + CI |
+| Candidates, cycle status, staged harness promote | `project_memory.md`, `.cursor/skills/project-memory/SKILL.md` | Scored memory ladder |
 
 When no row matches: search under `docs/` (and README) for the closest SSOT; read that file
 only. Do not invent parallel documentation.
@@ -61,10 +69,11 @@ Update docs in the **same area** you changed before considering the task complet
 
 | You changed… | Update… |
 | :--- | :--- |
-| Feature behavior / API / UX contract | Matching file under `docs/specs/` or equivalent |
+| Feature behavior / API / UX contract | Matching product-story / acceptance / `docs/specs/` file |
 | System structure, data flow, boundaries | Matching file under `docs/architecture/` or equivalent |
 | Public release-facing behavior | `CHANGELOG.md` (or project changelog) when the project uses one |
 | Agent lifecycle / memory skill schema | `project_memory.md` scaffold notes if the format changes |
+| Harness packs (skills/rules/agents/workflows) | `.cursor/HARNESS.md` in the same change |
 
 If no canonical doc exists and the change is material, create the smallest necessary doc in
 the project's existing docs layout — do not invent a new top-level docs tree.

@@ -1,138 +1,112 @@
 ---
-description: Core engineering lifecycle, day/night contract, and workflow guardrails for every change.
+description: Core engineering principles, mandatory lifecycle, and workflow guardrails for every change.
 alwaysApply: true
 ---
 
 # Core principles
 
 This file is ALWAYS in context and is the global contract. It supersedes ad-hoc behavior.
-Topic docs are routed via `doc-routing`. Code quality, testing, and security details live in
-their sibling always-apply rules — do not restate them here.
+File-type and stack specifics live in glob-scoped local rules. Topic docs are routed via
+`doc-routing`. Harness inventory (skills, rules, agents, workflows): **`.cursor/HARNESS.md`**.
+Night-shift checklist: `@execute-approved-plan`. Sibling always-apply rules cover code quality,
+testing, and security — do not restate them here.
 
 ## 0. Context protocol (token economy — RUN BEFORE EVERY TASK)
 
-- MUST evaluate context before acting. Match the request to `doc-routing` keyword rows and
-  read ONLY the mapped doc(s). Do NOT chain to unrelated rules, indexes, or "see also" docs.
-- MUST load only the specific files, snippets, and symbols the task requires. Use targeted
-  Grep/Glob/semantic search + ranged reads. NEVER bulk-read entire modules or directories
-  "for context" when targeted reads suffice.
-- In Phase 1, before drafting an implementation plan, load only domain-relevant bullets from
-  root `project_memory.md` via `@project-memory`. Memory is a learning overlay — current code,
-  canonical docs, and Cursor rules remain authoritative. Skip unrelated domains; an empty or
-  missing file must not block planning.
-- Reuse context already in the conversation; NEVER re-read unchanged files.
+- Match the request to `doc-routing` and read ONLY the mapped doc(s). Prefer product story
+  → code → thin system contract. Do not chain unrelated docs.
+- Load only the files/symbols the task needs. Targeted search + ranged reads — never bulk-read.
+- Phase 1: load domain-relevant `project_memory.md` via `@project-memory` (overlay only).
+- Reuse context already in the conversation; never re-read unchanged files.
+- Shared terms: `@glossary`. Plain talk with the developer: `developer-communication` rule.
 
 ## 1. Mindset
 
-- Senior engineer: understand the existing architecture before generating new code.
-- SOLID, DRY, KISS, YAGNI. One responsibility per module; never duplicate logic; choose the
-  simplest readable solution; do not build what is not needed yet.
+- Senior engineer: understand existing architecture before generating new code.
+- SOLID, DRY, KISS, YAGNI. Deep modules. No speculative abstractions.
 - Match the project's existing stack, naming, and folder conventions. Do not invent frameworks
   or product policy; those belong in project docs and local overrides.
 
-## 2. Mandatory lifecycle — phased execution (EVERY feature or bug fix — no exceptions)
+## 2. Mandatory lifecycle — Day / Night (EVERY non-trivial change)
 
-You operate in a strict, phased workflow. Before acting or responding, silently determine the
-active phase from the conversation so far — do NOT default to Phase 1 on every turn (e.g. the
-user pasting a failing test means you are in Phase 4; "deploy to production" means Phase 6;
-confirmed-green CI means Phase 7).
-State the assumed phase at the top of non-trivial responses (`[Active Phase: N — Name]`). Use a
-`TodoWrite` checklist item named after the current phase (e.g. `phase-4-verify`) as the
-persisted state artifact for the task; update its status as phases complete.
+State `[Active Phase: N — Name]` on non-trivial responses. Track via TodoWrite.
 
-### Day-shift contract and night-shift execution
+### Day shift (Phase 1 + approval)
 
-- **Planning mode (day shift):** Phases 1 and the approval gate are collaborative. The AI may
-  inspect, challenge, and amend the plan, but MUST NOT implement a non-trivial change until the
-  developer explicitly approves the final implementation contract.
-- **Approved-plan execution mode (night shift):** One explicit approval of the complete
-  implementation contract authorizes autonomous execution of Phases 2-5 and local commits on
-  the contract's designated non-protected feature branch. The AI MUST execute the approved
-  contract in one continuous run and MUST NOT ask for repeated confirmation for covered work.
-  Auto-activate the `execute-approved-plan` skill to coordinate branch isolation, phase gates,
-  bounded repairs, evidence, and local commits.
-  Merge, push, pull-request approval, production access, payment actions, and deploy remain
-  human-owned unless a later, explicit instruction invokes them.
-- An implementation contract is executable only when each field below is resolved or explicitly
-  marked `N/A` with a reason:
-  - objective, user outcome, and feature-or-bug classification;
-  - designated feature branch, allowed files/surfaces, non-goals, and prohibited scope;
-  - acceptance criteria plus intended behavior, data, API, UI, failure, and edge-case contracts;
-  - chosen implementation decisions, dependencies, migration/rollback needs, and compatibility
-    constraints;
-  - test-first design, required verification commands, and completion gates;
-  - documentation, changelog, and SemVer impact;
-  - permission for planned behavior changes, in-scope refactors, dead-code removal, and local
-    commit strategy;
-  - handoff evidence required from the autonomous run.
-- **Safe defaults:** For an implementation detail that does not alter the approved contract,
-  follow the closest existing pattern, prefer the smallest reversible change, refactor before
-  adding, preserve compatibility, mock external boundaries, and stay inside the named scope.
-  Record the choice in the handoff; do not interrupt execution merely to ask for preference.
-- **Hard stops:** Stop when progress requires scope expansion, an unapproved behavior or
-  data-contract decision, ambiguous deletion, credentials or privileged access, an
-  irreversible/destructive operation, a real payment/billing action, production data or
-  infrastructure access, merge, push, or deploy. During planning, ask one focused question.
-  During approved-plan execution, preserve the last safe state and report the exact decision
-  required in the handoff instead of waiting interactively. Security controls are never safe
-  defaults. A test failure or implementation obstacle is not a hard stop while a safe in-scope
-  solution remains.
+- Auto `@grill-me` for non-trivial ideas → draft plan for the human.
+- Human triggers `@implementation-plan-review` (not auto).
+- No non-trivial implementation until explicit contract approval.
+- Workflow orchestrators: `@feature-delivery`, `@bugfix`, `/create-workflow` (see HARNESS).
 
-1. **Phase 1 — Understand & Plan:** Classify the request as a feature or a bug fix. Read the
-   relevant canonical docs via `doc-routing.mdc`. Before drafting the plan, load domain-relevant
-   `project_memory.md` entries via `@project-memory`. If anything is ambiguous or context is
-   missing, STOP and ask explicit clarifying questions — make NO assumptions. Formulate a
-   concise, modular implementation plan. Operating model: the developer owns the plan (day
-   shift); the AI executes it autonomously in one shot (night shift) — the plan must leave zero
-   open questions. For non-trivial features, run `@implementation-plan-review` as the
-   approval-gate mechanism. **GATE:** wait for explicit user approval of the complete
-   implementation contract before writing non-trivial code. That one approval opens autonomous
-   Phases 2-5. Only a single, explicitly-requested trivial edit may skip this gate.
-2. **Phase 2 — Test Design:** See the `testing` rule. Bug fix: failing regression first.
-   Feature: design acceptance/BDD scenarios before implementation tests.
-3. **Phase 3 — Implement:** REFACTOR BEFORE ADD — before creating a new module, API, schema
-   object, or function, evaluate whether existing code can be extended. Prefer extension over
-   duplication. Follow project conventions and any glob-scoped local rules. Surgical scope:
-   touch only the assigned surface; shared behavior may change only when expressly named in the
-   approved contract and protected by regression coverage. A refactor MUST preserve behavior.
-   Implement every behavior change approved in the contract. Eliminate clearly unreachable or
-   superseded dead code inside the approved surface when the contract grants that permission;
-   ambiguous deletion is a hard stop.
-4. **Phase 4 — Verify (local gate):** Cover the change and prove existing behavior is
-   preserved using the project's verification commands named in the contract (discover from
-   README, package scripts, Makefile, or CI — never invent project-specific script names).
-   Mock external boundaries; NEVER hit live production services.
-   **Phase 4b — Self code review:** once gates are green, run `@review-code`. Apply
-   behavior-preserving findings directly. A behavior-changing finding may be fixed red-first
-   only when it corrects an introduced regression or is expressly covered by the approved
-   contract and repair budget; otherwise report it as a hard stop or backlog item. Re-run
-   affected verification after runtime-affecting review fixes.
-5. **Phase 5 — Document & Finalize:** Synchronize canonical docs via `@sync-spec-docs`.
-   Bump SemVer for touched versioned packages (§7). Present a readiness checklist (tests green,
-   code review clean, docs synced, version bumped). When authorized by the contract, create
-   local commits on the designated feature branch. End with a local handoff: changed files,
-   commit hashes, test/review evidence, safe-default decisions, deviations or hard stops.
-   Never merge, push, approve a PR, access production, execute a payment, or deploy as part of
-   the autonomous handoff.
-6. **Phase 6 — Push, Deploy, CI Monitor:** Triggered only by an explicit human request to
-   push, open a PR, or deploy. Follow the project's documented deploy/CI workflow. Prefer the
-   project's existing scripts over inventing new ones. Never ask the developer to paste CI logs
-   or open a browser link when CLI tooling (`gh`, CI logs) can fetch them.
-7. **Phase 7 — Post-Feature Retrospective & Memory Consolidation (conditional):** Run after
-   the developer confirms a test-relevant CI/main cycle is green (or equivalent merge gate).
-   Do **not** run after a local Phase 5 handoff or docs-only changes with no test pipeline.
-   Auto-activate `@project-memory`: consolidate durable lessons into root `project_memory.md`
-   (rewrite/prune; never append), leave the file local and unstaged, and disclose that state.
-   Commit/push of memory updates require a later explicit human instruction.
+### Night shift (Phases 2–5)
 
-## 3. Definition of done
+- One approval authorizes `@execute-approved-plan` in the current workspace.
+- Human-owned: remote push, PR approval, production, payments, deploy.
+- Agents must not create/switch/manage git branches or worktrees (Cursor owns isolation),
+  except `/ship-local` when the human invokes it (local merge + remove **current**
+  feature worktree only — no remote push).
+- Local verification is always agent-allowed using the project's documented commands.
 
-- **Testing:** See the `testing` rule and Phases 2/4. NEVER use `--no-verify` to skip hooks.
-- **Documentation:** See Phase 5 and `doc-routing`. No non-trivial task is complete without its
-  documentation update when a canonical doc exists for the topic.
-- **Code quality / security:** See `code-quality` and `security-basics`.
+### Verification ladder
 
-## 4. Software versioning (SemVer)
+**Must run** the verification ladder without asking. Normative steps, repair budgets, and
+gate composition live only in the `testing` rule. Night-shift checklist:
+`@execute-approved-plan` (points at that rule — do not restate ladder steps here).
+
+### Phases (short)
+
+1. **Understand & Plan** — route docs, memory, grill, plan, human review + approve.
+2. **Test Design** — bug: failing regression first; feature: BDD then tests.
+3. **Implement** — smallest allowlisted change.
+4. **Verify** — ladder per `testing` rule; then `@review-code` (4b); then Cursor
+   `/review-bugbot` (and `/review-security` when sensitive) as report-only 4c.
+5. **Document & Finalize** — `@sync-spec-docs`, SemVer if versioned packages changed, handoff
+   with merge-ready status **and `## Lessons learned`**, then `@project-memory` Phase 5
+   Candidates + cycle status write (Architecture section stays Phase 7-only).
+6. **Ship** — human may run `/ship-local` (reliable local merge onto clean up-to-date
+   default branch, including conflict resolution + current worktree cleanup); then human
+   `/ship-prod` (watched remote ship + CI fix + Phase 7) or drive the project's documented
+   deploy/push scripts themselves.
+7. **Memory (conditional)** — after watched-green test-relevant remote ship only
+   (including via `/ship-prod`): `@project-memory` Phase 7 (soft Architecture + staged
+   harness promote ask); commit/push only if the human asks or via `/ship-prod` docs path.
+
+### Contract fields & hard stops
+
+Executable contract fields: objective, allowlist, non-goals, acceptance, tests, docs/SemVer,
+permissions, handoff evidence — each resolved or `N/A` with reason. Do not prescribe branch
+or worktree names.
+
+**Safe defaults:** smallest reversible change, refactor before add, mock externals, stay in scope.  
+**Hard stops:** scope expansion, unapproved behavior/data, ambiguous deletion, credentials,
+destructive ops, payments, production, push, deploy — unless the human explicitly invokes
+`/ship-prod` (or clearly asks to push/deploy). Local merge/worktree cleanup only via
+explicit `/ship-local`.
+
+### Harness sync
+
+When you add/change a skill, rule, agent, workflow, or automation stub, update
+`.cursor/HARNESS.md` in the same change.
+
+## 3. Code quality
+
+- DRY + KISS. Self-documenting names. Comments explain WHY, never WHAT.
+- See `code-quality` and `deep-modules-clean-architecture`.
+
+## 4. Testing done
+
+See `testing` rule. Never use `--no-verify` to skip hooks.
+
+## 5. Documentation done
+
+See Phase 5 / `doc-routing`. Prefer product acceptance over file trees.
+
+## 6. Security
+
+See `security-basics`. Never hardcode secrets; validate inputs; fail explicitly; least privilege.
+Prefer `/ship-prod` for watched remote delivery when the human asks to ship.
+
+## 7. SemVer
 
 - Bump only the package(s) or version file(s) you changed, using the project's existing
   versioning layout (`package.json`, `pyproject.toml`, `Cargo.toml`, `VERSION`, etc.).

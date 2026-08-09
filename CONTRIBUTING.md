@@ -4,7 +4,8 @@ Keep packs small, actionable, Cursor-native, and **portable**. This harness must
 applicable to any software project — no product names, private paths, or one-repo scripts.
 Stack- or domain-specific guidance belongs in consumer local overrides, not in shared packs.
 
-Register every new pack in `manifest.yaml` so `install.sh` can distribute it.
+Register every new pack in `manifest.yaml` so `install.sh` can distribute it, and update
+root [`HARNESS.md`](HARNESS.md) in the same change.
 
 ## Add a rule
 
@@ -24,11 +25,19 @@ alwaysApply: true
 For file-scoped rules, use `globs` and set `alwaysApply: false`.
 
 2. Add the filename under `packs.rules` in `manifest.yaml`.
-3. Keep the body focused (prefer under ~80 lines).
+3. Add a one-line entry under Rules in `HARNESS.md`.
+4. Keep the body focused (prefer under ~80 lines).
+
+## Sync from a live project lab
+
+When harness process is developed inside a real project’s `.cursor/`, run **`/sync`**
+(skill: `skills/sync/`) in this repo. It diffs the lab, ports generalizable packs,
+strips product leaks, updates `manifest.yaml` + `HARNESS.md`, and smoke-installs.
+Pass the lab path: `/sync /path/to/project` or `/sync /path/to/project/.cursor`.
 
 ## Add a skill
 
-1. Create `skills/<skill-name>/SKILL.md`:
+1. Create `skills/<skill-name>/SKILL.md` (workflows under `skills/workflows/<name>/`):
 
 ```markdown
 ---
@@ -43,8 +52,22 @@ description: Third-person description of WHAT it does and WHEN to use it.
 ```
 
 2. Optional: add `reference.md`, `examples.md`, or `scripts/` next to `SKILL.md`.
-3. Add `<skill-name>` under `packs.skills` in `manifest.yaml`.
-4. Keep `SKILL.md` under 500 lines; put deep detail in linked files one level deep.
+3. Add `<skill-name>` (or `workflows/<name>`) under `packs.skills` in `manifest.yaml`.
+4. Add a one-line entry in `HARNESS.md`.
+5. Keep `SKILL.md` under 500 lines; put deep detail in linked files one level deep.
+
+## Add an agent
+
+1. Create `agents/<name>.md` with YAML frontmatter (`name`, `description`, `model`, optional
+   `readonly`).
+2. Keep the agent portable: discover project commands; no product paths or one-repo scripts.
+3. Register under `packs.agents` in `manifest.yaml` and list it in `HARNESS.md`.
+
+## Add an automation stub
+
+1. Edit `automations/README.md` with trigger, output, and prompt idea.
+2. Keep draft-PR allowlist / hard deny generic.
+3. Ensure `packs.automations: true` in `manifest.yaml` and update `HARNESS.md`.
 
 ## Add a hook
 
@@ -53,6 +76,7 @@ description: Third-person description of WHAT it does and WHEN to use it.
 3. Scripts run from the **consumer project root**; installed paths are `.cursor/hooks/<name>.sh`.
 4. Read JSON from stdin; write JSON to stdout. Fail open unless the policy requires otherwise.
 5. Ensure dependencies exist in the hook environment (`python3`, etc.).
+6. Update the Hooks section in `HARNESS.md`.
 
 `install.sh` merges harness hook entries by `command` path and preserves unrelated project hooks.
 
@@ -64,11 +88,15 @@ Do **not** edit harness-managed filenames in the consumer repo if they are symli
 - Or copy from `templates/local-override.example.mdc`
 - Extend doc maps via `templates/doc-routing.local.example.mdc`
 - Seed memory via `templates/project_memory.example.md` → root `project_memory.md`
+- Add domain agents/MCP/autofix under the consumer `.cursor/` (non-colliding names)
+- Optionally append local rows to a project-owned harness note; do not rewrite portable `HARNESS.md` content in place if it is a symlink — prefer a local companion doc or override
 
 ## Checklist before opening a PR
 
 - [ ] Pack registered in `manifest.yaml`
-- [ ] Rule/skill frontmatter valid
+- [ ] `HARNESS.md` updated
+- [ ] Rule/skill/agent frontmatter valid
+- [ ] No product names, private paths, or one-repo scripts in shared packs
 - [ ] Hook scripts executable and paths match `hooks.json`
 - [ ] Docs updated if install or layout behavior changed
-- [ ] `./install.sh --target /tmp/harness-smoke --mode symlink` succeeds
+- [ ] `./install.sh --target /tmp/harness-smoke --mode symlink --with-agents` succeeds

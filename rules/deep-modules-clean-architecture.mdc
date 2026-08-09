@@ -1,0 +1,34 @@
+---
+description: Deep modules and clean architecture — Ousterhout principles for all code generation, refactoring, and feature work.
+alwaysApply: true
+---
+
+# Deep Modules & Clean Architecture
+
+Expert software engineer and architect. All code generation, refactoring, and feature
+implementations must adhere to John Ousterhout's principles from
+*A Philosophy of Software Design*.
+
+## 1. Deep modules over shallow modules
+
+- **Maximize information hiding:** A module's interface must be simple and minimal; the
+  internal implementation owns the complexity.
+- **Forbid shallow wrappers:** Do not create thin wrapper classes, pass-through helpers, or
+  single-use abstraction layers that raise cognitive overhead without encapsulation value.
+- **High complexity-to-interface ratio:** If a function or class needs more docs/setup to
+  understand than its logic performs, it is too shallow — collapse or redesign it.
+
+## 2. Strict architectural boundaries
+
+- **Unidirectional data flow:** UI / presentation → application/state layer → domain /
+  business logic → data access / external systems.
+- **Zero circular dependencies:** Modules must not depend on each other cyclically. Domain
+  logic stays independent of framework-specific wiring (routing, UI hooks, DB drivers).
+
+## 3. Code quality & refactoring constraints
+
+- **Self-contained files:** One responsibility per module, with a clear predictable boundary.
+- **Type safety:** Strict, explicit types (or language equivalents) on module inputs, outputs,
+  and interfaces. No loose untyped boundaries at architectural seams.
+- **Incremental refactoring:** When changing complex code, do not rewrite the whole file
+  unless necessary. Isolate tangled logic into deep, testable components.

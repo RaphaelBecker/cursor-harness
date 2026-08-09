@@ -3,9 +3,12 @@ version: 1
 defaults:
   mode: symlink
 packs:
+  harness_map: HARNESS.md
   rules:
     - core-principles.mdc
+    - deep-modules-clean-architecture.mdc
     - doc-routing.mdc
+    - developer-communication.mdc
     - code-quality.mdc
     - testing.mdc
     - security-basics.mdc
@@ -14,7 +17,21 @@ packs:
     - grill-me
     - execute-approved-plan
     - project-memory
+    - ship-local
     - review-code
     - sync-spec-docs
+    - generate-bdd-test-spec
+    - help
+    - glossary
+    - create-workflow
+    - sync
+    - review-docs
+    - test-harness-optimize
+    - workflows/feature-delivery
+    - workflows/bugfix
+    - workflows/ship-prod
+  agents:
+    - verifier.md
+  automations: true
   hooks:
     enabled: true

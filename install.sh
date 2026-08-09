@@ -6,7 +6,8 @@ usage() {
   cat <<'EOF'
 Usage: install.sh [options]
 
-Install cursor-harness rules, skills, and hooks into a target project.
+Install cursor-harness rules, skills, agents, automations, hooks, and HARNESS.md
+into a target project.
 
 Options:
   --target <path>     Project root to install into (default: auto-detect)
@@ -104,14 +105,6 @@ log() {
   printf '%s\n' "$*"
 }
 
-run_cmd() {
-  if [[ "$DRY_RUN" -eq 1 ]]; then
-    log "DRY-RUN: $*"
-    return 0
-  fi
-  "$@"
-}
-
 ensure_dir() {
   local dir="$1"
   if [[ "$DRY_RUN" -eq 1 ]]; then
@@ -192,18 +185,34 @@ import re, shlex, sys
 text = open(sys.argv[1], encoding="utf-8").read().splitlines()
 section = None
 hooks_enabled = True
+automations_enabled = False
+harness_map = "HARNESS.md"
 rules = []
 skills = []
+agents = []
 
 for raw in text:
     line = raw.split("#", 1)[0].rstrip()
     if not line.strip():
+        continue
+    m = re.match(r"^\s*harness_map:\s*(.+?)\s*$", line)
+    if m:
+        harness_map = m.group(1).strip().strip("\"'")
+        section = None
+        continue
+    m = re.match(r"^\s*automations:\s*(true|false)\s*$", line, re.I)
+    if m:
+        automations_enabled = m.group(1).lower() == "true"
+        section = None
         continue
     if re.match(r"^\s*rules:\s*$", line):
         section = "rules"
         continue
     if re.match(r"^\s*skills:\s*$", line):
         section = "skills"
+        continue
+    if re.match(r"^\s*agents:\s*$", line):
+        section = "agents"
         continue
     if re.match(r"^\s*hooks:\s*$", line):
         section = "hooks"
@@ -213,15 +222,17 @@ for raw in text:
         hooks_enabled = m.group(1).lower() == "true"
         continue
     m = re.match(r"^\s*-\s+(.+?)\s*$", line)
-    if m and section in ("rules", "skills"):
+    if m and section in ("rules", "skills", "agents"):
         item = m.group(1).strip().strip("\"'")
         if section == "rules":
             rules.append(item)
-        else:
+        elif section == "skills":
             skills.append(item)
+        else:
+            agents.append(item)
         continue
     # Leaving packs subsections when indentation drops to top-level keys
-    if re.match(r"^[A-Za-z]", line) and section in ("rules", "skills", "hooks"):
+    if re.match(r"^[A-Za-z]", line) and section in ("rules", "skills", "agents", "hooks"):
         section = None
 
 def emit(name, values):
@@ -232,7 +243,10 @@ def emit(name, values):
 
 emit("RULES", rules)
 emit("SKILLS", skills)
+emit("AGENTS", agents)
+print(f"HARNESS_MAP={shlex.quote(harness_map)}")
 print(f"HOOKS_ENABLED={'1' if hooks_enabled else '0'}")
+print(f"AUTOMATIONS_ENABLED={'1' if automations_enabled else '0'}")
 PY
 )"
 
@@ -246,6 +260,10 @@ log "  harness: $HARNESS_ROOT"
 log "  target:  $TARGET"
 log "  mode:    $MODE"
 
+if [[ -n "${HARNESS_MAP:-}" ]]; then
+  install_path "${HARNESS_ROOT}/${HARNESS_MAP}" "${CURSOR_DIR}/HARNESS.md" file
+fi
+
 for rule in "${RULES[@]:-}"; do
   [[ -z "${rule:-}" ]] && continue
   install_path "${HARNESS_ROOT}/rules/${rule}" "${CURSOR_DIR}/rules/${rule}" file
@@ -255,6 +273,16 @@ for skill in "${SKILLS[@]:-}"; do
   [[ -z "${skill:-}" ]] && continue
   install_path "${HARNESS_ROOT}/skills/${skill}" "${CURSOR_DIR}/skills/${skill}" dir
 done
+
+for agent in "${AGENTS[@]:-}"; do
+  [[ -z "${agent:-}" ]] && continue
+  ensure_dir "${CURSOR_DIR}/agents"
+  install_path "${HARNESS_ROOT}/agents/${agent}" "${CURSOR_DIR}/agents/${agent}" file
+done
+
+if [[ "${AUTOMATIONS_ENABLED}" -eq 1 ]]; then
+  install_path "${HARNESS_ROOT}/automations" "${CURSOR_DIR}/automations" dir
+fi
 
 if [[ "${HOOKS_ENABLED}" -eq 1 ]]; then
   # Install hook scripts (basename only under .cursor/hooks/)

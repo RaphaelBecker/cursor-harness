@@ -1,9 +1,13 @@
 ---
-description: Portable test discipline — regression-first bugs, acceptance design for features, no weakened gates.
+description: Portable test discipline — regression-first bugs, acceptance design for features, verification ladder SSOT, no weakened gates.
 alwaysApply: true
 ---
 
 # Testing
+
+This file is the **SSOT for the verification ladder** (order, repair budgets, gate hygiene).
+Night-shift skills and workflows must point here — do not restate numbered ladder steps
+elsewhere.
 
 ## Definition of done
 
@@ -22,19 +26,34 @@ alwaysApply: true
   integration / UI / E2E per project layout). Name it after the bug. If the bug reveals a
   systemic gap, propose the accompanying rule/doc change alongside the test — do not fix
   silently.
-- **Feature:** design acceptance criteria or BDD-style scenarios (Given/When/Then) before
-  writing implementation tests. Cover happy path, failure, and material edge cases named in
-  the implementation contract.
+- **Feature:** run `@generate-bdd-test-spec` for Given/When/Then scenarios before writing
+  implementation tests. Cover happy path, failure, and material edge cases named in the
+  implementation contract.
 
-## Phase 4 — verify
+## Phase 4 — verification ladder (normative)
 
-- Discover verification commands from the project's existing sources: `README.md`,
-  `package.json` scripts, `Makefile`, `justfile`, `pyproject.toml`, or CI workflows.
-  Prefer the project's documented fast/local gate for iteration and its full/CI-parity gate
-  before finalizing an approved-plan run. Never invent script names from another project.
+Discover verification commands from the project's existing sources: `README.md`,
+`package.json` scripts, `Makefile`, `justfile`, `pyproject.toml`, or CI workflows.
+Never invent script names from another project. Prefer this order when the project defines
+the layers:
+
+1. Targeted/dedicated suites for the changed surface
+2. Fast/local gate (if defined)
+3. Full/CI-parity gate once (if defined)
+4. On failure: re-run **only failing** suites/tests — at most **two** code-repair attempts
+   per failing gate and **six** code-repair attempts total across the run
+5. When green: **one confirming** full gate when the project has one
+6. Merge-ready needs final green full gate when the project requires it
+
+Also:
+
 - Record the exact commands used in the implementation contract and handoff.
-- After runtime-affecting review fixes (Phase 4b), re-run affected targeted tests and the
+- Harness/docs-only contracts may document N/A for ladder steps in their test field.
+- After runtime-affecting Phase 4b review fixes, re-run affected targeted tests and the
   relevant project gates.
+- Optional report-only helper: `verifier` agent.
+- At most **one** retry for a clearly transient infrastructure failure (does not consume a
+  code-repair attempt).
 
 ## Gate hygiene
 
