@@ -22,6 +22,8 @@ lives in the consumer project.
 | **Harness** (Cursor Harness) | The whole agent framework: **skills**, **rules**, **subagents/agents**, **hooks**, **automations**, **workflows**, and **plans**. |
 | **HARNESS.md** | `.cursor/HARNESS.md` — short inventory map of what exists in the harness. |
 | **Workflow** | Named sequence of skills/agents for a job (feature, bug, audit, ship). |
+| **HIL checkpoint** | Hard stop: the agent waits for an explicit human yes before the next step. |
+| **Batch issue refine** | Day workflow (`/batch-issue-refine`): validate and rewrite a Ready-column GitHub batch. No implementation. |
 | **Skill** | Instructions the agent follows for a task (`SKILL.md`); often run with `/name`. |
 | **Rule** | Always-on or file-scoped guardrail (`.mdc`). |
 | **Subagent** / **Agent** | Focused helper (often report-only) under `.cursor/agents/`. |
@@ -30,9 +32,10 @@ lives in the consumer project.
 | **Plan** | Draft or approved implementation plan (often under `.cursor/plans/`). |
 | **Verification ladder** | Targeted tests → fast/local gate → full/CI-parity gate (then rerun failing only, then confirm) — SSOT in the `testing` rule; discovered project commands. |
 | **Lessons learned** | Short session summary at Phase 5 handoff. Feeds Candidates; durable Architecture tips wait for Phase 7. |
-| **Candidates** | Scored rows in `project_memory.md` that may later promote into harness packs. |
+| **Candidates** | Scored rows in `project_memory.md` (the project summary) that may later promote into harness packs. |
+| **Help count** | How often a Candidate lesson actually helped a later session. Bumped at most +1 per cycle. |
 | **Staged** | Candidate that hit help/age thresholds and is ready for a human harness-promote ask. |
 | **Cycle status** | Compact Phase 5 block summarizing new/helped/staged candidate counts. |
 | **Ship local** | `/ship-local` — human-triggered reliable merge onto clean local default branch + current worktree cleanup (no remote push). |
 | **Ship prod** | `/ship-prod` — human-triggered watched remote ship + CI fix + Phase 7. |
-| **Project memory** | `project_memory.md` — short cross-session tips. Not stronger than code or docs. |
+| **Project memory** | Root `project_memory.md` summary: Architecture tips + scored Candidates (`help_count`). Not stronger than code or docs. |

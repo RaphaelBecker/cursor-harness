@@ -13,6 +13,10 @@ if printf '%s' "$command" | grep -Eiq \
   'supabase[[:space:]]+db[[:space:]]+(reset|push)|prisma[[:space:]]+migrate[[:space:]]+reset|drop[[:space:]]+database'; then
   ask=1
 fi
+# Overwriting GitHub issue bodies / closing issues (batch-issue-refine HIL 2).
+if printf '%s' "$command" | grep -Eiq 'gh[[:space:]]+issue[[:space:]]+(edit|close|delete|lock)'; then
+  ask=1
+fi
 # Force-push targeting main/master (order of flags/ref may vary).
 if printf '%s' "$command" | grep -Eiq 'git[[:space:]]+push' \
   && printf '%s' "$command" | grep -Eiq -- '--force(--with-lease)?|[[:space:]]-f[[:space:]]|[[:space:]]-f$' \
@@ -24,8 +28,8 @@ if [[ "$ask" -eq 1 ]]; then
   cat <<'JSON'
 {
   "permission": "ask",
-  "user_message": "This command can destroy data, rewrite a remote database, or force-push to a protected branch. Confirm only if you intend this.",
-  "agent_message": "Blocked pending confirmation: a destructive or prod-affecting command was detected. Prefer versioned migrations, non-destructive workflows, and normal (non-force) pushes. Never reset or push schema to production without explicit human intent."
+  "user_message": "This command can destroy data, overwrite GitHub issue text, rewrite a remote database, or force-push to a protected branch. Confirm only if you intend this.",
+  "agent_message": "Blocked pending confirmation: a destructive or prod-affecting command was detected. Prefer versioned migrations, non-destructive workflows, and normal (non-force) pushes. Never reset or push schema to production, or overwrite GitHub issues, without explicit human intent."
 }
 JSON
   exit 0

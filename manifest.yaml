@@ -30,6 +30,12 @@ packs:
     - workflows/feature-delivery
     - workflows/bugfix
     - workflows/ship-prod
+    - workflows/batch-issue-refine
+    - batch-issue-ingest
+    - market-ux-strategy
+    - value-validator
+    - issue-text-refiner
+    - issue-board-sync
   agents:
     - verifier.md
   automations: true

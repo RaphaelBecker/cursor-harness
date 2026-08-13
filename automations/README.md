@@ -1,5 +1,8 @@
 # Cursor Automations (prompt pack)
 
+Human catalog: [docs/automations.md](../docs/automations.md). This file is the **paste
+prompt pack** only.
+
 Repo stubs only. **Create live Automations in the Agents Window** with `/automate` after
 these prompts are committed. Do not invent MCP server names.
 

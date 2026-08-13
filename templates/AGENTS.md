@@ -24,8 +24,8 @@ Follow `core-principles`:
   `/ship-local`
 - Remote push and deploy stay human-owned unless you explicitly ask via `/ship-prod`
 
-Thin orchestrators: `/feature-delivery`, `/bugfix`, `/ship-prod`. Author new ones with
-`/create-workflow`.
+Thin orchestrators: `/feature-delivery`, `/bugfix`, `/batch-issue-refine`, `/ship-prod`.
+Author new ones with `/create-workflow`.
 
 ## Useful skills
 
@@ -40,6 +40,7 @@ Thin orchestrators: `/feature-delivery`, `/bugfix`, `/ship-prod`. Author new one
 - `review-docs` / `test-harness-optimize` — docs drift and flake/speed helpers
 - `sync-spec-docs` — Phase 5 product-story / canonical doc updates
 - `help` / `glossary` — cheat sheet and shared process terms
+- `batch-issue-refine` — Ready-column GitHub texts → AI-ready (two human gates; no code)
 - `sync` — (harness maintainers) pull lab `.cursor` diffs into the portable pack via `/sync`
 
 ## Project-specific overrides
@@ -48,6 +49,8 @@ Add local rules under `.cursor/rules/` with names that do **not** collide with
 harness-managed files (see harness `templates/doc-routing.local.example.mdc` and
 `templates/local-override.example.mdc`). Copy `templates/project_memory.example.md` to
 root `project_memory.md` when you want the memory overlay (Candidates + cycle status).
+For `/batch-issue-refine`, copy `templates/batch-issue-refine.local.example.md` to
+`.cursor/batch-issue-refine.local.md` (project number, Ready column, notes path).
 
 Domain agents, MCP servers, and stack-specific autofix hooks belong in this project — not in
 the portable harness pack.

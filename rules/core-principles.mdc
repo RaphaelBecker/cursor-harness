@@ -36,7 +36,9 @@ State `[Active Phase: N — Name]` on non-trivial responses. Track via TodoWrite
 - Auto `@grill-me` for non-trivial ideas → draft plan for the human.
 - Human triggers `@implementation-plan-review` (not auto).
 - No non-trivial implementation until explicit contract approval.
-- Workflow orchestrators: `@feature-delivery`, `@bugfix`, `/create-workflow` (see HARNESS).
+- Workflow orchestrators: `@feature-delivery`, `@bugfix`, `/batch-issue-refine`,
+  `/create-workflow` (see HARNESS). `/batch-issue-refine` is board-text only —
+  do not start the implementation spine.
 
 ### Night shift (Phases 2–5)
 

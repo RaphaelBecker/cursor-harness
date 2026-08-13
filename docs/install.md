@@ -1,5 +1,7 @@
 # Install guide
 
+Workflows: [README.md](../README.md#workflows). Pack catalogs: [docs/](.).
+
 ## Requirements
 
 - `bash`
@@ -78,5 +80,6 @@ If the project committed symlinks, reinstall is only needed after harness update
 | Hooks not firing | Confirm `.cursor/hooks.json` paths; check Cursor Hooks output; ensure scripts are executable |
 | Skill not discovered | Ensure `.cursor/skills/<name>/SKILL.md` exists with `name` + `description` |
 | Workflow skill missing | Nested packs install under `.cursor/skills/workflows/<name>/` |
+| Batch issue refine asks for config | Copy `templates/batch-issue-refine.local.example.md` to `.cursor/batch-issue-refine.local.md` |
 | HARNESS map missing | Re-run install; check `packs.harness_map` in `manifest.yaml` |
 | Submodule empty | `git submodule update --init --recursive` |

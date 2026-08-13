@@ -3,7 +3,8 @@
 **Harness** = the whole Cursor framework here: skills, rules, subagents/agents, hooks,
 automations, workflows, and plans.
 
-Simple inventory of what exists. Not a wiki. One line each. Details live in the linked file.
+Simple inventory of what exists. Not a wiki. One line each. Details live in the linked
+skill/rule file. Human catalogs: [docs/](docs/). Workflows: [README.md](README.md#workflows).
 
 - **Quick cheat sheet:** type `/help` in Agent chat
 - **Full map:** this file (installed as `.cursor/HARNESS.md`)
@@ -19,6 +20,7 @@ routed doc row — do not bulk-read `docs/`.
 ## 1. How work runs
 
 - **Day shift** — Plan with you: grill → plan → you run plan review → you approve.
+  Board-text batch: `/batch-issue-refine` (two HIL gates; no implementation).
 - **Night shift** — After approval: implement, ladder (`testing` rule), `@review-code` (4b),
   `/review-bugbot` (+ `/review-security` when sensitive) report-only (4c), sync docs,
   scored Candidates + cycle status, handoff. Local merge/cleanup via `/ship-local` when
@@ -38,9 +40,13 @@ routed doc row — do not bulk-read `docs/`.
 | Sync from lab | Pull portable diffs from a live `.cursor` | Meta → `/sync` |
 | Feature delivery | New feature / page | Day → Night → `feature-delivery` |
 | Bug fix | Defect | Day → Night → `bugfix` |
+| Batch issue refine | Ready-column GitHub texts → AI-ready, no code | Day → `/batch-issue-refine` |
 | Ship prod | Clean local default → watched CI → green → Phase 7 | Hybrid → `/ship-prod` |
 | Test harness optimize | Flakes, speed, coverage | Day or Autonomous |
 | Daily quality automations | Recurring hygiene | Autonomous (see automations README) |
+
+Proposed (not installed): [README workflow ideas](README.md#workflow-ideas) —
+architecture, test suite, frontend tokens, docs-to-user-stories, performance.
 
 ---
 
@@ -69,6 +75,12 @@ routed doc row — do not bulk-read `docs/`.
 | `sync` | Pull lab `.cursor` diffs into this portable pack; strip product leaks |
 | `feature-delivery` | Thin orchestrator for full features |
 | `bugfix` | Thin orchestrator for bugs |
+| `batch-issue-refine` | Thin Day orchestrator: Ready-batch ingest → value gates → refined issue texts → HIL sync |
+| `batch-issue-ingest` | Pull Ready-column issues; triage `BUG FIX` / `NEW FEATURE` |
+| `market-ux-strategy` | Feature-only competitor benchmark, minimal UX, edge |
+| `value-validator` | Feature-only `PROCEED` / `PRUNE` / `DISCARD` (HIL 1) |
+| `issue-text-refiner` | Ambiguity-free AI-ready issue bodies + blockers |
+| `issue-board-sync` | Preview + `gh issue edit` script; run only after HIL 2 |
 | `ship-prod` | Human-triggered prod delivery: local green → project ship → watch CI → fix red (+ Bugbot) → Phase 7 |
 | `review-docs` | Doc drift audit (report default) |
 | `test-harness-optimize` | Faster/less flaky tests without weaker asserts |
@@ -95,6 +107,8 @@ routed doc row — do not bulk-read `docs/`.
 | --- | --- |
 | `verifier` | Discover and run project typecheck/lint/tests; report only |
 | Bugbot / Security Review | Built-in Cursor reviewers (Phase 4c) |
+| `ci-investigator` | Built-in: short root-cause of one failed CI check |
+| `explore` | Built-in: fast codebase map |
 
 Stack- or domain-specific agents belong in the consumer project (not this portable pack).
 
@@ -106,7 +120,7 @@ Stack- or domain-specific agents belong in the consumer project (not this portab
 | --- | --- |
 | `sessionStart` → `session-bootstrap.sh` | Lifecycle/skills reminder |
 | `beforeSubmitPrompt` → `protect-secrets-prompt.sh` | Secret-pattern guard |
-| `beforeShellExecution` → `guard-destructive-shell.sh` | Confirm destructive DB / force-push |
+| `beforeShellExecution` → `guard-destructive-shell.sh` | Confirm destructive DB / force-push / `gh issue edit` |
 
 ---
 
@@ -130,7 +144,7 @@ See [`automations/README.md`](automations/README.md). Create live ones in the Ag
 
 | When | Use |
 | --- | --- |
-| Day | `/feature-delivery`, `/implementation-plan-review` |
+| Day | `/feature-delivery`, `/implementation-plan-review`, `/batch-issue-refine` |
 | Night quality | `@review-code` then `/review-bugbot` (+ `/review-security` when sensitive) |
 | Local ship | `/ship-local` after merge-ready Phase 5 |
 | Prod ship | `/ship-prod` after clean local default is ready (watch + CI fix + Phase 7) |

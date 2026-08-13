@@ -12,3 +12,4 @@ Use this file as a template for project-specific guidance that should not live i
   `doc-routing.mdc`, `code-quality.mdc`, `testing.mdc`, `security-basics.mdc`)
 - Keep it short and actionable
 - Put stack-specific conventions here (frameworks, folder layout, deploy scripts)
+- Brand UI (token CSS path, light/dark, primary/secondary/tertiary) belongs here — not in the harness

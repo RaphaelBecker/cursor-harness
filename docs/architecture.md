@@ -22,6 +22,8 @@
 
 Templates (`project_memory.example.md`, `doc-routing.local.example.mdc`) show how consumers
 opt into memory and project-specific routing without editing harness-managed filenames.
+`project_memory.md` is the project **summary**: agents write lessons from human
+lessons-learned into a scored Candidates table and bump `help_count` when a row later helps.
 
 ## Why not root `.cursorrules`?
 
@@ -55,6 +57,8 @@ cursor-harness/                 consumer project/
 
 Authoring paths mirror destinations so contributors do not learn a second schema.
 Nested skills (e.g. `workflows/feature-delivery`) install under `.cursor/skills/workflows/`.
+Human catalogs in `docs/` are **not** installed into `.cursor/` — they stay in the submodule
+and are linked from [README.md](../README.md#contents).
 
 ## Distribution model
 
@@ -84,19 +88,10 @@ Harness entries are identified by their `command` path (e.g. `.cursor/hooks/sess
 
 `manifest.yaml` is the install source of truth. If a file exists on disk but is not listed, it is not installed. That keeps experimental drafts from leaking into consumer projects.
 
-## Lifecycle model (packs)
+## Lifecycle vs catalogs
 
-`core-principles` defines a phased workflow:
-
-- **Day shift:** Phase 1 + auto `grill-me` → human `implementation-plan-review` → approved contract
-- **Night shift:** `execute-approved-plan` for Phases 2–5 (BDD → implement → `testing`-rule ladder →
-  `@review-code` 4b → `/review-bugbot` 4c → `sync-spec-docs` + Lessons learned → Phase 5 Candidates);
-  agents do not manage git branches except during human `/ship-local`
-- **Ship:** human `/ship-local` then `/ship-prod` (or project push/deploy scripts)
-- **Optional Phase 7:** `project-memory` Architecture + staged harness promote ask after
-  watched-green test-relevant remote ship
-
-Sibling rules cover doc routing, deep modules, developer communication, code quality, testing,
-and security. Workflows (`feature-delivery`, `bugfix`, `ship-prod`) are thin orchestrators.
-Hooks reinforce secrets and destructive-shell safety. Automations README provides autonomous
-quality stubs.
+- **Workflow sequences** (human): [README.md](../README.md#workflows)
+- **Day/night contract** (normative): [core-principles.mdc](../rules/core-principles.mdc)
+- **Pack catalogs:** [rules](rules.md) · [skills](skills.md) · [agents](agents.md) ·
+  [hooks](hooks.md) · [automations](automations.md)
+- **Agent one-liners:** [HARNESS.md](../HARNESS.md)

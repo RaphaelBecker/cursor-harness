@@ -5,7 +5,10 @@ applicable to any software project — no product names, private paths, or one-r
 Stack- or domain-specific guidance belongs in consumer local overrides, not in shared packs.
 
 Register every new pack in `manifest.yaml` so `install.sh` can distribute it, and update
-root [`HARNESS.md`](HARNESS.md) in the same change.
+root [`HARNESS.md`](HARNESS.md) in the same change. Add a **one-line catalog row** in the
+matching file under [`docs/`](docs/) (`rules.md`, `skills.md`, `agents.md`, `hooks.md`,
+`automations.md`). If you add a **workflow**, also add a short section to
+[`README.md`](README.md#workflows) — do not paste skill steps into the README.
 
 ## Add a rule
 
@@ -88,6 +91,7 @@ Do **not** edit harness-managed filenames in the consumer repo if they are symli
 - Or copy from `templates/local-override.example.mdc`
 - Extend doc maps via `templates/doc-routing.local.example.mdc`
 - Seed memory via `templates/project_memory.example.md` → root `project_memory.md`
+- Copy `templates/batch-issue-refine.local.example.md` → `.cursor/batch-issue-refine.local.md` for Ready-column project number, column name, and notes path
 - Add domain agents/MCP/autofix under the consumer `.cursor/` (non-colliding names)
 - Optionally append local rows to a project-owned harness note; do not rewrite portable `HARNESS.md` content in place if it is a symlink — prefer a local companion doc or override
 
@@ -95,6 +99,7 @@ Do **not** edit harness-managed filenames in the consumer repo if they are symli
 
 - [ ] Pack registered in `manifest.yaml`
 - [ ] `HARNESS.md` updated
+- [ ] Matching `docs/` catalog row (and README workflow section if it is a workflow)
 - [ ] Rule/skill/agent frontmatter valid
 - [ ] No product names, private paths, or one-repo scripts in shared packs
 - [ ] Hook scripts executable and paths match `hooks.json`

@@ -30,6 +30,7 @@ Paste this content (keep it compact):
 | --- | --- |
 | New feature | New agent → `/feature-delivery` → read plan → `/implementation-plan-review` → **approve** |
 | Bug fix | New agent → `/bugfix` → (same review/approve if non-trivial) |
+| Refine Ready issues | New agent → `/batch-issue-refine` → you approve twice (value, then board overwrite). No code. |
 | After approve | Agent runs night shift (`execute-approved-plan`): ladder → `@review-code` → `/review-bugbot` (+ `/review-security` if sensitive) → docs → **Lessons learned** + scored Candidates |
 | Local ship | `/ship-local` (merge workflow → clean up-to-date local default → remove current worktree) |
 | Prod ship | `/ship-prod` (local green → project ship → watch CI → fix red + Bugbot → Phase 7) |
@@ -52,7 +53,7 @@ Paste this content (keep it compact):
 
 | When | Use |
 | --- | --- |
-| Day | `/feature-delivery`, `/implementation-plan-review` |
+| Day | `/feature-delivery`, `/implementation-plan-review`, `/batch-issue-refine` |
 | Night quality | `@review-code` then `/review-bugbot` (+ `/review-security` when sensitive) |
 | Local ship | `/ship-local` |
 | Prod ship | `/ship-prod` |
@@ -70,3 +71,4 @@ Paste this content (keep it compact):
 ---
 
 If they ask “what next for my feature?”, point them at `/feature-delivery` only.
+If they ask to refine Ready-column GitHub texts, point them at `/batch-issue-refine` only.

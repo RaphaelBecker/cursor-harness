@@ -103,9 +103,10 @@ For each PORT item:
    `HARNESS.md`, templates as needed).
 4. Register new packs in `manifest.yaml`.
 5. Update root `HARNESS.md` one-liners in the same change.
-6. Touch consumer-facing docs only when install/layout behavior changed
-   (`README.md`, `docs/architecture.md`, `docs/install.md`, `CONTRIBUTING.md`,
-   `templates/AGENTS.md`).
+6. Touch consumer-facing docs only when install/layout/pack catalog behavior changed
+   (`README.md` workflows, `docs/architecture.md`, `docs/install.md`, `docs/rules.md`,
+   `docs/skills.md`, `docs/agents.md`, `docs/hooks.md`, `docs/automations.md`,
+   `CONTRIBUTING.md`, `templates/AGENTS.md`).
 
 ### 4) Leak scan (mandatory)
 

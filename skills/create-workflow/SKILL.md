@@ -41,9 +41,14 @@ is the map.
 | Remote ship | human `/ship-prod` |
 | Verification report | `verifier` (report-only) |
 | Autonomous quality | Report-only unless step matches draft-PR allowlist |
+| Ready-column issue texts | `/batch-issue-refine` (Day, two HIL gates; no code; not an Automation) |
 
 ## Style
 
 - Plain words. Keep new workflow skills thin — orchestrate existing skills.
+- **One job per skill.** Do not fold audit + fix + coverage + E2E merge into one playbook.
+- Prefer a report-only skill plus HIL before a write skill. Fan out with subagents when
+  tracks are independent (`verifier`, Bugbot, Security Review, `explore`, `ci-investigator`).
 - No second wiki. One-line HARNESS entries only.
 - Do not bake product names or one-repo scripts into shared workflow skills.
+- Proposed backlog: [README workflow ideas](../../README.md#workflow-ideas).

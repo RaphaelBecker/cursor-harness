@@ -1,7 +1,11 @@
 # Project memory
 
-Bounded learning overlay. Not a source of truth — current code, canonical docs, and Cursor
-rules take precedence. Keep entries short; rewrite in place (never append forever).
+This is the project **summary** file agents read and update. Bounded learning overlay —
+not a source of truth. Current code, canonical docs, and Cursor rules take precedence.
+Keep entries short; rewrite in place (never append forever).
+
+**Candidates** come from human **lessons learned**. Later sessions load matching rows and
+bump `help_count` when a lesson actually helped.
 
 ## Architecture & Best Practices
 
