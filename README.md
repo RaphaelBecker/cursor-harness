@@ -15,7 +15,11 @@ After a cycle, human **lessons learned** become scored **Candidates**. Later ses
 load matching rows and bump `help_count` when a lesson actually helped — so the pack
 learns what was useful, not only what was written down.
 
-Inspired by skills-based AI engineering, including work by [Matt Pocock](https://www.mattpocock.com/).
+Inspired by:
+
+- [Matt Pocock](https://www.mattpocock.com/)
+- [Learn Harness Engineering](https://walkinglabs.github.io/learn-harness-engineering/en/)
+- [Dexter Horthy — 12-Factor Agents](https://github.com/humanlayer/12-factor-agents)
 
 ```bash
 git submodule add git@github.com:RaphaelBecker/cursor-harness.git vendor/cursor-harness
