@@ -10,6 +10,61 @@ matching file under [`docs/`](docs/) (`rules.md`, `skills.md`, `agents.md`, `hoo
 `automations.md`). If you add a **workflow**, also add a short section to
 [`README.md`](README.md#workflows) — do not paste skill steps into the README.
 
+## README flowcharts
+
+Workflow diagrams in [`README.md`](README.md) use a locked mermaid theme so GitHub
+light/dark and screenshots stay consistent. Copy this block.
+
+Dark slate canvas. **One hue per role** — do not rainbow every node. Unused palette
+colors (pink, lime, neon purple) stay off the charts.
+
+Every node uses the same cool-grey border. Role is the **fill** only. Keep fills
+mid-tone so `#E8EEF7` text stays readable — no gradients.
+
+| Role | Fill / token | Meaning |
+| --- | --- | --- |
+| Canvas | `#2B313C` | Chart background |
+| Lines / secondary text | `#9AA6B8` | Arrows, edge labels |
+| Primary text | `#E8EEF7` | Node titles and body |
+| Border (all nodes) | `#A8B4C4` | Shared stroke on every shape |
+| Skill | `#3A5F9A` | Playbook / work |
+| HIL / decision | `#A34D16` | You decide (diamond) — orange |
+| Done | `#2A6B5C` | Arrival / ship |
+| Drop | `#7A3D4A` | Stop |
+| Proposed | `#4A4578` dashed | Not installed |
+| You / system | `#3D4554` | Neutral machine step |
+| Mark · skill | `#4C8DFF` | Legend / icon accent |
+| Mark · HIL | `#F5A524` | Legend / icon accent |
+| Mark · subagent | `#22C7E0` | Legend / icon accent |
+| Mark · rule | `#A8B4C4` | Legend / icon accent |
+
+Overview rows: `fontSize` 17px. Zoom-ins: `fontSize` 15px. Bold the node title; do
+not underline. Done / start nodes use stadium `([])`. HIL decisions use diamond
+`{}`. Do **not** wrap a chart in a mermaid subgraph — GitHub draws a box around it.
+Keep the key **out** of the mermaid block. Put this key under the closing fence
+(bottom-left of the chart). GitHub strips inline CSS — color lives in the chips
+(`docs/assets/legend-*.svg`):
+
+```
+![✦ skill](docs/assets/legend-skill.svg) · ![◉ HIL](docs/assets/legend-hil.svg) · ![◇ subagent](docs/assets/legend-subagent.svg)
+```
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"darkMode":true,"fontFamily":"ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif","fontSize":"15px","background":"#2B313C","lineColor":"#9AA6B8","textColor":"#9AA6B8","primaryTextColor":"#E8EEF7","edgeLabelBackground":"#2B313C"},"flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":31,"rankSpacing":48,"padding":16,"useMaxWidth":true}}}%%
+flowchart LR
+  example["<b>Title</b><br/>✦ skill-name"]
+  classDef skill fill:#3A5F9A,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
+  classDef hil fill:#A34D16,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
+  classDef done fill:#2A6B5C,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
+  classDef drop fill:#7A3D4A,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
+  classDef you fill:#3D4554,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
+  classDef proposed fill:#4A4578,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7,stroke-dasharray:6 4
+  class example skill
+```
+
+Canvas `#2B313C`. Icons: skill `#4C8DFF`, HIL `#F5A524`, rule `#A8B4C4`,
+subagent `#22C7E0`.
+
 ## Add a rule
 
 1. Create `rules/<name>.mdc` with YAML frontmatter:
@@ -99,7 +154,7 @@ Do **not** edit harness-managed filenames in the consumer repo if they are symli
 
 - [ ] Pack registered in `manifest.yaml`
 - [ ] `HARNESS.md` updated
-- [ ] Matching `docs/` catalog row (and README workflow section if it is a workflow)
+- [ ] Matching `docs/` catalog row (and README workflow section if it is a workflow; mermaid uses the README flowchart theme)
 - [ ] Rule/skill/agent frontmatter valid
 - [ ] No product names, private paths, or one-repo scripts in shared packs
 - [ ] Hook scripts executable and paths match `hooks.json`

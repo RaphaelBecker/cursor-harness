@@ -52,3 +52,4 @@ is the map.
 - No second wiki. One-line HARNESS entries only.
 - Do not bake product names or one-repo scripts into shared workflow skills.
 - Proposed backlog: [README workflow ideas](../../README.md#workflow-ideas).
+  README flowcharts copy the theme in [CONTRIBUTING.md](../../CONTRIBUTING.md#readme-flowcharts).

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="cursor-harness">
+  <rect x="22" y="8" width="34" height="34" rx="9" fill="#4C8DFF"/>
+  <circle cx="24" cy="40" r="16" fill="#F5A524"/>
+  <path fill="#2A6B5C" d="M38 28 46 36 38 44 30 36Z"/>
+</svg>
