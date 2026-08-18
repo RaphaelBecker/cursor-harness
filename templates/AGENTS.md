@@ -7,7 +7,7 @@ and automation stubs.
 - Rules: `.cursor/rules/`
 - Skills: `.cursor/skills/` (including `workflows/`)
 - Agents: `.cursor/agents/`
-- Automations: `.cursor/automations/`
+- Automations: `.cursor/automations/` (local CLI/SDK prompt stubs; `/automate` is overflow)
 - Hooks: `.cursor/hooks.json` and `.cursor/hooks/`
 
 ## Lifecycle
@@ -18,7 +18,8 @@ Follow `core-principles`:
   approve the implementation contract
 - **Night shift:** `execute-approved-plan` for Phases 2–5 (BDD → implement → verification
   ladder → `@review-code` 4b → `/review-bugbot` 4c → `sync-spec-docs` + Lessons learned +
-  Phase 5 Candidates)
+  Phase 5 Candidates). Unattended: local Cursor CLI/SDK in the current worktree — see
+  harness `docs/runtime-policy.md`. Do not default to cloud Automations.
 - **Ship:** you run `/ship-local` then `/ship-prod` (or project push/deploy scripts)
 - Agents do not create or manage git branches/worktrees except during human-triggered
   `/ship-local`

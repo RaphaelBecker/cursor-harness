@@ -16,7 +16,7 @@
 | Doc-routing *protocol* + default keywords | Keyword → path map (`doc-routing.local.mdc`) |
 | Testing/security/quality discipline | Framework/folder conventions, glob rules |
 | Process skills + workflows (plan / execute / memory / review) | Stack-specific agents, MCP, autofix hooks |
-| Portable `verifier` agent + automation stubs | Domain auditors, product MCP servers |
+| Portable `verifier` agent + automation stubs (local CLI/SDK) | Domain auditors, product MCP servers |
 | Secret + destructive-shell guards | Deploy scripts, private env layout |
 | `.cursor/HARNESS.md` inventory | Extra local HARNESS rows for domain packs |
 
@@ -92,6 +92,7 @@ Harness entries are identified by their `command` path (e.g. `.cursor/hooks/sess
 
 - **Workflow sequences** (human): [README.md](../README.md#workflows)
 - **Day/night contract** (normative): [core-principles.mdc](../rules/core-principles.mdc)
+- **Where agents run** (local CLI/SDK vs Cursor VMs): [runtime-policy.md](runtime-policy.md)
 - **Pack catalogs:** [rules](rules.md) · [skills](skills.md) · [agents](agents.md) ·
   [hooks](hooks.md) · [automations](automations.md)
 - **Agent one-liners:** [HARNESS.md](../HARNESS.md)

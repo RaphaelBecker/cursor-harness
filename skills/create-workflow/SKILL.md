@@ -27,7 +27,8 @@ is the map.
    - New skill under `.cursor/skills/workflows/<name>/SKILL.md` (or a focused skill if not a
      thin orchestrator).
    - **Always update** `.cursor/HARNESS.md` in the same change.
-   - If autonomous: add a stub under `.cursor/automations/README.md` for later `/automate`.
+   - If autonomous: add a stub under `.cursor/automations/README.md` for a **local**
+     CLI/SDK job (`launchd` / cron). `/automate` is overflow when the laptop is off.
 
 ## Recommendation defaults
 

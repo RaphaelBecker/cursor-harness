@@ -1,10 +1,16 @@
 # Automations
 
-Cloud agents on a schedule or git/CI event. **This repo ships stubs only.** Create
-live automations in the Agents Window with `/automate` after install.
+Scheduled **quality** jobs **without a feature plan**. The night engine is
+**local**: Cursor CLI or SDK on this machine (`launchd` / cron). Prompt stubs
+live in [automations/README.md](../automations/README.md) (installed to
+`.cursor/automations/`).
 
-Paste prompts and safety lists: [automations/README.md](../automations/README.md)
-(installed to `.cursor/automations/`). Do not copy those prompts here.
+Runtime rules: [runtime policy](runtime-policy.md). Do not invent MCP server
+names.
+
+**Overflow only:** `/automate` in the Agents Window starts a **Cursor cloud
+agent** (always max context; individual plans cannot target My Machines). Use
+that when the laptop is off — not as install-default.
 
 ## Safety (short)
 
@@ -14,6 +20,7 @@ Paste prompts and safety lists: [automations/README.md](../automations/README.md
   high-risk domain cores the project marks locally.
 
 Memories may improve recurring runs; they must not override the deny list.
+Prefer `project_memory.md` over cloud Automations `MEMORIES.md`.
 
 ## Stubs
 

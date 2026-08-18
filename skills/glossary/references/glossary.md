@@ -16,7 +16,7 @@ lives in the consumer project.
 | **Night shift** | After approval: implement, test, docs, handoff. No merge/push/deploy unless asked. |
 | **Phase 4b** | Fix-capable maintainability review (`@review-code`) after a green ladder. |
 | **Phase 4c** | Report-only second opinion (`/review-bugbot`, optional `/review-security`). |
-| **Autonomous quality** | Scheduled cloud agents that improve tests/lint/security reports without a feature plan. |
+| **Autonomous quality** | Scheduled **local** CLI/SDK jobs that improve tests/lint/security reports without a feature plan. Cloud `/automate` is overflow when the machine is off. |
 | **Allowlist** | Files/actions the agent may change or open as draft PRs. |
 | **Deny list** | Areas auto agents must not change (auth, billing, secrets, migrations, …). |
 | **Harness** (Cursor Harness) | The whole agent framework: **skills**, **rules**, **subagents/agents**, **hooks**, **automations**, **workflows**, and **plans**. |

@@ -46,7 +46,7 @@ Paste this content (keep it compact):
 | Pull lab harness into this pack | `/sync <path-to-project-or-.cursor>` |
 | Flaky / slow tests | `/test-harness-optimize` |
 | Doc drift | `/review-docs` (report first) |
-| Cloud quality jobs | Stubs in `.cursor/automations/README.md` → create live with `/automate` |
+| Nightly hygiene | Stubs in `.cursor/automations/README.md` → local `agent -p` / SDK ([runtime policy](../../docs/runtime-policy.md)) |
 | Verify a change | Ask for `verifier` (report only) |
 
 ### Built-in Cursor skills we use
@@ -58,7 +58,7 @@ Paste this content (keep it compact):
 | Local ship | `/ship-local` |
 | Prod ship | `/ship-prod` |
 | Ship / PR | `/autopilot`, `/split-to-prs`, `/loop` to watch CI/deploy |
-| Cloud night jobs | `/automate` ← stubs in automations README |
+| Night hygiene | Local `agent -p` ← stubs in automations README. `/automate` only if the laptop is off |
 | Meta | `/create-skill`, `/create-rule`, `/create-hook`, `/create-subagent` |
 
 ### Rules of the road (short)

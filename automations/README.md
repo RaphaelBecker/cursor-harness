@@ -1,13 +1,19 @@
-# Cursor Automations (prompt pack)
+# Nightly hygiene (prompt pack)
 
-Human catalog: [docs/automations.md](../docs/automations.md). This file is the **paste
+Human catalog: [docs/automations.md](../docs/automations.md). Runtime:
+[docs/runtime-policy.md](../docs/runtime-policy.md). This file is the **paste
 prompt pack** only.
 
-Repo stubs only. **Create live Automations in the Agents Window** with `/automate` after
-these prompts are committed. Do not invent MCP server names.
+Run these as **local** Cursor CLI or SDK jobs on this machine (`launchd` / cron).
+Example: `agent -p "<paste prompt>" --model composer-2.5`. Do not invent MCP
+server names.
 
-Enable **Memories** on recurring runs so they can improve across days. Memories must
-**not** override the hard deny list below.
+**Overflow:** `/automate` in the Agents Window starts a Cursor **cloud** agent.
+Use that only when the laptop is off. Do not make it the nightly default.
+
+Enable **Memories** on recurring runs so they can improve across days. Prefer
+`project_memory.md` in the repo. Memories must **not** override the hard deny
+list below.
 
 ## Safety
 
@@ -138,7 +144,10 @@ Steps:
 
 ## Human checklist after commit
 
-1. Open Agents → Automations (or run `/automate`).
-2. Create each stub you want live; paste the prompt idea; set trigger + output.
-3. Keep draft-PR allowlist and hard deny in the automation prompt.
+1. Pick a local schedule (`launchd` / cron) on the machine that holds the
+   test pool.
+2. Paste the prompt into `agent -p` (or SDK `Agent.prompt` with `local.cwd`).
+   Do not prepend `&` (cloud handoff).
+3. Keep draft-PR allowlist and hard deny in the prompt.
 4. When you add/change a stub, update `.cursor/HARNESS.md` in the same change.
+5. Optional overflow: `/automate` only if the laptop will be off.

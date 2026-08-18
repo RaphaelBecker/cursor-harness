@@ -4,7 +4,8 @@
 
 # cursor-harness
 
-<p align="center"><strong>Day when you decide. Night when the agent builds.</strong></p>
+<p align="center"><strong>A developer’s time is precious. Automate my Workflows. 
+Days are for Devs, Nights for the agents.</strong></p>
 
 A **portable**, project-agnostic pack of Cursor **rules**, **skills**, **agents**,
 **hooks**, and **automation stubs**. Humans only at HIL checkpoints. No binding to
@@ -17,7 +18,7 @@ learns what was useful, not only what was written down.
 
 Inspired by:
 
-- [Matt Pocock](https://www.mattpocock.com/)
+- [Matt Pocock](https://github.com/mattpocock)
 - [Learn Harness Engineering](https://walkinglabs.github.io/learn-harness-engineering/en/)
 - [Dexter Horthy — 12-Factor Agents](https://github.com/humanlayer/12-factor-agents)
 
@@ -179,12 +180,13 @@ when a later cycle actually used the row.
 | [Workflows](#workflows) (this file)             | Each named sequence, zoomed in                         |
 | [Workflow ideas](#workflow-ideas) (this file)   | Proposed sequences (not installed)                     |
 | [docs/architecture.md](docs/architecture.md)    | Portable vs local, layout, install model               |
+| [docs/runtime-policy.md](docs/runtime-policy.md)| Local CLI/SDK vs Cursor VMs, Origin, Automations       |
 | [docs/install.md](docs/install.md)              | Submodule install, flags, troubleshooting              |
 | [docs/rules.md](docs/rules.md)                  | Rule catalog                                           |
 | [docs/skills.md](docs/skills.md)                | Skill catalog                                          |
 | [docs/agents.md](docs/agents.md)                | Subagents + built-in reviewers                         |
 | [docs/hooks.md](docs/hooks.md)                  | Hook catalog                                           |
-| [docs/automations.md](docs/automations.md)      | Cloud automation stubs                                 |
+| [docs/automations.md](docs/automations.md)      | Nightly hygiene stubs (local CLI/SDK)                  |
 | [HARNESS.md](HARNESS.md)                        | Agent inventory (one line each) → `.cursor/HARNESS.md` |
 | [CONTRIBUTING.md](CONTRIBUTING.md)              | Add a pack                                             |
 | [LICENSE](LICENSE)                              | MIT                                                    |
@@ -211,7 +213,7 @@ Zoom-ins of [the big picture](#the-big-picture). Start each one in a new agent c
 | 2b      | Something already shipped is wrong          | `/bugfix`                              |
 | 3       | Merge locally, then go to production        | `/ship-local` then `/ship-prod`        |
 | 4a      | Faster, less flaky tests                    | `/test-harness-optimize`               |
-| 4b      | Nightly hygiene without a feature plan      | Automations (`/automate`)              |
+| 4b      | Nightly hygiene without a feature plan      | Local CLI/SDK (`docs/runtime-policy.md`) |
 | Anytime | Cheat sheet, new workflow, pull lab process | `/help` · `/create-workflow` · `/sync` |
 
 ---
@@ -507,18 +509,20 @@ This skill currently does flakes, speed, **and** coverage. Split it — full des
 
 ---
 
-### 4b. Nightly hygiene — Automations
+### 4b. Nightly hygiene — local CLI / SDK
 
-Cloud jobs on a schedule (or when CI fails). **Stubs** until you create them with
-`/automate`. May open a **draft PR** for safe test/lint cleanup. Never auth, billing,
-secrets, or migrations.
+Scheduled quality jobs on **this machine** (`launchd` / cron + Cursor CLI or
+SDK). Prompt stubs: [automations/README.md](automations/README.md). May open a
+**draft PR** for safe test/lint cleanup. Never auth, billing, secrets, or
+migrations. Cloud `/automate` is overflow when the laptop is off —
+[runtime policy](docs/runtime-policy.md).
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"darkMode":true,"fontFamily":"ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif","fontSize":"15px","background":"#2B313C","lineColor":"#9AA6B8","textColor":"#9AA6B8","primaryTextColor":"#E8EEF7","edgeLabelBackground":"#2B313C"},"flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":31,"rankSpacing":48,"padding":16,"useMaxWidth":true}}}%%
 flowchart LR
   A(["<b>Create the job</b><br/>◉ HIL"])
   B["<b>Clock or CI fires</b>"]
-  C["<b>Cloud agent runs</b><br/>✦ test-harness-optimize<br/>◇ verifier"]
+  C["<b>Local CLI or SDK</b><br/>✦ test-harness-optimize<br/>◇ verifier"]
   D{"<b>Safe to patch?</b>"}
   E(["<b>Draft PR</b>"])
   F(["<b>Report only</b>"])
@@ -541,7 +545,7 @@ flowchart LR
 
  `[test-harness-optimize](skills/test-harness-optimize/SKILL.md)`
 ·  `[verifier](agents/verifier.md)`
-·  you create the live job
+·  you schedule the local job
 
 Catalog: [docs/automations.md](docs/automations.md)
 
@@ -553,6 +557,7 @@ Catalog: [docs/automations.md](docs/automations.md)
 | Architecture drift has no scheduled job                                | `deep-modules-clean-architecture`, `review-docs` | weekly `architecture-audit` **report**    |
 | Security scan stays report-only                                        | `security-basics`, Security scan stub            | `test-security-findings` only after HIL   |
 | CI failure triage should start with `ci-investigator`                  | CI failure stub                                  | built-in subagent, not a new pack agent   |
+| Do not default the stub to `/automate` (Cursor VM)                     | [runtime policy](docs/runtime-policy.md)         | local `agent -p` / SDK; `/automate` overflow only |
 
 ---
 

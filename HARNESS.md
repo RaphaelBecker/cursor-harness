@@ -25,7 +25,10 @@ routed doc row — do not bulk-read `docs/`.
   `/review-bugbot` (+ `/review-security` when sensitive) report-only (4c), sync docs,
   scored Candidates + cycle status, handoff. Local merge/cleanup via `/ship-local` when
   you ask; watched remote ship via `/ship-prod` when you ask.
-- **Autonomous** — Scheduled cloud agents for quality (mostly report-only; draft PRs only on an allowlist).
+- **Autonomous** — Local CLI/SDK (or a leftover IDE session) on a schedule.
+  Quality jobs: mostly report-only; draft PRs only on an allowlist. Cloud
+  Automations (`/automate`) are overflow when the machine is off — [runtime
+  policy](docs/runtime-policy.md).
 - **Map rule** — Any new skill, rule, agent, workflow, or automation stub must update **this file**.
 
 ---
@@ -43,7 +46,7 @@ routed doc row — do not bulk-read `docs/`.
 | Batch issue refine | Ready-column GitHub texts → AI-ready, no code | Day → `/batch-issue-refine` |
 | Ship prod | Clean local default → watched CI → green → Phase 7 | Hybrid → `/ship-prod` |
 | Test harness optimize | Flakes, speed, coverage | Day or Autonomous |
-| Daily quality automations | Recurring hygiene | Autonomous (see automations README) |
+| Daily quality jobs | Recurring hygiene | Autonomous (local CLI/SDK; see automations README) |
 
 Proposed (not installed): [README workflow ideas](README.md#workflow-ideas) —
 architecture, test suite, frontend tokens, docs-to-user-stories, performance.
@@ -126,7 +129,9 @@ Stack- or domain-specific agents belong in the consumer project (not this portab
 
 ## 7. Automations (stubs in repo)
 
-See [`automations/README.md`](automations/README.md). Create live ones in the Agents Window after install.
+See [`automations/README.md`](automations/README.md) and
+[docs/runtime-policy.md](docs/runtime-policy.md). Run stubs with local CLI/SDK.
+`/automate` is overflow (Cursor VM), not install-default.
 
 | Stub | Trigger | Output |
 | --- | --- | --- |
@@ -149,7 +154,7 @@ See [`automations/README.md`](automations/README.md). Create live ones in the Ag
 | Local ship | `/ship-local` after merge-ready Phase 5 |
 | Prod ship | `/ship-prod` after clean local default is ready (watch + CI fix + Phase 7) |
 | Ship / PR | `/autopilot`, `/split-to-prs`, `/loop` to watch CI/deploy |
-| Cloud night jobs | `/automate` ← stubs in automations README |
+| Night hygiene | Local `agent -p` ← stubs in automations README. `/automate` only if the laptop is off |
 | Meta | `/create-skill`, `/create-rule`, `/create-hook`, `/create-subagent` |
 
 ---
