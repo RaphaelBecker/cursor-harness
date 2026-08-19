@@ -3,117 +3,133 @@ name: execute-approved-plan
 description: >-
   Autonomously executes an explicitly approved implementation contract through
   lifecycle Phases 2-5 (code, docs, review, versioning). Local verification is
-  always agent-executable via the testing-rule ladder. Auto-activate whenever
-  the current conversation contains an approved implementation contract ready
-  for unattended or night-shift execution. Never pushes, merges, deploys, or
-  weakens a required gate. Git branch and worktree isolation are owned by
-  Cursor — do not create or manage them (local merge/cleanup is `/ship-local`
-  only).
+  always agent-executable via the testing-rule ladder. Auto-activate in a
+  worktree that has an approved night-shift contract, including unattended
+  `night-shift fire` (CURSOR_HARNESS_UNATTENDED=1). Never pushes, merges,
+  deploys, or weakens a required gate. Do not create or manage git worktrees.
 ---
 
 # Execute an approved implementation contract
 
 Turn an approved, zero-open-question implementation contract into reviewed work
-in the current Cursor workspace. Work unattended only inside the contract for
-code/docs. Follow `core-principles.mdc` for hard stops and day/night authority;
-this skill owns the night-shift checklist only.
+in the **current** Cursor workspace (human-created worktree). Work unattended
+only inside the contract. Follow `core-principles.mdc` for hard stops; this
+skill owns the night-shift checklist only.
+
+Unattended runs (`CURSOR_HARNESS_UNATTENDED=1` or `/night-shift` fire): **never
+wait**. Park `.cursor/night-shift/BLOCKED.md` and exit. Leave other worktrees
+alone.
 
 ## Activation gate
 
-Auto-activate when the conversation contains both an executable implementation contract
-and explicit developer approval to implement it. Do not edit `~/.cursor/plans`.
+Activate when the current worktree has `.cursor/night-shift/contract.md` with
+`status: approved`, or the conversation contains that contract plus explicit
+approval. Do not edit `~/.cursor/plans`.
 
-Before editing, restate the contract as a checklist. Stop on material open decisions.
+Before editing, restate the contract as a checklist. On material open decisions:
+if unattended → BLOCKED.md; else stop.
 
 ## Non-negotiable boundaries
 
 - Work only in the current Cursor-provided workspace. Do **not** create, switch,
-  rename, delete, or otherwise manage git branches or git worktrees — Cursor owns
-  isolation (parallel agents / New Worktree). Local merge + current-worktree cleanup
-  is **`/ship-local` only**, when the human invokes it after this handoff.
+  rename, delete, or otherwise manage git branches or git worktrees — humans and
+  Cursor own isolation. Local merge + current-worktree cleanup is
+  **`/ship-local` only**.
 - **Local verification is always agent-allowed:** discover and run the project's
   typecheck/lint/test commands yourself. Do **not** ask the human for permission.
-- **Verification ladder:** mandatory; run without asking. Normative order, repair
-  budgets, and gate composition live only in the `testing` rule — do not restate them here.
+  If `harness.project.yaml` declares `slots`, wait for a slot rather than skipping
+  tests. There is no harness-wide max agent count.
+- **Verification ladder:** mandatory; run without asking. Normative order lives
+  only in the `testing` rule — read it (not always-on).
 - **`project_memory.md`:** do not edit **Architecture** during Phases 2–5. Phase 5
-  **must** run `@project-memory` Candidates + cycle status write after lessons. Soft
-  Architecture consolidate remains Phase 7 only (after watched-green remote ship).
-- Never push, merge, open a PR, deploy, or sync production secrets unless the developer
-  explicitly asks after handoff (`/ship-local` for local merge only; `/ship-prod` for
-  watched remote ship).
+  **must** run `@project-memory` Candidates + cycle status write after lessons.
+- Never push, merge, open a PR, deploy, or sync production secrets.
 - Never skip/weaken tests or use `--no-verify`.
 - Stage only contract-scoped files.
+- **Commits:** if the contract has `commits: authorized` (prep default),
+  make local commits as you go. Do not ask. If the field is missing in an
+  unattended run, treat as authorized for this worktree.
 
 ## Budgets
 
 - Scope allowlist is absolute.
 - At most **one** Phase 4b review-fix cycle; **one** transient infra retry.
-- Per-gate repair caps follow the `testing` rule (do not invent a second ladder budget).
+- Per-gate repair caps follow the `testing` rule.
 
 ## Execution workflow
 
 ### 0. Workspace preflight
 
 1. Confirm the working tree is usable for the contract (no staged/unstaged/untracked
-   contract-irrelevant files). If dirty with unrelated work → **STOP** and ask the human.
-   Never stash/absorb pre-existing work.
-2. Do not fetch/rebase/merge for the sake of starting work, and do not create branches
-   or worktrees.
+   contract-irrelevant files). If dirty with unrelated work → **park BLOCKED.md**
+   (unattended) or stop (attended). Never stash/absorb pre-existing work.
+2. Do not fetch/rebase/merge for the sake of starting work, and do not create
+   branches or worktrees.
 3. Record allowlist and repo-root as the verification cwd.
+4. Clear a previous `.cursor/night-shift/BLOCKED.md` only if you can proceed.
+5. **Decision log** — append-only `.cursor/night-shift/decisions.tsv`. Copy the
+   header from `templates/night-shift-decisions.example.tsv` on first use. Log
+   forks, pivots, gate results, BLOCKED, and one-way doors — not every tool
+   call. One row is one decision. Never edit or delete old rows. Evidence is a
+   pointer (SHA, `file:line`, command), not a paragraph. Prefer:
+
+   `./vendor/cursor-harness/runtime/log-decision <phase> <decision> <why> <evidence> <result>`
+
+   Do not commit the TSV unless the human asks. It is a working artifact.
 
 ### Phases 2–4
 
-1. **Phase 2:** Bug → write failing regression first. Feature → `@generate-bdd-test-spec`
-   then author tests. Run RED commands on the dedicated/targeted suite.
-2. **Phase 3:** Smallest contract-complete change; follow project migration/regen rules when
-   the contract requires them.
-3. **Phase 4 — Verify:** Run the verification ladder without asking (order and budgets in
-   the `testing` rule). Harness/docs-only contracts may document N/A per their test field.
-4. **Phase 4b — `@review-code`:** After green ladder (or N/A), fix-capable maintainability
-   review (behavior-preserving fixes; contract-scoped behavior fixes with red-first only).
+1. **Phase 2:** Bug → write failing regression first at the contract's named
+   red command / seam. If the contract is a non-trivial bug and that command
+   is missing → park `BLOCKED.md` (do not hypothesise). Feature → if
+   `@generate-bdd-test-spec` is installed (`bdd` pack), use it; otherwise write
+   acceptance tests from the contract. Run RED commands on the dedicated/targeted
+   suite.
+2. **Phase 3:** Smallest contract-complete change; follow project migration/regen
+   rules when the contract requires them.
+3. **Phase 4 — Verify:** Run the verification ladder without asking.
+4. **Phase 4b — `@review-code`:** After green ladder (or N/A), fix-capable
+   maintainability review. Sensitive allowlists also run `@blast-radius`
+   (shared modules, lifecycle, money, auth, wire formats). Skip copy/docs.
 5. **Phase 4c — Cursor second opinion (report only):**
-   1. Run `/review-bugbot` (or the Bugbot subagent per Cursor's `review-bugbot` skill)
-      on branch changes.
-   2. If the contract allowlist touches auth, access control, billing/payments, admin,
-      secrets, or other sensitive surfaces the project marks as such, also run
-      `/review-security`.
-   3. Summarize findings in the handoff (severity table). **Do not auto-fix** Bugbot
-      or Security findings. Ask the human before any such edit, or fold into a follow-up
-      contract.
-   4. Re-run the ladder only if the human approves fixes that change runtime behavior.
+   1. Run `/review-bugbot` (or the Bugbot subagent) on branch changes.
+   2. If the allowlist touches auth, access control, billing/payments, admin,
+      secrets, or other sensitive surfaces, also run `/review-security`.
+   3. Summarize findings in the handoff. **Do not auto-fix** Bugbot or Security
+      findings. Do **not** wait for the human — leave 4c for after Nightshift.
+   4. Re-run the ladder only if a human later approves behavior-changing fixes.
 
 ### Phase 5 — Document, version, lessons, handoff
 
-1. Sync docs (`@sync-spec-docs`); SemVer for touched versioned packages.
-2. Local commits only when the human asks or the contract explicitly authorizes them.
+1. Sync docs (`@sync-spec-docs`); SemVer only if the project versions packages
+   you touched.
+2. Local commits when `commits: authorized`.
 3. Write handoff `## Lessons learned` (3–7 short actionable bullets).
-4. Run **`@project-memory` Phase 5** — upsert Candidates, bump cited helps, stage check,
-   refresh **Cycle status**. Echo cycle status in the handoff. Do not edit Architecture here.
+4. Run **`@project-memory` Phase 5**.
 5. Handoff **must** also include:
-   - Verification commands executed and results for the ladder (per `testing` rule) or
-     contract N/A
-   - Phase 4b summary (fixes applied) and Phase 4c Bugbot/Security findings (report only)
-   - **Merge-ready only if** required full gates are green with evidence (or harness/docs-only
-     N/A); otherwise state not merge-ready and list what remains
-   - Optionally note the current Cursor-provided branch name for the human (do not
-     create or change it)
-6. Do not push, merge, or remove worktrees. Remind human: `/ship-local` then
-   `/ship-prod` (or the project's documented push/deploy scripts if they drive remote
-   themselves).
+   - **Manual test** — commands to run the app in this worktree and which
+     acceptance to click (from the contract; update if you learned more)
+   - Verification commands and results
+   - Phase 4b summary and Phase 4c Bugbot/Security findings (report only)
+   - **`## Blast radius`** when the allowlist was sensitive (from `@blast-radius`);
+     omit for copy/docs
+   - **ready-for-manual-test** if required gates are green; otherwise not
+     merge-ready and list what remains
+6. Write `.cursor/night-shift/HANDOFF.md` with the same content (include the
+   phrase `ready-for-manual-test` when true).
+7. Do not push, merge, or remove worktrees. Remind: morning `night-shift status`,
+   then `/ship-local` then `/ship-prod`.
 
-## Ship path (after handoff)
+## Park (unattended hard stop)
 
-```text
-Phase 5 handoff (+ Candidates/cycle status)
-  → (human) /ship-local  # reliable local merge onto clean default branch (+ worktree cleanup)
-  → (human) /ship-prod   # watched remote ship → CI fix → Phase 7
-  # alternate: human runs project deploy/push scripts themselves
-```
+Write `.cursor/night-shift/BLOCKED.md` with: reason, last command, what the
+human should decide. Append a `decisions.tsv` row (`phase=park`). Exit the
+run. Do not ping. Do not ask.
 
 ## Evidence report
 
-Contract goal, files changed, verification ladder commands and results (including
-skipped/not-run and failing-only reruns), browser N/A or evidence, Phase 4b/4c review notes,
-commit IDs, risks/hard stops, merge-ready yes/no, `## Lessons learned` (required), cycle
-status echo.
+Contract goal, files changed, verification ladder, browser N/A or evidence,
+Phase 4b/4c notes, blast-radius when required, commit IDs, **Manual test**,
+merge-ready / ready-for-manual-test, `## Lessons learned`, cycle status echo,
+pointer to `decisions.tsv`.
 **No remote push, merge, or deployment was performed.**

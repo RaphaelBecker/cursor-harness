@@ -1,0 +1,46 @@
+# Copy this file to the consumer project root as `harness.project.yaml`.
+# This is the only required project interface. Install fails closed without it.
+#
+#   cp vendor/cursor-harness/templates/harness.project.yaml harness.project.yaml
+#   ./vendor/cursor-harness/install.sh --target . --check
+#
+# Do not put product secrets here. Add `.cursor/night-shift/*.pid`,
+# `.cursor/night-shift/*.log`, `.cursor/night-shift/slots/`, and
+# `.cursor/night-shift/decisions.tsv` to gitignore.
+
+# github | files | none
+issue_source: none
+
+# github:
+#   owner: my-org-or-user
+#   project: 1          # GitHub Project number (gh project list --owner …)
+#   ready: Ready
+# files:
+#   path: issues/
+
+test:
+  discover: true
+  # targeted: npm test --
+  # fast: npm run test:fast
+  # full: npm test
+
+# Scarce test resource (golden DB pool, device farm). Omit to fire every
+# prepared worktree. Not a harness cap — about 3 parallel agents has been
+# comfortable on a laptop; raise if this machine and the pool allow.
+# slots:
+#   count: 3
+#   lease: ./scripts/lease-test-slot.sh
+
+docs:
+  routing: .cursor/rules/doc-routing.local.mdc
+memory: project_memory.md
+
+# core is always installed. Add github-board, market-ux, bdd as needed.
+packs:
+  - core
+
+# Night executor (local Cursor CLI). Do not prepend & (cloud handoff).
+executor:
+  command: agent
+  prompt: "@execute-approved-plan"
+  model: composer-2.5

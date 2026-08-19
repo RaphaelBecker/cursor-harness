@@ -1,9 +1,8 @@
 # Automations
 
-Scheduled **quality** jobs **without a feature plan**. The night engine is
-**local**: Cursor CLI or SDK on this machine (`launchd` / cron). Prompt stubs
-live in [automations/README.md](../automations/README.md) (installed to
-`.cursor/automations/`).
+Scheduled **quality** jobs **without a feature plan**. The **night engine** for
+features is [`runtime/night-shift`](../runtime/night-shift) (local `agent -p` in
+existing worktrees). These stubs are hygiene only.
 
 Runtime rules: [runtime policy](runtime-policy.md). Do not invent MCP server
 names.
@@ -36,4 +35,5 @@ Prefer `project_memory.md` over cloud Automations `MEMORIES.md`.
 
 Activate first: daily test health → lint hygiene → CI failure triage.
 
-Not an automation: `/batch-issue-refine` (Day chat, two human gates).
+Not an automation: `/prep` (HIL workpack) and `/batch-issue-refine`
+(optional github-board pack, two human gates).

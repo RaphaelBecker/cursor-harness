@@ -7,31 +7,42 @@ usage() {
 Usage: install.sh [options]
 
 Install cursor-harness rules, skills, agents, automations, hooks, and HARNESS.md
-into a target project.
+into a target project. Fails closed unless harness.project.yaml is valid.
 
 Options:
   --target <path>     Project root to install into (default: auto-detect)
   --mode <symlink|copy>
                       Install mode (default: symlink, or manifest defaults.mode)
+  --packs <list>      Comma-separated pack sets: core,github-board,market-ux,bdd
+                      or all. Default: packs from harness.project.yaml, else core
+  --init              Copy templates/harness.project.yaml if the target has none
+  --check             Validate harness.project.yaml and exit (no install)
+  --no-check          Skip the project-interface check (not recommended)
   --force             Replace existing non-symlink files managed by the harness
   --with-agents       Copy templates/AGENTS.md to project root if missing
   --dry-run           Print actions without changing the filesystem
   -h, --help          Show this help
 
 Examples:
-  ./vendor/cursor-harness/install.sh --target .
+  ./vendor/cursor-harness/install.sh --target . --init
+  ./vendor/cursor-harness/install.sh --target . --packs core,github-board --check
   ./vendor/cursor-harness/install.sh --target . --mode copy --with-agents
 EOF
 }
 
 HARNESS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MANIFEST="${HARNESS_ROOT}/manifest.yaml"
+PROJECT_CONFIG="${HARNESS_ROOT}/runtime/project_config.py"
 
 TARGET=""
 MODE=""
+PACKS_FLAG=""
 FORCE=0
 WITH_AGENTS=0
 DRY_RUN=0
+INIT=0
+CHECK_ONLY=0
+NO_CHECK=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -42,6 +53,22 @@ while [[ $# -gt 0 ]]; do
     --mode)
       MODE="${2:-}"
       shift 2
+      ;;
+    --packs)
+      PACKS_FLAG="${2:-}"
+      shift 2
+      ;;
+    --init)
+      INIT=1
+      shift
+      ;;
+    --check)
+      CHECK_ONLY=1
+      shift
+      ;;
+    --no-check)
+      NO_CHECK=1
+      shift
       ;;
     --force)
       FORCE=1
@@ -104,6 +131,35 @@ fi
 log() {
   printf '%s\n' "$*"
 }
+
+if [[ ! -f "$PROJECT_CONFIG" ]]; then
+  echo "error: missing $PROJECT_CONFIG" >&2
+  exit 1
+fi
+
+if [[ "$INIT" -eq 1 ]]; then
+  dest="${TARGET}/harness.project.yaml"
+  src="${HARNESS_ROOT}/templates/harness.project.yaml"
+  if [[ -e "$dest" ]]; then
+    log "skip harness.project.yaml (already exists): $dest"
+  else
+    if [[ "$DRY_RUN" -eq 1 ]]; then
+      log "DRY-RUN: cp $src $dest"
+    else
+      mkdir -p "$TARGET"
+      cp "$src" "$dest"
+      log "installed: $dest"
+    fi
+  fi
+fi
+
+if [[ "$NO_CHECK" -eq 0 ]]; then
+  python3 "$PROJECT_CONFIG" check --target "$TARGET" --harness-root "$HARNESS_ROOT"
+fi
+
+if [[ "$CHECK_ONLY" -eq 1 ]]; then
+  exit 0
+fi
 
 ensure_dir() {
   local dir="$1"
@@ -177,78 +233,12 @@ install_path() {
   log "installed ($MODE): $dest"
 }
 
-# Parse pack lists from the simple manifest.yaml without PyYAML.
-eval "$(
-  python3 - "$MANIFEST" <<'PY'
-import re, shlex, sys
-
-text = open(sys.argv[1], encoding="utf-8").read().splitlines()
-section = None
-hooks_enabled = True
-automations_enabled = False
-harness_map = "HARNESS.md"
-rules = []
-skills = []
-agents = []
-
-for raw in text:
-    line = raw.split("#", 1)[0].rstrip()
-    if not line.strip():
-        continue
-    m = re.match(r"^\s*harness_map:\s*(.+?)\s*$", line)
-    if m:
-        harness_map = m.group(1).strip().strip("\"'")
-        section = None
-        continue
-    m = re.match(r"^\s*automations:\s*(true|false)\s*$", line, re.I)
-    if m:
-        automations_enabled = m.group(1).lower() == "true"
-        section = None
-        continue
-    if re.match(r"^\s*rules:\s*$", line):
-        section = "rules"
-        continue
-    if re.match(r"^\s*skills:\s*$", line):
-        section = "skills"
-        continue
-    if re.match(r"^\s*agents:\s*$", line):
-        section = "agents"
-        continue
-    if re.match(r"^\s*hooks:\s*$", line):
-        section = "hooks"
-        continue
-    m = re.match(r"^\s*enabled:\s*(true|false)\s*$", line, re.I)
-    if section == "hooks" and m:
-        hooks_enabled = m.group(1).lower() == "true"
-        continue
-    m = re.match(r"^\s*-\s+(.+?)\s*$", line)
-    if m and section in ("rules", "skills", "agents"):
-        item = m.group(1).strip().strip("\"'")
-        if section == "rules":
-            rules.append(item)
-        elif section == "skills":
-            skills.append(item)
-        else:
-            agents.append(item)
-        continue
-    # Leaving packs subsections when indentation drops to top-level keys
-    if re.match(r"^[A-Za-z]", line) and section in ("rules", "skills", "agents", "hooks"):
-        section = None
-
-def emit(name, values):
-    print(f"{name}=(")
-    for v in values:
-        print(f"  {shlex.quote(v)}")
-    print(")")
-
-emit("RULES", rules)
-emit("SKILLS", skills)
-emit("AGENTS", agents)
-print(f"HARNESS_MAP={shlex.quote(harness_map)}")
-print(f"HOOKS_ENABLED={'1' if hooks_enabled else '0'}")
-print(f"AUTOMATIONS_ENABLED={'1' if automations_enabled else '0'}")
-PY
-)"
+HARNESS_MAP="HARNESS.md"
+PACK_DUMP_ARGS=(dump-packs --manifest "$MANIFEST" --target "$TARGET")
+if [[ -n "$PACKS_FLAG" ]]; then
+  PACK_DUMP_ARGS+=(--packs "$PACKS_FLAG")
+fi
+eval "$(python3 "$PROJECT_CONFIG" "${PACK_DUMP_ARGS[@]}")"
 
 CURSOR_DIR="${TARGET}/.cursor"
 ensure_dir "${CURSOR_DIR}/rules"
@@ -259,6 +249,7 @@ log "cursor-harness install"
 log "  harness: $HARNESS_ROOT"
 log "  target:  $TARGET"
 log "  mode:    $MODE"
+log "  packs:   ${PACK_NAMES:-core}"
 
 if [[ -n "${HARNESS_MAP:-}" ]]; then
   install_path "${HARNESS_ROOT}/${HARNESS_MAP}" "${CURSOR_DIR}/HARNESS.md" file

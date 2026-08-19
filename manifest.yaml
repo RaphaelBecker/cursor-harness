@@ -2,42 +2,58 @@
 version: 1
 defaults:
   mode: symlink
-packs:
-  harness_map: HARNESS.md
-  rules:
-    - core-principles.mdc
-    - deep-modules-clean-architecture.mdc
-    - doc-routing.mdc
-    - developer-communication.mdc
-    - code-quality.mdc
-    - testing.mdc
-    - security-basics.mdc
-  skills:
-    - implementation-plan-review
-    - grill-me
-    - execute-approved-plan
-    - project-memory
-    - ship-local
-    - review-code
-    - sync-spec-docs
-    - generate-bdd-test-spec
-    - help
-    - glossary
-    - create-workflow
-    - sync
-    - review-docs
-    - test-harness-optimize
-    - workflows/feature-delivery
-    - workflows/bugfix
-    - workflows/ship-prod
-    - workflows/batch-issue-refine
-    - batch-issue-ingest
-    - market-ux-strategy
-    - value-validator
-    - issue-text-refiner
-    - issue-board-sync
-  agents:
-    - verifier.md
-  automations: true
-  hooks:
-    enabled: true
+  pack_set: core
+pack_sets:
+  core:
+    rules:
+      - core-principles.mdc
+      - deep-modules-clean-architecture.mdc
+      - doc-routing.mdc
+      - developer-communication.mdc
+      - code-quality.mdc
+      - testing.mdc
+      - security-basics.mdc
+    skills:
+      - implementation-plan-review
+      - grill-me
+      - execute-approved-plan
+      - project-memory
+      - ship-local
+      - review-code
+      - sync-spec-docs
+      - help
+      - glossary
+      - create-workflow
+      - sync
+      - review-docs
+      - test-harness-optimize
+      - blast-radius
+      - diagnose-bug
+      - wait-what
+      - architecture-audit
+      - extract-deep-module
+      - dependency-direction-fix
+      - workflows/feature-delivery
+      - workflows/bugfix
+      - workflows/ship-prod
+      - workflows/prep
+      - workflows/night-shift
+      - workflows/architecture-improve
+    agents:
+      - verifier.md
+    automations: true
+    hooks:
+      enabled: true
+  github-board:
+    skills:
+      - workflows/batch-issue-refine
+      - batch-issue-ingest
+      - issue-text-refiner
+      - issue-board-sync
+  market-ux:
+    skills:
+      - market-ux-strategy
+      - value-validator
+  bdd:
+    skills:
+      - generate-bdd-test-spec

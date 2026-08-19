@@ -47,6 +47,11 @@ and ask if the tree has contract-irrelevant dirt.
    (this skill does not invent lessons).
 3. Feature worktree path, feature branch name, and primary default-branch root are known.
 4. No unrelated dirty/staged files on feature or default-branch checkouts.
+5. **Blast radius:** if the landed allowlist touches shared modules, lifecycle,
+   money, auth, or wire formats, the handoff must contain `## Blast radius`
+   with a safety fact at trust-ladder step 4 (ran it) or labeled **unproven**.
+   If that block is missing, run `@blast-radius` and write it **before**
+   merging. Skip copy-only and docs-only lands.
 
 ## Reliable merge protocol (do in order)
 

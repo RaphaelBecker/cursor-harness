@@ -1,6 +1,7 @@
 ---
 description: Portable test discipline — regression-first bugs, acceptance design for features, verification ladder SSOT, no weakened gates.
-alwaysApply: true
+globs: "**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs,java,kt,rb,php,cs,swift},**/{test,tests,spec,__tests__}/**"
+alwaysApply: false
 ---
 
 # Testing
@@ -26,8 +27,9 @@ elsewhere.
   integration / UI / E2E per project layout). Name it after the bug. If the bug reveals a
   systemic gap, propose the accompanying rule/doc change alongside the test — do not fix
   silently.
-- **Feature:** run `@generate-bdd-test-spec` for Given/When/Then scenarios before writing
-  implementation tests. Cover happy path, failure, and material edge cases named in the
+- **Feature:** if `@generate-bdd-test-spec` is installed (`bdd` pack), run it for
+  Given/When/Then before implementation tests; otherwise write acceptance tests from
+  the contract. Cover happy path, failure, and material edge cases named in the
   implementation contract.
 
 ## Phase 4 — verification ladder (normative)

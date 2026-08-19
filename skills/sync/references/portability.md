@@ -10,8 +10,9 @@ Process / craft that applies to any software project:
 | --- | --- |
 | Lifecycle spine | `core-principles`, `grill-me`, `implementation-plan-review`, `execute-approved-plan`, `project-memory` |
 | Ship spine | `ship-local`, `workflows/ship-prod` |
-| Workflows | `feature-delivery`, `bugfix`, `create-workflow` |
-| Quality helpers | `review-code`, `review-docs`, `test-harness-optimize`, `generate-bdd-test-spec` |
+| Workflows | `prep`, `night-shift`, `feature-delivery`, `bugfix`, `architecture-improve`, `create-workflow` |
+| Optional packs | `github-board`, `market-ux`, `bdd` (`generate-bdd-test-spec`) stay optional |
+| Quality helpers | `review-code`, `review-docs`, `test-harness-optimize`, `blast-radius`, `diagnose-bug` |
 | DX | `help`, `glossary` (process terms only), `HARNESS.md`, automations stubs |
 | Portable agents | Generic report-only verifiers that **discover** project commands |
 | Architecture rules | Deep modules, developer communication, doc-routing *protocol* (not product keyword dumps) |
@@ -69,7 +70,8 @@ Do **not** make the portable pack less general. Keep TARGET if SOURCE:
 
 After porting:
 
-1. Every installed pack is listed in `manifest.yaml`
+1. Every installed pack is listed in `manifest.yaml` `pack_sets`
 2. Nested skills use paths like `workflows/<name>`
 3. `HARNESS.md` has one-line inventory rows for new packs
-4. `./install.sh --target /tmp/harness-smoke --mode symlink --with-agents` succeeds
+4. Copy `templates/harness.project.yaml` then
+   `./install.sh --target /tmp/harness-smoke --mode symlink --with-agents` succeeds

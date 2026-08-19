@@ -22,8 +22,9 @@ This skill runs in **planning mode**. Do not write implementation code. Executio
 after the developer explicitly approves the complete contract in Step 6. That single approval
 authorizes uninterrupted Phases 2-5 (code/docs), agent-executed local verification, and
 contract-authorized local commits in the current Cursor workspace when the human asks; it
-never authorizes merge, push, pull-request approval, payment actions, production access, or
-deploy. Git branch/worktree isolation is owned by Cursor.
+  never authorizes merge, push, pull-request approval, payment actions, production access, or
+  deploy. Git branch/worktree isolation is owned by the human (Cursor worktrees). Local
+  commits default to authorized on the night-shift contract.
 
 ## Core review principles
 
@@ -137,7 +138,8 @@ extract-shared-module over a parallel implementation, unless already rejected wi
 - Edit the plan file in place (do not dump the whole plan in chat).
 - Add an **Implementation Contract** with every field from `core-principles.mdc` resolved or
   `N/A` with reason (objective, allowlist, acceptance, tests, docs/SemVer, permissions,
-  handoff evidence). Do not prescribe git branch or worktree names — Cursor owns isolation.
+  manual test, handoff evidence). Write `.cursor/night-shift/contract.md` with
+  `commits: authorized`. Do not prescribe git branch or worktree names.
 - Record when relevant: **owned module** (Gate A), **cascade / residual-state acceptance**
   (Gate B), and **design-quality constraints** (Gate C).
 - Never weaken security, destructive-operation, payment/billing, production-data, merge, push,
@@ -147,10 +149,10 @@ extract-shared-module over a parallel implementation, unless already rejected wi
 
 - Summarize the contract and name the plan file.
 - Ask: **"Approve this implementation contract for autonomous Phases 2-5 (local verification
-  agent-executable via the project's discovered ladder) and local commits when requested?"**
-- After approval, execute Phases 2–5 via `execute-approved-plan` without re-asking covered
-  product decisions. Hard stops for scope expansion, unapproved behavior/data, ambiguous
-  deletion, credentials, destructive ops, payments, production, merge, push, or deploy.
+  agent-executable via the project's discovered ladder) and local commits (`commits: authorized`)?"**
+- After approval, set `status: approved` on `.cursor/night-shift/contract.md`. Night fire
+  (`/night-shift`) runs `@execute-approved-plan` unattended. Do not start coding in the
+  prep sitting unless the human asks to run one tree now. Hard stops: park BLOCKED.md when unattended.
 - Handoff: changed files, commit hashes, verification results, safe defaults, hard stops,
   and `## Lessons learned`. No merge, push, PR approval, payment, production access, or deploy.
 

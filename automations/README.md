@@ -8,6 +8,9 @@ Run these as **local** Cursor CLI or SDK jobs on this machine (`launchd` / cron)
 Example: `agent -p "<paste prompt>" --model composer-2.5`. Do not invent MCP
 server names.
 
+Feature night execute is **not** this file — use
+[`runtime/night-shift`](../runtime/night-shift) (`fire` / `status`).
+
 **Overflow:** `/automate` in the Agents Window starts a Cursor **cloud** agent.
 Use that only when the laptop is off. Do not make it the nightly default.
 

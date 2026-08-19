@@ -1,8 +1,8 @@
 ---
 name: glossary
 description: >-
-  Shared plain-language definitions for harness process terms (module, day shift,
-  night shift, contract, verification ladder, and more). Use when a human or agent
+  Shared plain-language definitions for harness process terms (module, prep,
+  nightshift, contract, verification ladder, and more). Use when a human or agent
   uses an ambiguous term, when writing plans or handoffs, or when aligning
   vocabulary before implementation.
 ---

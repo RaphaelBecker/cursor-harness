@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Copy, fill PROJECT_ROOT and HARNESS_ROOT, load with launchctl.
+  This fires local Cursor CLI agents in *existing* human-created worktrees.
+  Do not pass & to `agent` (cloud handoff).
+
+  cp vendor/cursor-harness/templates/launchd/com.cursor-harness.night-shift.plist.example \
+     ~/Library/LaunchAgents/com.cursor-harness.night-shift.plist
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.cursor-harness.night-shift</string>
+  <key>WorkingDirectory</key>
+  <string>PROJECT_ROOT</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/python3</string>
+    <string>HARNESS_ROOT/runtime/night_shift.py</string>
+    <string>--target</string>
+    <string>PROJECT_ROOT</string>
+    <string>fire</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PYTHONPATH</key>
+    <string>HARNESS_ROOT/runtime</string>
+  </dict>
+  <key>RunAtLoad</key>
+  <false/>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>22</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>PROJECT_ROOT/.cursor/night-shift/launchd.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>PROJECT_ROOT/.cursor/night-shift/launchd.err.log</string>
+</dict>
+</plist>

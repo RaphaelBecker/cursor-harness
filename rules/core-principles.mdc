@@ -6,17 +6,19 @@ alwaysApply: true
 # Core principles
 
 This file is ALWAYS in context and is the global contract. It supersedes ad-hoc behavior.
-File-type and stack specifics live in glob-scoped local rules. Topic docs are routed via
-`doc-routing`. Harness inventory (skills, rules, agents, workflows): **`.cursor/HARNESS.md`**.
-Night-shift checklist: `@execute-approved-plan`. Sibling always-apply rules cover code quality,
-testing, and security — do not restate them here.
+File-type and stack specifics live in glob-scoped local rules. Topic docs: read
+`doc-routing` when routing (that rule is not always-on). Harness inventory:
+**`.cursor/HARNESS.md`**. Project interface: **`harness.project.yaml`** at the repo
+root. Prep: `/prep`. Nightshift: `@execute-approved-plan` via `/night-shift`.
+Sibling rules cover code quality, testing, and security — load them when coding;
+do not restate them here.
 
 ## 0. Context protocol (token economy — RUN BEFORE EVERY TASK)
 
 - Match the request to `doc-routing` and read ONLY the mapped doc(s). Prefer product story
   → code → thin system contract. Do not chain unrelated docs.
 - Load only the files/symbols the task needs. Targeted search + ranged reads — never bulk-read.
-- Phase 1: load domain-relevant `project_memory.md` via `@project-memory` (overlay only).
+- Prep (Phase 1): load domain-relevant `project_memory.md` via `@project-memory` (overlay only).
 - Reuse context already in the conversation; never re-read unchanged files.
 - Shared terms: `@glossary`. Plain talk with the developer: `developer-communication` rule.
 
@@ -25,65 +27,76 @@ testing, and security — do not restate them here.
 - Senior engineer: understand existing architecture before generating new code.
 - SOLID, DRY, KISS, YAGNI. Deep modules. No speculative abstractions.
 - Match the project's existing stack, naming, and folder conventions. Do not invent frameworks
-  or product policy; those belong in project docs and local overrides.
+  or product policy; those belong in project docs, `harness.project.yaml`, and local overrides.
 
-## 2. Mandatory lifecycle — Day / Night (EVERY non-trivial change)
+## 2. Mandatory lifecycle — Prep, then Nightshift
 
-State `[Active Phase: N — Name]` on non-trivial responses. Track via TodoWrite.
+Two stages. **Not a clock.** Prep can run any time of day. Keep it short (about **2h max**).
+When the workpack is approved, Nightshift runs fully autonomously in the worktrees.
 
-### Day shift (Phase 1 + approval)
+Cursor is the current coding platform. Humans create Cursor worktrees (one tree,
+one agent, one feature). Agents must not create, switch, or manage git worktrees
+except `/ship-local` when the human invokes it.
 
-- Auto `@grill-me` for non-trivial ideas → draft plan for the human.
-- Human triggers `@implementation-plan-review` (not auto).
-- No non-trivial implementation until explicit contract approval.
-- Workflow orchestrators: `@feature-delivery`, `@bugfix`, `/batch-issue-refine`,
-  `/create-workflow` (see HARNESS). `/batch-issue-refine` is board-text only —
-  do not start the implementation spine.
+### Prep (HIL — `/prep`)
 
-### Night shift (Phases 2–5)
+- Human creates Cursor worktrees, then `/prep`: packet grill → draft contract
+  in `.cursor/night-shift/contract.md` → human `/implementation-plan-review` →
+  explicit approve (`status: approved`, `commits: authorized`).
+- Conversational one-at-a-time grill only if the human asks for that escape hatch.
+- Approval does not authorize merge, push, or production.
+- `/batch-issue-refine` is optional (`github-board` pack) and board-text only.
+- Outside a `/prep` sitting: do not open a long questioning loop. If they dump an
+  idea, point them at `/prep` (anytime) or capture a note — do not pair all day.
 
-- One approval authorizes `@execute-approved-plan` in the current workspace.
-- Human-owned: remote push, PR approval, production, payments, deploy.
-- Agents must not create/switch/manage git branches or worktrees (Cursor owns isolation),
-  except `/ship-local` when the human invokes it (local merge + remove **current**
-  feature worktree only — no remote push).
+### Nightshift (Phases 2–5, unattended)
+
+- `night-shift fire` launches one local `agent -p` per approved worktree.
+  Do not prepend `&` (cloud handoff). Do not create worktrees.
+- On a hard stop: write `.cursor/night-shift/BLOCKED.md`, exit, leave other trees
+  running. Never wait for the human.
 - Local verification is always agent-allowed using the project's documented commands.
+- Local commits are contract-default authorized when `commits: authorized`.
+
+### After Nightshift (human)
+
+- `night-shift status`. Manual-test ready trees (recipe in the contract/handoff).
+- Then human `/ship-local` and `/ship-prod`.
 
 ### Verification ladder
 
-**Must run** the verification ladder without asking. Normative steps, repair budgets, and
-gate composition live only in the `testing` rule. Night-shift checklist:
-`@execute-approved-plan` (points at that rule — do not restate ladder steps here).
+**Must run** the verification ladder without asking. Normative steps live only in
+the `testing` rule. Nightshift checklist: `@execute-approved-plan`.
 
 ### Phases (short)
 
-1. **Understand & Plan** — route docs, memory, grill, plan, human review + approve.
-2. **Test Design** — bug: failing regression first; feature: BDD then tests.
+1. **Understand & Plan** — prep: route docs, memory, packet grill, plan, human
+   review + approve into the worktree contract.
+2. **Test Design** — bug: failing regression first; feature: acceptance tests
+   (BDD skill if the `bdd` pack is installed).
 3. **Implement** — smallest allowlisted change.
 4. **Verify** — ladder per `testing` rule; then `@review-code` (4b); then Cursor
    `/review-bugbot` (and `/review-security` when sensitive) as report-only 4c.
-5. **Document & Finalize** — `@sync-spec-docs`, SemVer if versioned packages changed, handoff
-   with merge-ready status **and `## Lessons learned`**, then `@project-memory` Phase 5
-   Candidates + cycle status write (Architecture section stays Phase 7-only).
-6. **Ship** — human may run `/ship-local` (reliable local merge onto clean up-to-date
-   default branch, including conflict resolution + current worktree cleanup); then human
-   `/ship-prod` (watched remote ship + CI fix + Phase 7) or drive the project's documented
-   deploy/push scripts themselves.
-7. **Memory (conditional)** — after watched-green test-relevant remote ship only
-   (including via `/ship-prod`): `@project-memory` Phase 7 (soft Architecture + staged
-   harness promote ask); commit/push only if the human asks or via `/ship-prod` docs path.
+   Do not wait on 4c — summarize in the handoff.
+5. **Document & Finalize** — `@sync-spec-docs`, SemVer if versioned packages changed,
+   handoff with **Manual test** recipe, merge-ready status, **`## Lessons learned`**,
+   then `@project-memory` Phase 5 Candidates + cycle status (Architecture stays
+   Phase 7-only). Write `.cursor/night-shift/HANDOFF.md`.
+6. **Ship** — human `/ship-local` then `/ship-prod` (or the project's documented
+   deploy/push scripts).
+7. **Memory (conditional)** — after watched-green remote ship only: `@project-memory`
+   Phase 7; commit/push only if the human asks or via `/ship-prod`.
 
 ### Contract fields & hard stops
 
-Executable contract fields: objective, allowlist, non-goals, acceptance, tests, docs/SemVer,
-permissions, handoff evidence — each resolved or `N/A` with reason. Do not prescribe branch
-or worktree names.
+Executable contract fields: objective, allowlist, non-goals, acceptance, tests,
+docs/SemVer, permissions, **manual test**, handoff evidence — each resolved or
+`N/A` with reason. Do not prescribe branch or worktree names.
 
-**Safe defaults:** smallest reversible change, refactor before add, mock externals, stay in scope.  
-**Hard stops:** scope expansion, unapproved behavior/data, ambiguous deletion, credentials,
-destructive ops, payments, production, push, deploy — unless the human explicitly invokes
-`/ship-prod` (or clearly asks to push/deploy). Local merge/worktree cleanup only via
-explicit `/ship-local`.
+**Safe defaults:** smallest reversible change, refactor before add, mock externals, stay in scope.
+**Hard stops (unattended):** scope expansion, unapproved behavior/data, ambiguous deletion,
+credentials, destructive ops, payments, production, push, deploy — **park BLOCKED.md**.
+Local merge/worktree cleanup only via explicit `/ship-local`.
 
 ### Harness sync
 
@@ -93,7 +106,7 @@ When you add/change a skill, rule, agent, workflow, or automation stub, update
 ## 3. Code quality
 
 - DRY + KISS. Self-documenting names. Comments explain WHY, never WHAT.
-- See `code-quality` and `deep-modules-clean-architecture`.
+- See `code-quality` and `deep-modules-clean-architecture` when editing code.
 
 ## 4. Testing done
 
@@ -110,7 +123,7 @@ Prefer `/ship-prod` for watched remote delivery when the human asks to ship.
 
 ## 7. SemVer
 
-- Bump only the package(s) or version file(s) you changed, using the project's existing
-  versioning layout (`package.json`, `pyproject.toml`, `Cargo.toml`, `VERSION`, etc.).
+- Bump only when the project versions packages, using its existing layout
+  (`package.json`, `pyproject.toml`, `Cargo.toml`, `VERSION`, etc.).
 - MINOR = new feature; PATCH = bug/hotfix; MAJOR = breaking change when the project already
   treats MAJOR as meaningful. Prefer the project's documented versioning policy when present.

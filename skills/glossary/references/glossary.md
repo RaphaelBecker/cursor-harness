@@ -12,8 +12,9 @@ lives in the consumer project.
 | **Connector** | Thin adapter that talks to an outside system (API, DB client). Not business rules. |
 | **SSOT** | Single source of truth — one place that owns a fact; others read or point to it. |
 | **Contract** | Approved plan for what to build: allowlist, acceptance, tests, hard stops. |
-| **Day shift** | Planning with the human: grill → plan → plan review → approve. No big coding yet. |
-| **Night shift** | After approval: implement, test, docs, handoff. No merge/push/deploy unless asked. |
+| **Prep** | Short HIL sitting (about 2h max, anytime): human creates Cursor worktrees; packet grill; approve contracts. |
+| **Nightshift** | Unattended execute in those trees (`night-shift fire`). Park BLOCKED.md; never wait. |
+| **Packet** | All material questions at once, each with a recommended answer. |
 | **Phase 4b** | Fix-capable maintainability review (`@review-code`) after a green ladder. |
 | **Phase 4c** | Report-only second opinion (`/review-bugbot`, optional `/review-security`). |
 | **Autonomous quality** | Scheduled **local** CLI/SDK jobs that improve tests/lint/security reports without a feature plan. Cloud `/automate` is overflow when the machine is off. |
@@ -22,10 +23,10 @@ lives in the consumer project.
 | **Harness** (Cursor Harness) | The whole agent framework: **skills**, **rules**, **subagents/agents**, **hooks**, **automations**, **workflows**, and **plans**. |
 | **HARNESS.md** | `.cursor/HARNESS.md` — short inventory map of what exists in the harness. |
 | **Workflow** | Named sequence of skills/agents for a job (feature, bug, audit, ship). |
-| **HIL checkpoint** | Hard stop: the agent waits for an explicit human yes before the next step. |
-| **Batch issue refine** | Day workflow (`/batch-issue-refine`): validate and rewrite a Ready-column GitHub batch. No implementation. |
+| **HIL checkpoint** | Hard stop during **prep**: the human must say yes. Nightshift does not wait. |
+| **Batch issue refine** | Optional `github-board` workflow (`/batch-issue-refine`): Ready-column GitHub texts. No implementation. |
 | **Skill** | Instructions the agent follows for a task (`SKILL.md`); often run with `/name`. |
-| **Rule** | Always-on or file-scoped guardrail (`.mdc`). |
+| **Rule** | Always-on (`core-principles`, `developer-communication`) or glob-scoped guardrail (`.mdc`). |
 | **Subagent** / **Agent** | Focused helper (often report-only) under `.cursor/agents/`. |
 | **Hook** | Script that runs around agent actions (e.g. block destructive shell commands). |
 | **Automation** | Cloud agent run on a schedule or git/CI event. |
@@ -36,6 +37,11 @@ lives in the consumer project.
 | **Help count** | How often a Candidate lesson actually helped a later session. Bumped at most +1 per cycle. |
 | **Staged** | Candidate that hit help/age thresholds and is ready for a human harness-promote ask. |
 | **Cycle status** | Compact Phase 5 block summarizing new/helped/staged candidate counts. |
-| **Ship local** | `/ship-local` — human-triggered reliable merge onto clean local default branch + current worktree cleanup (no remote push). |
+| **Night-shift CLI** | `runtime/night-shift` — discover, fire, status. Never creates worktrees. |
+| **BLOCKED.md** | `.cursor/night-shift/BLOCKED.md` — unattended hard stop. Night does not ping. |
+| **decisions.tsv** | Append-only night log (what, why, evidence pointer, result). Working artifact; do not commit by default. |
+| **Blast radius** | The one fact a change is safe because of, proven by running code. Unproven stays labeled unproven. |
+| **Tight red loop** | One named command already run that goes red on this bug. Required before hypothesising. |
+| **harness.project.yaml** | Required consumer interface (issue source, tests, optional slots, packs). |
 | **Ship prod** | `/ship-prod` — human-triggered watched remote ship + CI fix + Phase 7. |
 | **Project memory** | Root `project_memory.md` summary: Architecture tips + scored Candidates (`help_count`). Not stronger than code or docs. |

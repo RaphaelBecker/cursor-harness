@@ -2,9 +2,10 @@
 
 Keep packs small, actionable, Cursor-native, and **portable**. This harness must stay
 applicable to any software project — no product names, private paths, or one-repo scripts.
-Stack- or domain-specific guidance belongs in consumer local overrides, not in shared packs.
+Stack- or domain-specific guidance belongs in consumer local overrides and
+`harness.project.yaml`, not in shared packs.
 
-Register every new pack in `manifest.yaml` so `install.sh` can distribute it, and update
+Register every new pack in `manifest.yaml` `pack_sets` so `install.sh` can distribute it, and update
 root [`HARNESS.md`](HARNESS.md) in the same change. Add a **one-line catalog row** in the
 matching file under [`docs/`](docs/) (`rules.md`, `skills.md`, `agents.md`, `hooks.md`,
 `automations.md`). If you add a **workflow**, also add a short section to
@@ -72,7 +73,7 @@ subagent `#22C7E0`.
 ```markdown
 ---
 description: Short description shown in the rule picker
-alwaysApply: true
+alwaysApply: true   # only for core-principles / developer-communication; else globs + false
 ---
 
 # Title
@@ -82,7 +83,7 @@ alwaysApply: true
 
 For file-scoped rules, use `globs` and set `alwaysApply: false`.
 
-2. Add the filename under `packs.rules` in `manifest.yaml`.
+2. Add the filename under the right `pack_sets.<name>.rules` list in `manifest.yaml`.
 3. Add a one-line entry under Rules in `HARNESS.md`.
 4. Keep the body focused (prefer under ~80 lines).
 
@@ -110,9 +111,12 @@ description: Third-person description of WHAT it does and WHEN to use it.
 ```
 
 2. Optional: add `reference.md`, `examples.md`, or `scripts/` next to `SKILL.md`.
-3. Add `<skill-name>` (or `workflows/<name>`) under `packs.skills` in `manifest.yaml`.
+3. Add `<skill-name>` (or `workflows/<name>`) under the right `pack_sets.<name>.skills` list in `manifest.yaml`.
 4. Add a one-line entry in `HARNESS.md`.
 5. Keep `SKILL.md` under 500 lines; put deep detail in linked files one level deep.
+6. Write for agents (see `create-workflow`): sharp `description` pointer,
+   completion criteria on steps, prompt the positive, one meaning in one
+   place, prune no-ops. Do not restate always-on rules.
 
 ## Add an agent
 
@@ -142,6 +146,7 @@ description: Third-person description of WHAT it does and WHEN to use it.
 
 Do **not** edit harness-managed filenames in the consumer repo if they are symlinks. Instead:
 
+- Seed `harness.project.yaml` from `templates/harness.project.yaml` (required)
 - Add a project-owned rule such as `.cursor/rules/my-app-local.mdc`
 - Or copy from `templates/local-override.example.mdc`
 - Extend doc maps via `templates/doc-routing.local.example.mdc`
@@ -152,11 +157,11 @@ Do **not** edit harness-managed filenames in the consumer repo if they are symli
 
 ## Checklist before opening a PR
 
-- [ ] Pack registered in `manifest.yaml`
+- [ ] Pack registered in `manifest.yaml` `pack_sets`
 - [ ] `HARNESS.md` updated
 - [ ] Matching `docs/` catalog row (and README workflow section if it is a workflow; mermaid uses the README flowchart theme)
 - [ ] Rule/skill/agent frontmatter valid
 - [ ] No product names, private paths, or one-repo scripts in shared packs
 - [ ] Hook scripts executable and paths match `hooks.json`
 - [ ] Docs updated if install or layout behavior changed
-- [ ] `./install.sh --target /tmp/harness-smoke --mode symlink --with-agents` succeeds
+- [ ] `mkdir -p /tmp/harness-smoke && cp templates/harness.project.yaml /tmp/harness-smoke/ && ./install.sh --target /tmp/harness-smoke --mode symlink --with-agents` succeeds

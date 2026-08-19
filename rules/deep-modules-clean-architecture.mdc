@@ -1,6 +1,7 @@
 ---
 description: Deep modules and clean architecture — Ousterhout principles for all code generation, refactoring, and feature work.
-alwaysApply: true
+globs: "**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs,java,kt,rb,php,cs,swift,vue,svelte}"
+alwaysApply: false
 ---
 
 # Deep Modules & Clean Architecture

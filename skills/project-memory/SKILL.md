@@ -6,7 +6,7 @@ description: >-
   consolidates soft Architecture and proposes staged harness promotions in
   Phase 7 after watched-green remote ship. Auto-activate on Phase 1 planning,
   plan review, Phase 5 candidate write, or post-CI Phase 7. Never treat memory
-  as authoritative over code, canonical docs, or Cursor rules.
+  as authoritative over code, canonical docs, or harness rules.
 ---
 
 # Project memory
@@ -18,7 +18,7 @@ preventing context bloat and logic drift.
 ## Authority
 
 - Memory is a compact learning overlay, not a source of truth.
-- Precedence: current code → canonical docs (via `doc-routing`) → Cursor rules →
+- Precedence: current code → canonical docs (via `doc-routing`) → harness rules →
   `project_memory.md`.
 - If a memory entry contradicts a canonical doc or rule, ignore it for planning
   and prune it during the next consolidation.

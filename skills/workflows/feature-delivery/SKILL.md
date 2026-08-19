@@ -1,37 +1,39 @@
 ---
 name: feature-delivery
 description: >-
-  Day-to-night spine for a new feature or page. Use when the developer wants a
-  full feature delivery workflow from grilling through approved implementation,
-  TDD, verification, docs sync, scored lessons, local ship, and Phase 7 memory.
+  Prep-then-Nightshift spine for a new feature or page in a human-created Cursor
+  worktree. Use during /prep when packing several trees, or for one tree.
+  Packet grill, contract approval, then unattended execute after fire.
 ---
 
 # Feature delivery
 
 Thin orchestrator. Reuse existing skills — do not reinvent the lifecycle.
+Prefer `/prep` when preparing several trees.
 
-## Day shift
+## Prep (HIL)
 
-1. Load domain memory (`@project-memory`) and route docs (`doc-routing`).
-2. `@grill-me` until material decisions are closed.
-3. Draft the implementation plan for the human to read.
-4. Wait for human `/implementation-plan-review`, then explicit contract approval.
-5. Do not implement before approval.
+1. Confirm this is a **human-created** Cursor worktree. Do not create one.
+2. Load domain memory (`@project-memory`) and route docs (`doc-routing`).
+3. `@grill-me` in **packet mode** until material decisions are closed.
+4. Draft `.cursor/night-shift/contract.md` (`status: draft`, `commits: authorized`,
+   **Manual test** filled).
+5. Wait for human `/implementation-plan-review`, then explicit contract approval
+   (`status: approved`).
+6. Do not implement before approval. Remind `/night-shift` fire (or stay and run
+   `@execute-approved-plan` only if the human asks).
 
-## Night shift (after approval)
+## Nightshift (after fire / approval)
 
 1. `@execute-approved-plan`
-2. Feature path: `@generate-bdd-test-spec` → tests RED → implement → GREEN
-3. Verification ladder per `testing` rule (do not redefine steps or repair caps here).
-4. Phase 4b: `@review-code` (fix-capable). Phase 4c: `/review-bugbot` report-only;
-   also `/review-security` when the allowlist touches auth, access control, billing,
-   admin, or secrets. Do not auto-fix 4c findings.
-5. Phase 5: `@sync-spec-docs` (product story / acceptance — not file trees).
-6. Handoff must include `## Lessons learned`, then `@project-memory` Phase 5
-   (Candidates upsert/bump/stage + cycle status). Do not edit Architecture here.
-7. Stop for human `/ship-local` (local default merge + current worktree cleanup). After a
-   batch is on local default, human `/ship-prod` (watched remote ship, CI fix loop,
-   Phase 7) — or they drive project push/deploy scripts themselves.
+2. Feature path: `@generate-bdd-test-spec` if the `bdd` pack is installed, else
+   acceptance tests from the contract → tests RED → implement → GREEN
+3. Verification ladder per `testing` rule.
+4. Phase 4b: `@review-code`. Phase 4c: `/review-bugbot` report-only;
+   `/review-security` when sensitive. Do not wait on 4c.
+5. Phase 5: `@sync-spec-docs`, lessons, `@project-memory` Phase 5, `HANDOFF.md`
+   with **Manual test** and `ready-for-manual-test` when true.
+6. After: human tests, then `/ship-local` / `/ship-prod`.
 
 ## Map
 

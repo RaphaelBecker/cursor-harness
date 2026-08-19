@@ -1,17 +1,19 @@
 ---
 name: batch-issue-refine
 description: >-
-  Day-shift batch of GitHub Ready-column issues: ingest and triage, strategy and
-  value-validate features, rewrite AI-ready issue text, human-gated board sync.
-  Use when the developer runs /batch-issue-refine, asks to refine a Ready batch,
-  validate Kanban issue texts, or prepare issues for an implementation wave.
-  Does not implement code or write an implementation contract.
+  Optional github-board pack: Ready-column GitHub issues → AI-ready texts,
+  human-gated board sync. Fits in prep (board text only). Requires
+  issue_source=github in harness.project.yaml. Does not implement code.
 ---
 
 # Batch issue refine
 
-Thin **Day** orchestrator. Board-text hygiene only. Reuse the five phase skills
-below — do not reinvent them here.
+Thin orchestrator (**github-board** pack). Board-text hygiene only. Fits in
+prep; still not implementation.
+
+If `@market-ux-strategy` / `@value-validator` are missing (`market-ux` pack not
+installed), skip strategy/value for features and refine texts directly after
+ingest (still stop at HIL 2 before `gh issue edit`).
 
 This is **not** `/feature-delivery` or `/bugfix`. Do **not** run `@grill-me`,
 `/implementation-plan-review`, or `@execute-approved-plan`. Do **not** write

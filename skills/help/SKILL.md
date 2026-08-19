@@ -19,22 +19,23 @@ Paste this content (keep it compact):
 ## Cursor harness — cheat sheet
 
 **Harness** = skills + rules + subagents + hooks + automations + workflows + plans.  
-**Map:** [`.cursor/HARNESS.md`](../../HARNESS.md) · **Terms:** `/glossary`
+**Map:** [`.cursor/HARNESS.md`](../../HARNESS.md) · **Terms:** `/glossary`  
+**Project file:** `harness.project.yaml`
 
-**Context tax:** Planning loads `feature-delivery` → domain memory slice → `grill-me` →
-**one** routed doc row — do not bulk-read `docs/`.
+**Context tax:** Always-on = `core-principles` + `developer-communication`. Prep
+loads `prep` → memory slice → packet `grill-me` → **one** routed doc.
 
-### Day → Night (features & bugs)
+### Stages (not a clock)
 
 | You want | You do |
 | --- | --- |
-| New feature | New agent → `/feature-delivery` → read plan → `/implementation-plan-review` → **approve** |
-| Bug fix | New agent → `/bugfix` → (same review/approve if non-trivial) |
-| Refine Ready issues | New agent → `/batch-issue-refine` → you approve twice (value, then board overwrite). No code. |
-| After approve | Agent runs night shift (`execute-approved-plan`): ladder → `@review-code` → `/review-bugbot` (+ `/review-security` if sensitive) → docs → **Lessons learned** + scored Candidates |
-| Local ship | `/ship-local` (merge workflow → clean up-to-date local default → remove current worktree) |
-| Prod ship | `/ship-prod` (local green → project ship → watch CI → fix red + Bugbot → Phase 7) |
-| You ship remote | `/ship-prod`, or the project's documented push/deploy scripts if you drive it yourself |
+| Prep (anytime, ~2h max) | You create Cursor worktrees. `/prep` → read packets → `/implementation-plan-review` → **approve** |
+| Fire Nightshift | `./vendor/cursor-harness/runtime/night-shift fire` (or `/night-shift`) |
+| After Nightshift | `night-shift status` (skim `decisions.tsv`) → manual tests → `/ship-local` → `/ship-prod` |
+| One feature in an existing tree | `/feature-delivery` (during prep) |
+| Bug in an existing tree | `/bugfix` (during prep) |
+| One module smell | `/architecture-improve` |
+| Refine Ready issues | `/batch-issue-refine` if `github-board` pack is installed. No code. |
 
 ### Everyday helpers
 
@@ -46,29 +47,21 @@ Paste this content (keep it compact):
 | Pull lab harness into this pack | `/sync <path-to-project-or-.cursor>` |
 | Flaky / slow tests | `/test-harness-optimize` |
 | Doc drift | `/review-docs` (report first) |
-| Nightly hygiene | Stubs in `.cursor/automations/README.md` → local `agent -p` / SDK ([runtime policy](../../docs/runtime-policy.md)) |
+| Hygiene jobs | Stubs in `.cursor/automations/README.md` — not Nightshift |
 | Verify a change | Ask for `verifier` (report only) |
-
-### Built-in Cursor skills we use
-
-| When | Use |
-| --- | --- |
-| Day | `/feature-delivery`, `/implementation-plan-review`, `/batch-issue-refine` |
-| Night quality | `@review-code` then `/review-bugbot` (+ `/review-security` when sensitive) |
-| Local ship | `/ship-local` |
-| Prod ship | `/ship-prod` |
-| Ship / PR | `/autopilot`, `/split-to-prs`, `/loop` to watch CI/deploy |
-| Night hygiene | Local `agent -p` ← stubs in automations README. `/automate` only if the laptop is off |
-| Meta | `/create-skill`, `/create-rule`, `/create-hook`, `/create-subagent` |
+| Last message unclear | `/wait-what` |
+| What else could this break | `/blast-radius` |
 
 ### Rules of the road (short)
 
-- **Day** = plan with you. **Night** = build after you approve.
+- **Prep** = short HIL sitting, anytime. **Nightshift** = unattended build in those trees.
+- Humans create worktrees. Agents and `night-shift` never run `git worktree add`.
 - Product story first → then code → thin contracts only for high-risk seams.
-- Agents do **not** remote push / deploy unless you ask. Local merge = `/ship-local` when you ask.
+- Unattended hard stop = `.cursor/night-shift/BLOCKED.md`, not a ping.
 - Change a skill/rule/agent/workflow/automation → update `.cursor/HARNESS.md` same change.
 
 ---
 
-If they ask “what next for my feature?”, point them at `/feature-delivery` only.
-If they ask to refine Ready-column GitHub texts, point them at `/batch-issue-refine` only.
+If they ask “what next for the workpack?”, point them at `/prep` only.
+If they ask to refine Ready-column GitHub texts, point them at `/batch-issue-refine` only
+when that pack is installed.

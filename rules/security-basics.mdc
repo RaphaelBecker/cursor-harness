@@ -1,6 +1,7 @@
 ---
 description: Baseline security hygiene — secrets, boundaries, least privilege, no silent destructive ops.
-alwaysApply: true
+globs: "**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs,java,kt,rb,php,cs,swift}"
+alwaysApply: false
 ---
 
 # Security basics

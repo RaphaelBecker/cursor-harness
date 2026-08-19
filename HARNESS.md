@@ -5,30 +5,32 @@ automations, workflows, and plans.
 
 Simple inventory of what exists. Not a wiki. One line each. Details live in the linked
 skill/rule file. Human catalogs: [docs/](docs/). Workflows: [README.md](README.md#workflows).
+Project interface: **`harness.project.yaml`** (required). Night CLI:
+`runtime/night-shift`. Decision rows: `runtime/log-decision`.
 
 - **Quick cheat sheet:** type `/help` in Agent chat
 - **Full map:** this file (installed as `.cursor/HARNESS.md`)
 - **Terms:** `/glossary`
 
-**Context tax:** always-on = core rules (`core-principles`, `doc-routing`, `deep-modules`,
-`developer-communication`, plus portable `code-quality` / `testing` / `security-basics`).
-Planning loads `feature-delivery` → domain `project_memory` slice → `grill-me` → **one**
+**Context tax:** always-on = `core-principles` + `developer-communication` only.
+Other rules load on globs or when a skill says to read them. Prep loads
+`prep` → domain `project_memory` slice → packet `grill-me` → **one**
 routed doc row — do not bulk-read `docs/`.
 
 ---
 
 ## 1. How work runs
 
-- **Day shift** — Plan with you: grill → plan → you run plan review → you approve.
-  Board-text batch: `/batch-issue-refine` (two HIL gates; no implementation).
-- **Night shift** — After approval: implement, ladder (`testing` rule), `@review-code` (4b),
-  `/review-bugbot` (+ `/review-security` when sensitive) report-only (4c), sync docs,
-  scored Candidates + cycle status, handoff. Local merge/cleanup via `/ship-local` when
-  you ask; watched remote ship via `/ship-prod` when you ask.
-- **Autonomous** — Local CLI/SDK (or a leftover IDE session) on a schedule.
-  Quality jobs: mostly report-only; draft PRs only on an allowlist. Cloud
-  Automations (`/automate`) are overflow when the machine is off — [runtime
-  policy](docs/runtime-policy.md).
+- **Prep** (anytime, about 2h max) — human creates Cursor worktrees (one tree,
+  one agent, one feature). `/prep`: packet grill → plan review → approve
+  `.cursor/night-shift/contract.md`. Optional board text: `/batch-issue-refine`
+  (`github-board` pack).
+- **Nightshift** — `night-shift fire` runs `@execute-approved-plan` unattended in
+  each approved worktree. Ladder (`testing` rule), `@review-code` (4b), `/review-bugbot`
+  4c report-only, docs, Candidates, **Manual test** handoff. Append-only
+  `decisions.tsv`. Park `BLOCKED.md` instead of waiting.
+- **After** — `night-shift status` + manual tests, then `/ship-local` / `/ship-prod`.
+- **Autonomous** — local CLI/SDK hygiene stubs. Cloud `/automate` is overflow.
 - **Map rule** — Any new skill, rule, agent, workflow, or automation stub must update **this file**.
 
 ---
@@ -39,34 +41,38 @@ routed doc row — do not bulk-read `docs/`.
 | --- | --- | --- |
 | Cheat sheet | Anytime | `/help` |
 | See what exists | Anytime | Open this file |
-| Create a workflow | Add a new process | Day → `/create-workflow` |
+| Create a workflow | Add a new process | `/create-workflow` |
 | Sync from lab | Pull portable diffs from a live `.cursor` | Meta → `/sync` |
-| Feature delivery | New feature / page | Day → Night → `feature-delivery` |
-| Bug fix | Defect | Day → Night → `bugfix` |
-| Batch issue refine | Ready-column GitHub texts → AI-ready, no code | Day → `/batch-issue-refine` |
+| Prep | Batch packets + contracts into existing worktrees | `/prep` |
+| Nightshift | Fire / status local `agent -p` in those trees | `/night-shift` |
+| Feature delivery | New feature / page (one tree) | Prep → Nightshift → `feature-delivery` |
+| Bug fix | Defect (one tree) | Prep → Nightshift → `bugfix` |
+| Architecture improve | One module smell | Prep → Nightshift → `architecture-improve` |
+| Batch issue refine | Ready-column GitHub texts → AI-ready, no code | Optional `github-board` → `/batch-issue-refine` |
 | Ship prod | Clean local default → watched CI → green → Phase 7 | Hybrid → `/ship-prod` |
-| Test harness optimize | Flakes, speed, coverage | Day or Autonomous |
+| Test harness optimize | Flakes, speed, coverage | Prep or Autonomous |
 | Daily quality jobs | Recurring hygiene | Autonomous (local CLI/SDK; see automations README) |
 
 Proposed (not installed): [README workflow ideas](README.md#workflow-ideas) —
-architecture, test suite, frontend tokens, docs-to-user-stories, performance.
+test suite, frontend tokens, docs-to-user-stories, performance.
 
 ---
 
 ## 3. Skills
 
-### Spine (day / night)
+### Spine (prep / nightshift / ship)
 
 | Skill | What it does |
 | --- | --- |
-| `grill-me` | Ask hard product questions before the plan |
+| `grill-me` | Packet of hard questions (conversational grill is an escape hatch) |
 | `implementation-plan-review` | Turn a plan into an executable contract (you trigger it) |
-| `execute-approved-plan` | Night shift: build, ladder, 4b/4c review, docs, lessons → Candidates, handoff |
+| `execute-approved-plan` | Nightshift: build, ladder, 4b/4c, docs, lessons → Candidates, HANDOFF.md, decisions.tsv |
 | `project-memory` | Phase 1 load; Phase 5 scored Candidates; Phase 7 Architecture + staged harness promote ask |
 | `ship-local` | Human-triggered reliable local merge: refresh default, absorb main-ahead, auto-resolve conflicts, land feature, clean worktree (no remote push) |
-| `generate-bdd-test-spec` | Write Given/When/Then before feature tests |
 | `sync-spec-docs` | Update product acceptance / thin contracts after code changes |
 | `review-code` | Phase 4b: fix-capable maintainability review after green ladder |
+| `blast-radius` | Explicit: one proven safety fact beyond the diff (skip copy/docs) |
+| `diagnose-bug` | Tight red command before a non-trivial bug plan |
 | `glossary` | Shared plain-language terms |
 | `help` | Compact developer cheat sheet (`/help`) |
 
@@ -74,19 +80,32 @@ architecture, test suite, frontend tokens, docs-to-user-stories, performance.
 
 | Skill | What it does |
 | --- | --- |
+| `prep` | Thin prep orchestrator: packets + contracts in human-created worktrees |
+| `night-shift` | Fire/status CLI wrapper; never creates worktrees |
 | `create-workflow` | Guide a new workflow; update this HARNESS file |
 | `sync` | Pull lab `.cursor` diffs into this portable pack; strip product leaks |
 | `feature-delivery` | Thin orchestrator for full features |
 | `bugfix` | Thin orchestrator for bugs |
-| `batch-issue-refine` | Thin Day orchestrator: Ready-batch ingest → value gates → refined issue texts → HIL sync |
-| `batch-issue-ingest` | Pull Ready-column issues; triage `BUG FIX` / `NEW FEATURE` |
-| `market-ux-strategy` | Feature-only competitor benchmark, minimal UX, edge |
-| `value-validator` | Feature-only `PROCEED` / `PRUNE` / `DISCARD` (HIL 1) |
-| `issue-text-refiner` | Ambiguity-free AI-ready issue bodies + blockers |
-| `issue-board-sync` | Preview + `gh issue edit` script; run only after HIL 2 |
+| `architecture-improve` | Thin orchestrator: one smell → audit → grill → one extract or one cycle fix |
+| `architecture-audit` | Report shallow modules, cycles, layer leaks — no edits |
+| `extract-deep-module` | One extract or collapse per run |
+| `dependency-direction-fix` | One cycle or wrong-way dependency per run |
+| `wait-what` | Re-pitch the last message in plain words |
 | `ship-prod` | Human-triggered prod delivery: local green → project ship → watch CI → fix red (+ Bugbot) → Phase 7 |
 | `review-docs` | Doc drift audit (report default) |
 | `test-harness-optimize` | Faster/less flaky tests without weaker asserts |
+
+### Optional packs (not in default `core` install)
+
+| Skill | Pack | What it does |
+| --- | --- | --- |
+| `batch-issue-refine` | `github-board` | Ready-batch ingest → refined issue texts → HIL sync |
+| `batch-issue-ingest` | `github-board` | Pull Ready-column issues; triage `BUG FIX` / `NEW FEATURE` |
+| `issue-text-refiner` | `github-board` | Ambiguity-free AI-ready issue bodies + blockers |
+| `issue-board-sync` | `github-board` | Preview + `gh issue edit` script; run only after HIL 2 |
+| `market-ux-strategy` | `market-ux` | Feature-only competitor benchmark, minimal UX, edge |
+| `value-validator` | `market-ux` | Feature-only `PROCEED` / `PRUNE` / `DISCARD` (HIL 1) |
+| `generate-bdd-test-spec` | `bdd` | Write Given/When/Then before feature tests |
 
 ---
 
@@ -94,13 +113,13 @@ architecture, test suite, frontend tokens, docs-to-user-stories, performance.
 
 | Rule | When | Job |
 | --- | --- | --- |
-| `core-principles` | Always | Lifecycle, hard stops, day/night |
-| `deep-modules-clean-architecture` | Always | Deep modules, clean boundaries |
-| `doc-routing` | Always | Which doc to read; product story first |
+| `core-principles` | Always | Lifecycle, hard stops, prep then nightshift |
 | `developer-communication` | Always | Plain talk with you |
-| `code-quality` | Always | Architecture + craft defaults |
-| `testing` | Always | Ladder SSOT, gates, bug regression |
-| `security-basics` | Always | Secrets, boundaries, least privilege |
+| `deep-modules-clean-architecture` | Code globs | Deep modules, clean boundaries |
+| `doc-routing` | On demand | Which doc to read; product story first |
+| `code-quality` | Code globs | Architecture + craft defaults |
+| `testing` | Code/test globs | Ladder SSOT, gates, bug regression |
+| `security-basics` | Code globs | Secrets, boundaries, least privilege |
 
 ---
 
@@ -130,8 +149,8 @@ Stack- or domain-specific agents belong in the consumer project (not this portab
 ## 7. Automations (stubs in repo)
 
 See [`automations/README.md`](automations/README.md) and
-[docs/runtime-policy.md](docs/runtime-policy.md). Run stubs with local CLI/SDK.
-`/automate` is overflow (Cursor VM), not install-default.
+[docs/runtime-policy.md](docs/runtime-policy.md). The **night engine** is
+`runtime/night-shift fire`, not these stubs. `/automate` is overflow (Cursor VM).
 
 | Stub | Trigger | Output |
 | --- | --- | --- |
@@ -149,10 +168,12 @@ See [`automations/README.md`](automations/README.md) and
 
 | When | Use |
 | --- | --- |
-| Day | `/feature-delivery`, `/implementation-plan-review`, `/batch-issue-refine` |
-| Night quality | `@review-code` then `/review-bugbot` (+ `/review-security` when sensitive) |
-| Local ship | `/ship-local` after merge-ready Phase 5 |
-| Prod ship | `/ship-prod` after clean local default is ready (watch + CI fix + Phase 7) |
+| Prep | `/prep`, `/feature-delivery`, `/implementation-plan-review` |
+| Nightshift | `/night-shift` + `@execute-approved-plan`; `@review-code` then `/review-bugbot` |
+| Sensitive diff | `/blast-radius` (or via Phase 4b / `/ship-local`) |
+| Unclear reply | `/wait-what` |
+| Local ship | `/ship-local` after manual tests |
+| Prod ship | `/ship-prod` after clean local default is ready |
 | Ship / PR | `/autopilot`, `/split-to-prs`, `/loop` to watch CI/deploy |
 | Night hygiene | Local `agent -p` ← stubs in automations README. `/automate` only if the laptop is off |
 | Meta | `/create-skill`, `/create-rule`, `/create-hook`, `/create-subagent` |
@@ -166,3 +187,4 @@ See [`automations/README.md`](automations/README.md) and
 3. Thin system contracts only where the project needs them (security, money, ingest, critical E2E)
 
 Full keyword map: `.cursor/rules/doc-routing.mdc` (+ consumer `doc-routing.local.mdc`).
+Consumer contract: `harness.project.yaml`.

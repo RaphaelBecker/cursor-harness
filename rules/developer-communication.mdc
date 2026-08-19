@@ -13,3 +13,10 @@ When talking to the human developer:
 - Do not dump tool names, MCP internals, proto enums, or raw CLI noise unless the developer asks.
 - Prefer “what / why / next” over long essays.
 - Keep lists scannable. Bold only the rare must-see word.
+- Drop chatbot filler: "I hope this helps", "Let me know if", "Great question",
+  "Found the smoking gun".
+- Drop puffery and "not just X, but Y". State the fact.
+- Prefer concrete words over abstract metaphor nouns (landscape, tapestry,
+  north star, flywheel, gold-plating) when a plain word exists.
+- Same voice on `HANDOFF.md`, contracts, and issue texts. If a message did
+  not land, the developer can run `/wait-what`.

@@ -4,26 +4,29 @@
 
 - **Portable core** — general software-developer guidance; never project- or domain-bound
 - **Maintainable packs** — one concern per rule/skill/hook
-- **Easy to extend** — add a file, register in `manifest.yaml`, update `HARNESS.md`, reinstall
-- **Easy to integrate** — git submodule + `install.sh`
-- **Cursor-native** — ship formats Cursor actually loads
+- **Easy to extend** — add a file, register in `manifest.yaml` `pack_sets`, update `HARNESS.md`, reinstall
+- **Easy to integrate** — git submodule + `install.sh` + `harness.project.yaml`
+- **Cursor-native (this pass)** — ship formats Cursor actually loads; night executor is local `agent -p`
+
+Cursor is the current coding platform. The pack stays injectable into any **app**
+repo via a strict project interface. Leaving Cursor is deferred.
 
 ## Portable vs local
 
 | Lives in cursor-harness | Lives in the consumer project |
 |-------------------------|-------------------------------|
-| Lifecycle, day/night contract, hard stops | Product vision, domain rules |
+| Lifecycle, prep then nightshift, hard stops | Product vision, domain rules |
 | Doc-routing *protocol* + default keywords | Keyword → path map (`doc-routing.local.mdc`) |
-| Testing/security/quality discipline | Framework/folder conventions, glob rules |
+| Testing/security/quality discipline | Framework/folder conventions; `harness.project.yaml` test commands |
 | Process skills + workflows (plan / execute / memory / review) | Stack-specific agents, MCP, autofix hooks |
-| Portable `verifier` agent + automation stubs (local CLI/SDK) | Domain auditors, product MCP servers |
+| Portable `verifier` agent + automation stubs + **night-shift CLI** | Domain auditors, product MCP servers |
 | Secret + destructive-shell guards | Deploy scripts, private env layout |
 | `.cursor/HARNESS.md` inventory | Extra local HARNESS rows for domain packs |
+| Optional packs (`github-board`, `market-ux`, `bdd`) | Whether to opt in via `packs:` |
 
-Templates (`project_memory.example.md`, `doc-routing.local.example.mdc`) show how consumers
-opt into memory and project-specific routing without editing harness-managed filenames.
-`project_memory.md` is the project **summary**: agents write lessons from human
-lessons-learned into a scored Candidates table and bump `help_count` when a row later helps.
+The only **required** consumer file is [`harness.project.yaml`](../templates/harness.project.yaml).
+Templates (`project_memory.example.md`, `doc-routing.local.example.mdc`) remain optional
+overlays. `project_memory.md` is the project **summary**.
 
 ## Why not root `.cursorrules`?
 
@@ -31,6 +34,7 @@ Modern Cursor project guidance lives in:
 
 | Asset | Location |
 |-------|----------|
+| Project interface | `harness.project.yaml` at repo root |
 | Inventory map | `.cursor/HARNESS.md` |
 | Rules | `.cursor/rules/*.mdc` |
 | Skills | `.cursor/skills/<name>/SKILL.md` |
@@ -46,13 +50,16 @@ A single root `.cursorrules` file does not scale for shared packs, file-scoped a
 ```text
 cursor-harness/                 consumer project/
   HARNESS.md           ──►        .cursor/HARNESS.md
-  rules/*.mdc          ──►        .cursor/rules/*.mdc
+  rules/*.mdc          ──►        .cursor/rules/*.mdc  (filtered by pack set)
   skills/<name>/       ──►        .cursor/skills/<name>/
   agents/*.md          ──►        .cursor/agents/*.md
   automations/         ──►        .cursor/automations/
   hooks/scripts/*      ──►        .cursor/hooks/*
   hooks/hooks.json     ──merge──► .cursor/hooks.json
   templates/AGENTS.md  ──opt──►   AGENTS.md
+  templates/harness.project.yaml  ──copy──►  harness.project.yaml (required)
+  runtime/night-shift  (not installed; run from vendor path)
+  runtime/log-decision (not installed; appends decisions.tsv)
 ```
 
 Authoring paths mirror destinations so contributors do not learn a second schema.
@@ -63,9 +70,11 @@ and are linked from [README.md](../README.md#contents).
 ## Distribution model
 
 1. **Submodule** pins a harness revision in the consumer repo (`vendor/cursor-harness`).
-2. **`install.sh`** materializes packs into `.cursor/`:
+2. **Copy** `templates/harness.project.yaml` to the repo root and fill it.
+3. **`install.sh`** checks that file (fail closed), then materializes packs into `.cursor/`:
    - `symlink` (default) — consumer always sees the submodule contents
    - `copy` — snapshots files (better for environments that break symlinks)
+   - `--packs` or `packs:` in the YAML selects `core` plus optional sets
 
 Updates are: submodule bump + re-run install.
 
@@ -86,13 +95,20 @@ Harness entries are identified by their `command` path (e.g. `.cursor/hooks/sess
 
 ## Pack registry
 
-`manifest.yaml` is the install source of truth. If a file exists on disk but is not listed, it is not installed. That keeps experimental drafts from leaking into consumer projects.
+`manifest.yaml` `pack_sets` is the install source of truth. Default install is **`core`**.
+Optional: `github-board`, `market-ux`, `bdd`. If a file exists on disk but is not in the
+selected sets, it is not installed.
+
+## Worktrees
+
+Humans create Cursor worktrees. Agents and `runtime/night-shift` must not run
+`git worktree add`. One tree, one agent, one feature.
 
 ## Lifecycle vs catalogs
 
 - **Workflow sequences** (human): [README.md](../README.md#workflows)
-- **Day/night contract** (normative): [core-principles.mdc](../rules/core-principles.mdc)
-- **Where agents run** (local CLI/SDK vs Cursor VMs): [runtime-policy.md](runtime-policy.md)
+- **Prep then Nightshift contract** (normative): [core-principles.mdc](../rules/core-principles.mdc)
+- **Where agents run** (local CLI vs Cursor VMs): [runtime-policy.md](runtime-policy.md)
 - **Pack catalogs:** [rules](rules.md) · [skills](skills.md) · [agents](agents.md) ·
   [hooks](hooks.md) · [automations](automations.md)
 - **Agent one-liners:** [HARNESS.md](../HARNESS.md)

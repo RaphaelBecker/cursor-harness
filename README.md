@@ -8,8 +8,12 @@
 Days are for Devs, Nights for the agents.</strong></p>
 
 A **portable**, project-agnostic pack of Cursor **rules**, **skills**, **agents**,
-**hooks**, and **automation stubs**. Humans only at HIL checkpoints. No binding to
-one product stack.
+**hooks**, a **night-shift CLI**, and **automation stubs**. Cursor is the current
+coding platform. Your **app** stack stays yours. A short **prep** (about 2h max,
+anytime) assembles the workpack. **Nightshift** then runs fully autonomously in
+the human-created worktrees. You test and ship when you are back.
+
+Required consumer file: [`harness.project.yaml`](templates/harness.project.yaml).
 
 Agents share a root **summary** file, [`project_memory.md`](templates/project_memory.example.md).
 After a cycle, human **lessons learned** become scored **Candidates**. Later sessions
@@ -24,6 +28,7 @@ Inspired by:
 
 ```bash
 git submodule add git@github.com:RaphaelBecker/cursor-harness.git vendor/cursor-harness
+cp vendor/cursor-harness/templates/harness.project.yaml harness.project.yaml
 ./vendor/cursor-harness/install.sh --target . --mode symlink --with-agents
 ```
 
@@ -36,89 +41,84 @@ Three stages, **stacked**. Each stage is its own full-width row (left to right).
 Zoom-ins: [Workflows](#workflows). Proposed next: [Workflow ideas](#workflow-ideas).
 Marks: [legend](#legend).
 
-### 1 · GitHub batch — `/batch-issue-refine`
+### 1 · Prep — `/prep`
 
-Bugs skip **Value and UX** and go to rewrite.
+Anytime. Keep it short (about **2h max**). You create Cursor worktrees. Packet of
+questions. **No code.**
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"darkMode":true,"fontFamily":"ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif","fontSize":"17px","background":"#2B313C","lineColor":"#9AA6B8","textColor":"#9AA6B8","primaryTextColor":"#E8EEF7","edgeLabelBackground":"#2B313C"},"flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":35,"rankSpacing":48,"padding":16,"useMaxWidth":true}}}%%
 flowchart LR
-  b1["<b>Pull Ready</b><br/>✦ batch-issue-ingest"]
-  b2["<b>Tag bug or feature</b><br/>✦ batch-issue-ingest"]
-  b3["<b>Value and UX</b><br/>features only<br/>✦ market-ux-strategy<br/>✦ value-validator"]
-  b4{"<b>Keep, cut, drop?</b><br/>◉ HIL"}
-  b5["<b>Rewrite texts</b><br/>✦ issue-text-refiner"]
-  b6{"<b>Texts OK?</b><br/>◉ HIL"}
-  b7(["<b>Write to GitHub</b><br/>✦ issue-board-sync"])
-  b1 --> b2 --> b3 --> b4 --> b5 --> b6 --> b7
+  e1["<b>You open worktrees</b><br/>one tree · one feature"]
+  e2["<b>Packet grill</b><br/>✦ grill-me<br/>✦ prep"]
+  e3["<b>Draft contract</b><br/>.cursor/night-shift/"]
+  e4{"<b>Plan OK?</b><br/>◉ HIL<br/>✦ implementation-plan-review"}
+  e5(["<b>Approved</b><br/>commits authorized"])
+  e1 --> e2 --> e3 --> e4
+  e4 -->|Yes| e5
   classDef skill fill:#3A5F9A,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
   classDef hil fill:#A34D16,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
   classDef done fill:#2A6B5C,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
-  class b1,b2,b3,b5 skill
-  class b4,b6 hil
-  class b7 done
+  classDef you fill:#3D4554,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
+  class e2,e3 skill
+  class e4 hil
+  class e5 done
+  class e1 you
 ```
 
 ![✦ skill](docs/assets/legend-skill.svg) · ![◉ HIL](docs/assets/legend-hil.svg) · ![◇ subagent](docs/assets/legend-subagent.svg)
 
- `[batch-issue-ingest](skills/batch-issue-ingest/SKILL.md)`
-·  `[market-ux-strategy](skills/market-ux-strategy/SKILL.md)`
-·  `[value-validator](skills/value-validator/SKILL.md)`
-·  `[issue-text-refiner](skills/issue-text-refiner/SKILL.md)`
-·  `[issue-board-sync](skills/issue-board-sync/SKILL.md)`
-·  keep / cut / drop
-·  texts OK?
+ `[prep](skills/workflows/prep/SKILL.md)`
+·  `[grill-me](skills/grill-me/SKILL.md)`
+·  `[implementation-plan-review](skills/implementation-plan-review/SKILL.md)`
 
-**↓ Issue pack — one GitHub card per issue (feature or bug)**
+ you open worktrees
+·  plan OK?
 
-### 2 · Parallel delivery — one Cursor worktree per issue
+**↓ One approved contract per existing worktree**
 
-Typically **3** test slots. A fourth run waits. Features: `/feature-delivery`. Bugs: `/bugfix`.
+### 2 · Night fire — `/night-shift`
+
+One local `agent -p` per approved tree. Agents do not create worktrees. Count is
+however many trees you prepared (machine-bound; about **3** has been comfortable).
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"darkMode":true,"fontFamily":"ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif","fontSize":"17px","background":"#2B313C","lineColor":"#9AA6B8","textColor":"#9AA6B8","primaryTextColor":"#E8EEF7","edgeLabelBackground":"#2B313C"},"flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":35,"rankSpacing":48,"padding":16,"useMaxWidth":true}}}%%
 flowchart LR
-  d1["<b>Load context</b><br/>✦ project-memory<br/>▣ doc-routing"]
-  d2["<b>Grill</b><br/>✦ grill-me"]
-  d3["<b>Draft plan</b><br/>✦ grill-me"]
-  d4{"<b>Plan OK?</b><br/>◉ HIL<br/>✦ implementation-plan-review"}
-  n1["<b>Tests, then code</b><br/>✦ execute-approved-plan<br/>✦ generate-bdd-test-spec<br/>◇ verifier"]
-  n2["<b>Test ladder</b><br/>▣ testing<br/>targeted → fast → full<br/>◇ verifier"]
-  n3["<b>Keep tree clean</b><br/>✦ review-code<br/>✦ sync-spec-docs<br/>✦ project-memory<br/>◇ Bugbot<br/>◇ Security Review"]
-  n4(["<b>Handoff</b><br/>merge-ready · no push"])
-  d1 --> d2 --> d3 --> d4 --> n1 --> n2 --> n3 --> n4
+  n0["<b>night-shift fire</b>"]
+  n1["<b>Tests, then code</b><br/>✦ execute-approved-plan<br/>◇ verifier"]
+  n2["<b>Test ladder</b><br/>▣ testing"]
+  n3["<b>Keep tree clean</b><br/>✦ review-code<br/>✦ blast-radius<br/>✦ sync-spec-docs<br/>◇ Bugbot"]
+  n4(["<b>Handoff</b><br/>ready for manual test<br/>decisions.tsv"])
+  n0 --> n1 --> n2 --> n3 --> n4
   classDef skill fill:#3A5F9A,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
-  classDef hil fill:#A34D16,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
+  classDef you fill:#3D4554,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
   classDef done fill:#2A6B5C,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
-  class d1,d2,d3,n1,n2,n3 skill
-  class d4 hil
+  class n1,n2,n3 skill
+  class n0 you
   class n4 done
 ```
 
 ![✦ skill](docs/assets/legend-skill.svg) · ![◉ HIL](docs/assets/legend-hil.svg) · ![◇ subagent](docs/assets/legend-subagent.svg)
 
- `[feature-delivery](skills/workflows/feature-delivery/SKILL.md)`
-·  `[bugfix](skills/workflows/bugfix/SKILL.md)`
-·  `[project-memory](skills/project-memory/SKILL.md)`
-·  `[grill-me](skills/grill-me/SKILL.md)`
-·  `[implementation-plan-review](skills/implementation-plan-review/SKILL.md)`
+ `[night-shift](skills/workflows/night-shift/SKILL.md)`
 ·  `[execute-approved-plan](skills/execute-approved-plan/SKILL.md)`
-·  `[generate-bdd-test-spec](skills/generate-bdd-test-spec/SKILL.md)`
 ·  `[review-code](skills/review-code/SKILL.md)`
+·  `[blast-radius](skills/blast-radius/SKILL.md)`
 ·  `[sync-spec-docs](skills/sync-spec-docs/SKILL.md)`
 ·  `[verifier](agents/verifier.md)`
 ·  Bugbot
-·  Security Review
-·  plan OK?
 
-**↓ You ship when the handoff is merge-ready**
+**↓ You test when you are back, then you ship**
 
-### 3 · Land and ship — you trigger both
+### 3 · Review and ship
+
+You trigger ship. Nightshift never merges.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"darkMode":true,"fontFamily":"ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif","fontSize":"17px","background":"#2B313C","lineColor":"#9AA6B8","textColor":"#9AA6B8","primaryTextColor":"#E8EEF7","edgeLabelBackground":"#2B313C"},"flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":35,"rankSpacing":48,"padding":16,"useMaxWidth":true}}}%%
 flowchart LR
-  s1["<b>Merge to local main</b><br/>◉ HIL<br/>✦ ship-local"]
+  s1["<b>Merge to local main</b><br/>◉ HIL<br/>✦ ship-local<br/>✦ blast-radius"]
   s2["<b>Push, CI, prod</b><br/>◉ HIL<br/>✦ ship-prod<br/>◇ ci-investigator<br/>◇ Bugbot"]
   s3(["<b>Remember</b><br/>✦ project-memory"])
   s1 --> s2 --> s3
@@ -131,6 +131,7 @@ flowchart LR
 ![✦ skill](docs/assets/legend-skill.svg) · ![◉ HIL](docs/assets/legend-hil.svg) · ![◇ subagent](docs/assets/legend-subagent.svg)
 
  `[ship-local](skills/ship-local/SKILL.md)`
+·  `[blast-radius](skills/blast-radius/SKILL.md)`
 ·  `[ship-prod](skills/workflows/ship-prod/SKILL.md)`
 ·  `[project-memory](skills/project-memory/SKILL.md)`
 ·  ci-investigator
@@ -152,22 +153,23 @@ Screenshots: full width. Crop (1) the mark + three overview rows + this legend, 
 
 **How parallel work runs**
 
-- **Clean local** `main` is the integration branch. Cursor opens each issue in its own
-**worktree + branch**. Agents do not create, switch, or delete worktrees. The only
-exception is `/ship-local`, which you trigger — it may merge this feature and remove
-**this** worktree only.
-- **Day** (in that worktree): grill → draft plan → you `/implementation-plan-review` →
-you approve. That yes does **not** authorize merge, push, or production.
-- **Night:** tests first (feature: Given/When/Then; bug: failing regression), smallest
-code, then the `testing` ladder (targeted → fast → full). Then `review-code`, spec
-docs, lessons. Agent **stops** at merge-ready.
-- **Test pool:** local tests lease a golden test database from the **project** pool
-(typically **three** slots). A fourth run **waits**. Agents run tests without asking;
-they wait for a slot instead of skipping. One heavy gate per worktree.
-- **You** `/ship-local` (repeat for finished trees) → local `main` holds the batch →
-**you** `/ship-prod` (push, watch CI, production, then memory). No force-push. No
-skipped gates.
-- **Summary file:** every merge-ready handoff writes `## Lessons learned`.
+- **You** create each Cursor **worktree + branch** (one tree, one agent, one feature).
+  Agents do not create, switch, or delete worktrees. The night-shift CLI does not
+  either. The only exception is `/ship-local`, which you trigger — it may merge this
+  feature and remove **this** worktree only.
+- **Prep (anytime, about 2h max):** `/prep` packets → you `/implementation-plan-review` →
+  you approve. That yes does **not** authorize merge, push, or production. It does
+  authorize local commits in that tree.
+- **Nightshift:** `night-shift fire` — tests first, smallest code, `testing` ladder,
+  review, docs, lessons. Fully autonomous in those worktrees. Agent **stops** at
+  ready-for-manual-test (or parks `BLOCKED.md`). Hard stop never waits for you.
+- **Parallelism:** number of night agents = number of approved worktrees. Bound by
+  this machine. About **3** has been comfortable on a laptop — a reference, not a
+  cap. If the project declares `slots` in `harness.project.yaml` (scarce test DB),
+  a run **waits for a lease** instead of skipping tests.
+- **After:** `night-shift status` (skim `decisions.tsv`) → you manual-test →
+  `/ship-local` (repeat) → `/ship-prod`. No force-push. No skipped gates.
+- **Summary file:** every handoff writes `## Lessons learned`.
 `@project-memory` upserts those into `project_memory.md` and counts `help_count`
 when a later cycle actually used the row.
 
@@ -192,11 +194,17 @@ when a later cycle actually used the row.
 | [LICENSE](LICENSE)                              | MIT                                                    |
 
 **Templates** (copy into the consumer project, do not edit harness filenames in place):
+[`harness.project.yaml`](templates/harness.project.yaml) (required) ·
 [AGENTS.md](templates/AGENTS.md) ·
 [project_memory.example.md](templates/project_memory.example.md) ·
 [doc-routing.local.example.mdc](templates/doc-routing.local.example.mdc) ·
 [local-override.example.mdc](templates/local-override.example.mdc) ·
-[batch-issue-refine.local.example.md](templates/batch-issue-refine.local.example.md)
+[batch-issue-refine.local.example.md](templates/batch-issue-refine.local.example.md) ·
+[night-shift contract](templates/night-shift-contract.example.md) ·
+[night decision log](templates/night-shift-decisions.example.tsv) ·
+[launchd unit](templates/launchd/com.cursor-harness.night-shift.plist.example)
+
+**Night CLI** (not installed into `.cursor/`): [runtime/night-shift](runtime/night-shift).
 
 **Prompt pack** (installed, not a catalog): [automations/README.md](automations/README.md).
 
@@ -208,17 +216,40 @@ Zoom-ins of [the big picture](#the-big-picture). Start each one in a new agent c
 
 | Stage   | You want                                    | You type                               |
 | ------- | ------------------------------------------- | -------------------------------------- |
-| 1       | Clear GitHub issue texts, no code yet       | `/batch-issue-refine`                  |
-| 2a      | A new feature or page                       | `/feature-delivery`                    |
+| Prep    | Assemble the workpack (packets + approve)   | `/prep`                                |
+| Nightshift | Fire / status board                      | `/night-shift` or `runtime/night-shift` |
+| 2a      | A new feature in an existing worktree       | `/feature-delivery`                    |
 | 2b      | Something already shipped is wrong          | `/bugfix`                              |
+| 2c      | One module smell                            | `/architecture-improve`                |
+| Optional | Clear GitHub issue texts, no code yet      | `/batch-issue-refine` (`github-board`) |
 | 3       | Merge locally, then go to production        | `/ship-local` then `/ship-prod`        |
 | 4a      | Faster, less flaky tests                    | `/test-harness-optimize`               |
-| 4b      | Nightly hygiene without a feature plan      | Local CLI/SDK (`docs/runtime-policy.md`) |
+| 4b      | Hygiene without a feature plan              | Local CLI/SDK (`docs/runtime-policy.md`) |
 | Anytime | Cheat sheet, new workflow, pull lab process | `/help` · `/create-workflow` · `/sync` |
 
 ---
 
-### 1. Refine issues — `/batch-issue-refine`
+### 0. Prep — `/prep`
+
+Anytime. About **2h max**. You already opened Cursor worktrees. Packet of
+questions (recommended answers filled). You approve contracts. **No code.** CLI
+never creates trees.
+
+Fire when the workpack is ready: `./vendor/cursor-harness/runtime/night-shift fire`
+
+Orchestrator: [prep](skills/workflows/prep/SKILL.md)
+
+### 0b. Nightshift — `/night-shift`
+
+Unattended `agent -p` in each approved tree. When you are back: `night-shift status`
+then manual tests.
+
+Orchestrator: [night-shift](skills/workflows/night-shift/SKILL.md) ·
+CLI: [runtime/night-shift](runtime/night-shift)
+
+---
+
+### 1. Refine issues — `/batch-issue-refine` (optional `github-board` pack)
 
 Take 5–10 GitHub **Ready** issues and make the text unambiguous. **No code.**
 You approve twice. One-time [local config](templates/batch-issue-refine.local.example.md).
@@ -283,7 +314,8 @@ Orchestrator: [batch-issue-refine](skills/workflows/batch-issue-refine/SKILL.md)
 
 ### 2a. Build a feature — `/feature-delivery`
 
-Plan with you first. The agent builds **only after you approve**.
+Plan with you in **prep**, in a worktree **you** created. The agent builds
+**only after you approve** (usually after `night-shift fire`).
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"darkMode":true,"fontFamily":"ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif","fontSize":"15px","background":"#2B313C","lineColor":"#9AA6B8","textColor":"#9AA6B8","primaryTextColor":"#E8EEF7","edgeLabelBackground":"#2B313C"},"flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":31,"rankSpacing":48,"padding":16,"useMaxWidth":true}}}%%
@@ -293,7 +325,7 @@ flowchart LR
   C["<b>Write the plan</b><br/>✦ grill-me"]
   D{"<b>Plan look right?</b><br/>◉ HIL<br/>✦ implementation-plan-review"}
   E["<b>Tests, then the feature</b><br/>✦ execute-approved-plan<br/>✦ generate-bdd-test-spec<br/>◇ verifier"]
-  F["<b>Check, review, docs</b><br/>✦ review-code<br/>✦ sync-spec-docs<br/>✦ project-memory<br/>◇ Bugbot<br/>◇ Security Review"]
+  F["<b>Check, review, docs</b><br/>✦ review-code<br/>✦ blast-radius<br/>✦ sync-spec-docs<br/>✦ project-memory<br/>◇ Bugbot<br/>◇ Security Review"]
   G["<b>Merge local</b><br/>◉ HIL<br/>✦ ship-local"]
   H["<b>Ship prod</b><br/>◉ HIL<br/>✦ ship-prod<br/>◇ ci-investigator<br/>◇ Bugbot"]
 
@@ -317,6 +349,7 @@ flowchart LR
 ·  `[execute-approved-plan](skills/execute-approved-plan/SKILL.md)`
 ·  `[generate-bdd-test-spec](skills/generate-bdd-test-spec/SKILL.md)`
 ·  `[review-code](skills/review-code/SKILL.md)`
+·  `[blast-radius](skills/blast-radius/SKILL.md)`
 ·  `[sync-spec-docs](skills/sync-spec-docs/SKILL.md)`
 ·  `[ship-local](skills/ship-local/SKILL.md)`
 ·  `[ship-prod](skills/workflows/ship-prod/SKILL.md)`
@@ -337,7 +370,7 @@ flowchart LR
 | Suggestion                                                                          | Reuse                                         | Add                                                      |
 | ----------------------------------------------------------------------------------- | --------------------------------------------- | -------------------------------------------------------- |
 | Keep night execute thin — it already calls other skills; do not grow it             | `execute-approved-plan`, `testing`            | —                                                        |
-| Map module smells before a large feature plan                                       | `deep-modules-clean-architecture`, `grill-me` | `architecture-audit` — [idea](#architecture-improvement) |
+| Map module smells before a large feature plan                                       | `deep-modules-clean-architecture`, `grill-me` | `/architecture-improve`                                  |
 | Default grill to an `explore` subagent instead of the parent walking the whole tree | `grill-me`                                    | Cursor `explore` (already on the chart)                  |
 | Show `verifier` in the handoff every time, not only when something fails            | `testing`, `verifier`                         | handoff field, not a skill                               |
 | Security Review only when the allowlist is sensitive (already the rule)             | `security-basics`                             | keep off the default path                                |
@@ -348,24 +381,26 @@ flowchart LR
 
 ### 2b. Fix a bug — `/bugfix`
 
-Same shape as a feature. First move: a **failing test** that proves the bug.
-A tiny one-file fix can skip the long plan — only if **you** ask.
+Same shape as a feature. Non-trivial bugs start with a **tight red command**
+(`@diagnose-bug`), then the plan. A tiny one-file fix can skip diagnose and
+the long plan — only if **you** ask.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"darkMode":true,"fontFamily":"ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif","fontSize":"15px","background":"#2B313C","lineColor":"#9AA6B8","textColor":"#9AA6B8","primaryTextColor":"#E8EEF7","edgeLabelBackground":"#2B313C"},"flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":31,"rankSpacing":48,"padding":16,"useMaxWidth":true}}}%%
 flowchart LR
   A(["<b>Describe the bug</b><br/>◉ HIL<br/>✦ bugfix"])
   B{"<b>Big or risky?</b><br/>✦ bugfix"}
+  R["<b>Tight red command</b><br/>✦ diagnose-bug"]
   C["<b>Questions and plan</b><br/>✦ grill-me<br/>◇ explore"]
   D{"<b>Plan look right?</b><br/>◉ HIL<br/>✦ implementation-plan-review"}
   T{"<b>Skip the long plan?</b><br/>◉ HIL"}
   E["<b>Failing test first</b><br/>✦ execute-approved-plan<br/>◇ verifier"]
   F["<b>Smallest fix</b><br/>✦ execute-approved-plan<br/>◇ verifier"]
-  G["<b>Check, review, docs</b><br/>✦ review-code<br/>✦ sync-spec-docs<br/>✦ project-memory<br/>◇ Bugbot<br/>◇ Security Review"]
+  G["<b>Check, review, docs</b><br/>✦ review-code<br/>✦ blast-radius<br/>✦ sync-spec-docs<br/>✦ project-memory<br/>◇ Bugbot<br/>◇ Security Review"]
   H["<b>Ship</b><br/>◉ HIL<br/>✦ ship-local<br/>✦ ship-prod<br/>◇ ci-investigator"]
 
   A --> B
-  B -->|Yes| C --> D
+  B -->|Yes| R --> C --> D
   D -->|No| C
   D -->|Yes| E
   B -->|You ask tiny| T --> E
@@ -375,12 +410,13 @@ flowchart LR
   classDef hil fill:#A34D16,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
   classDef done fill:#2A6B5C,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
   class A,D,T,H hil
-  class B,C,E,F,G skill
+  class B,C,R,E,F,G skill
 ```
 
 ![✦ skill](docs/assets/legend-skill.svg) · ![◉ HIL](docs/assets/legend-hil.svg) · ![◇ subagent](docs/assets/legend-subagent.svg)
 
  `[bugfix](skills/workflows/bugfix/SKILL.md)`
+·  `[diagnose-bug](skills/diagnose-bug/SKILL.md)`
 ·  `[grill-me](skills/grill-me/SKILL.md)`
 ·  `[implementation-plan-review](skills/implementation-plan-review/SKILL.md)`
 ·  `[execute-approved-plan](skills/execute-approved-plan/SKILL.md)`
@@ -405,10 +441,64 @@ flowchart LR
 
 | Suggestion                                                      | Reuse               | Add                                                                  |
 | --------------------------------------------------------------- | ------------------- | -------------------------------------------------------------------- |
-| Isolate reproduce from fix — do not hunt and patch in one skill | `bugfix`, `testing` | `reproduce-bug` (RED proof only)                                     |
+| Isolate reproduce from fix — do not hunt and patch in one skill | `bugfix`, `testing` | `@diagnose-bug` (installed)                                          |
 | Tell a flake from a product bug before changing code            | `testing`           | `flake-vs-bug` (classify only) → then `flake-hunter` or the fix path |
 | CI-only failures start with a log summary                       | `ship-prod`         | `ci-investigator` on the first red box                               |
 | Auth/billing/admin bugs always run Security Review              | `security-basics`   | — (already Phase 4c)                                                 |
+
+---
+
+### 2c. One module smell — `/architecture-improve`
+
+Incremental structure work — not a rewrite. You pick **one** smell per run.
+Audit first (recent git hot spots, deletion test). Then packet grill and a
+contract. Night does one extract or one dependency-direction fix.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"darkMode":true,"fontFamily":"ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif","fontSize":"15px","background":"#2B313C","lineColor":"#9AA6B8","textColor":"#9AA6B8","primaryTextColor":"#E8EEF7","edgeLabelBackground":"#2B313C"},"flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":31,"rankSpacing":48,"padding":16,"useMaxWidth":true}}}%%
+flowchart LR
+  a1["<b>Load context</b><br/>✦ project-memory<br/>▣ doc-routing"]
+  a2["<b>Map smells</b><br/>✦ architecture-audit<br/>◇ explore"]
+  a3{"<b>Which slice?</b><br/>◉ HIL"}
+  a4["<b>Grill and plan</b><br/>✦ grill-me"]
+  a5{"<b>Plan OK?</b><br/>◉ HIL<br/>✦ implementation-plan-review"}
+  a6["<b>One refactor</b><br/>✦ extract-deep-module<br/>or ✦ dependency-direction-fix"]
+  a7["<b>Prove</b><br/>▣ testing<br/>◇ verifier"]
+  a8["<b>Review</b><br/>✦ review-code<br/>✦ blast-radius<br/>✦ sync-spec-docs<br/>◇ Bugbot<br/>◇ Security Review"]
+  a9(["<b>Remember</b><br/>✦ project-memory"])
+
+  a1 --> a2 --> a3 --> a4 --> a5 --> a6 --> a7 --> a8 --> a9
+
+  classDef skill fill:#3A5F9A,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
+  classDef hil fill:#A34D16,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
+  classDef done fill:#2A6B5C,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
+  class a1,a2,a4,a6,a7,a8 skill
+  class a3,a5 hil
+  class a9 done
+```
+
+![✦ skill](docs/assets/legend-skill.svg) · ![◉ HIL](docs/assets/legend-hil.svg) · ![◇ subagent](docs/assets/legend-subagent.svg)
+
+ `[architecture-improve](skills/workflows/architecture-improve/SKILL.md)`
+·  `[architecture-audit](skills/architecture-audit/SKILL.md)`
+·  `[grill-me](skills/grill-me/SKILL.md)`
+·  `[implementation-plan-review](skills/implementation-plan-review/SKILL.md)`
+·  `[extract-deep-module](skills/extract-deep-module/SKILL.md)`
+·  `[dependency-direction-fix](skills/dependency-direction-fix/SKILL.md)`
+·  `[review-code](skills/review-code/SKILL.md)`
+·  `[blast-radius](skills/blast-radius/SKILL.md)`
+
+ explore
+·  `[verifier](agents/verifier.md)`
+·  Bugbot
+·  Security Review
+
+ which slice?
+·  plan OK?
+
+Do **not** add a skill that “improves architecture” in general. Ship stays
+`/ship-local` then `/ship-prod`. Sensitive boundary moves wait for Security
+Review; do not auto-fix.
 
 ---
 
@@ -420,10 +510,10 @@ Shipping is always **your** call. The agent never pushes or deploys on its own.
 %%{init: {"theme":"base","themeVariables":{"darkMode":true,"fontFamily":"ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif","fontSize":"15px","background":"#2B313C","lineColor":"#9AA6B8","textColor":"#9AA6B8","primaryTextColor":"#E8EEF7","edgeLabelBackground":"#2B313C"},"flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":31,"rankSpacing":48,"padding":16,"useMaxWidth":true}}}%%
 flowchart LR
   A(["<b>Work is done locally</b>"])
-  B["<b>Merge local</b><br/>◉ HIL<br/>✦ ship-local"]
+  B["<b>Merge local</b><br/>◉ HIL<br/>✦ ship-local<br/>✦ blast-radius"]
   C["<b>Push and watch CI</b><br/>◉ HIL<br/>✦ ship-prod<br/>◇ ci-investigator"]
   D{"<b>CI red?</b>"}
-  E["<b>Fix, then watch again</b><br/>✦ bugfix<br/>✦ review-code<br/>◇ Bugbot<br/>◇ verifier"]
+  E["<b>Fix, then watch again</b><br/>✦ diagnose-bug<br/>✦ bugfix<br/>✦ review-code<br/>◇ Bugbot<br/>◇ verifier"]
   F(["<b>Green — remember</b><br/>✦ project-memory"])
 
   A --> B --> C --> D
@@ -444,7 +534,9 @@ flowchart LR
 ![✦ skill](docs/assets/legend-skill.svg) · ![◉ HIL](docs/assets/legend-hil.svg) · ![◇ subagent](docs/assets/legend-subagent.svg)
 
  `[ship-local](skills/ship-local/SKILL.md)`
+·  `[blast-radius](skills/blast-radius/SKILL.md)`
 ·  `[ship-prod](skills/workflows/ship-prod/SKILL.md)`
+·  `[diagnose-bug](skills/diagnose-bug/SKILL.md)`
 ·  `[bugfix](skills/workflows/bugfix/SKILL.md)`
 ·  `[review-code](skills/review-code/SKILL.md)`
 ·  `[project-memory](skills/project-memory/SKILL.md)`
@@ -554,7 +646,7 @@ Catalog: [docs/automations.md](docs/automations.md)
 | Suggestion                                                             | Reuse                                            | Add                                       |
 | ---------------------------------------------------------------------- | ------------------------------------------------ | ----------------------------------------- |
 | One stub per job — do not let one nightly run lint + flakes + security | existing stubs                                   | map each stub to one new test-suite skill |
-| Architecture drift has no scheduled job                                | `deep-modules-clean-architecture`, `review-docs` | weekly `architecture-audit` **report**    |
+| Architecture drift has no scheduled job                                | `architecture-audit`, `review-docs`              | weekly report stub only                   |
 | Security scan stays report-only                                        | `security-basics`, Security scan stub            | `test-security-findings` only after HIL   |
 | CI failure triage should start with `ci-investigator`                  | CI failure stub                                  | built-in subagent, not a new pack agent   |
 | Do not default the stub to `/automate` (Cursor VM)                     | [runtime policy](docs/runtime-policy.md)         | local `agent -p` / SDK; `/automate` overflow only |
@@ -579,65 +671,10 @@ they do not become mega-skills.
 
 | Idea                                                  | You would type          | Point                                                |
 | ----------------------------------------------------- | ----------------------- | ---------------------------------------------------- |
-| [Architecture improvement](#architecture-improvement) | `/architecture-improve` | One module smell per run                             |
 | [Optimize test suite](#optimize-test-suite)           | `/optimize-test-suite`  | Honest green runs                                    |
 | [Frontend refactor](#frontend-refactor)               | `/frontend-refactor`    | Corporate tokens, one UI family per run              |
 | [Docs to user stories](#docs-to-user-stories)         | `/docs-to-user-stories` | Stories + tests; retire tech dupes only when covered |
 | [App performance](#app-performance)                   | `/performance-optimize` | Measure, then one hotspot                            |
-
----
-
-### Architecture improvement
-
-Proposed `/architecture-improve`. Incremental structure work — not a rewrite.
-You pick **one** smell per run.
-
-```mermaid
-%%{init: {"theme":"base","themeVariables":{"darkMode":true,"fontFamily":"ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif","fontSize":"15px","background":"#2B313C","lineColor":"#9AA6B8","textColor":"#9AA6B8","primaryTextColor":"#E8EEF7","edgeLabelBackground":"#2B313C"},"flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":31,"rankSpacing":48,"padding":16,"useMaxWidth":true}}}%%
-flowchart LR
-  a1["<b>Load context</b><br/>✦ project-memory<br/>▣ doc-routing"]
-  a2["<b>Map smells</b><br/>✦ architecture-audit (new)<br/>◇ explore"]
-  a3{"<b>Which slice?</b><br/>◉ HIL"}
-  a4["<b>Grill and plan</b><br/>✦ grill-me"]
-  a5{"<b>Plan OK?</b><br/>◉ HIL<br/>✦ implementation-plan-review"}
-  a6["<b>One refactor</b><br/>✦ extract-deep-module (new)<br/>or ✦ dependency-direction-fix (new)"]
-  a7["<b>Prove</b><br/>▣ testing<br/>◇ verifier"]
-  a8["<b>Review</b><br/>✦ review-code<br/>✦ sync-spec-docs<br/>◇ Bugbot<br/>◇ Security Review"]
-  a9(["<b>Remember</b><br/>✦ project-memory"])
-
-  a1 --> a2 --> a3 --> a4 --> a5 --> a6 --> a7 --> a8 --> a9
-
-  classDef skill fill:#3A5F9A,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
-  classDef proposed fill:#4A4578,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7,stroke-dasharray:6 4
-  classDef hil fill:#A34D16,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
-  classDef done fill:#2A6B5C,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
-  class a1,a4,a7,a8 skill
-  class a2,a6 proposed
-  class a3,a5 hil
-  class a9 done
-```
-
-![✦ skill](docs/assets/legend-skill.svg) · ![◉ HIL](docs/assets/legend-hil.svg) · ![◇ subagent](docs/assets/legend-subagent.svg)
-
-**Reuse**
-
-| Kind      | What                                                                                                                                         |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Rules     | `deep-modules-clean-architecture` · `code-quality` · `security-basics` · `testing` · `doc-routing` · `core-principles`                       |
-| Skills    | `project-memory` · `grill-me` · `implementation-plan-review` · `review-code` · `sync-spec-docs` · `review-docs` · `ship-local` · `ship-prod` |
-| Subagents | `explore` (map) · `verifier` (prove) · Bugbot · Security Review when boundaries move                                                         |
-
-**Add** (one job each)
-
-| Skill                      | One job                                                    |
-| -------------------------- | ---------------------------------------------------------- |
-| `architecture-improve`     | Thin orchestrator only                                     |
-| `architecture-audit`       | Report shallow modules, cycles, and layer leaks — no edits |
-| `extract-deep-module`      | One extract or collapse per run                            |
-| `dependency-direction-fix` | One cycle or wrong-way dependency per run                  |
-
-Do **not** add a skill that “improves architecture” in general. Ship stays `/ship-local`
-then `/ship-prod`. Sensitive boundary moves wait for Security Review; do not auto-fix.
 
 ---
 
@@ -888,10 +925,12 @@ Full flags, clone, CI, troubleshooting: [docs/install.md](docs/install.md).
 
 ```bash
 git submodule add git@github.com:RaphaelBecker/cursor-harness.git vendor/cursor-harness
+cp vendor/cursor-harness/templates/harness.project.yaml harness.project.yaml
 ./vendor/cursor-harness/install.sh --target . --mode symlink --with-agents
 ```
 
-Requires `bash`, `python3` (stdlib), and `git`.
+Requires `bash`, `python3` (stdlib), and `git`. Default packs: `core`. Add
+`--packs core,github-board,market-ux,bdd` when you want those optional sets.
 
 ## Layout
 
@@ -901,13 +940,14 @@ cursor-harness/
 ├── HARNESS.md          # agent inventory → .cursor/HARNESS.md
 ├── CONTRIBUTING.md
 ├── install.sh
-├── manifest.yaml       # pack registry (what install.sh copies)
+├── manifest.yaml       # pack_sets registry
+├── runtime/            # night-shift CLI (not copied into .cursor/)
 ├── rules/              # *.mdc
 ├── skills/             # SKILL.md packs + workflows/
 ├── agents/
 ├── automations/        # prompt stubs
 ├── hooks/
-├── templates/
+├── templates/          # harness.project.yaml + consumer copies
 └── docs/               # catalogs + architecture + install
 ```
 

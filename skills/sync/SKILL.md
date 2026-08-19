@@ -126,6 +126,8 @@ committed pack text is not.
 ### 5) Smoke install
 
 ```bash
+mkdir -p /tmp/harness-smoke
+cp templates/harness.project.yaml /tmp/harness-smoke/
 ./install.sh --target /tmp/harness-smoke --mode symlink --with-agents
 ```
 

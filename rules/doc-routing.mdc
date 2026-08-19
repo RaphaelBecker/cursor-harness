@@ -1,6 +1,6 @@
 ---
 description: Master routing — map prompts to docs by keyword; update existing docs before adding new ones.
-alwaysApply: true
+alwaysApply: false
 ---
 
 # AI directive — master doc routing

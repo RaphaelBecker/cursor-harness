@@ -82,9 +82,14 @@ Check the diff against each item; skip commentary on items that pass.
    backlog follow-up; do not broaden scope during review.
 5. Re-run affected targeted tests and the project's relevant gates after
    runtime-affecting fixes.
-6. Output a short review summary — findings, fixes applied, backlog entries —
-   which feeds the Phase 5 readiness checklist ("code review clean").
-7. Remind that Phase 4c (`/review-bugbot`, optional `/review-security`) is report-only
+6. **Blast radius** (sensitive diffs only): if the allowlist or diff touches
+   shared modules, lifecycle, money, auth, or wire formats, follow
+   `@blast-radius`. Write the `## Blast radius` block for `HANDOFF.md`. Skip
+   copy-only and docs-only changes. Do not invent a third always-on rule.
+7. Output a short review summary — findings, fixes applied, backlog entries,
+   blast-radius fact (or skipped) — which feeds the Phase 5 readiness
+   checklist ("code review clean").
+8. Remind that Phase 4c (`/review-bugbot`, optional `/review-security`) is report-only
    and runs after this skill in night shift.
 
 ## Tone

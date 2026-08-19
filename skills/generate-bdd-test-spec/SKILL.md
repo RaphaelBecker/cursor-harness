@@ -3,8 +3,9 @@ name: generate-bdd-test-spec
 description: >-
   Generates structured BDD test scenarios (Gherkin Given/When/Then) from
   implementation plans, split into unit and E2E (or integration) tests.
-  Auto-invoke in Phase 2 for every approved feature plan, immediately after
-  Phase 1 approval.
+  Auto-invoke in Phase 2 when this skill is installed (`bdd` pack) for every
+  approved feature plan, immediately after Phase 1 approval. Skip if the pack
+  is not installed.
 ---
 
 # Test Specification Workflow
