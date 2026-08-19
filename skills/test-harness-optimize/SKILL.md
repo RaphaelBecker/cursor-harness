@@ -12,8 +12,9 @@ description: >-
 
 - Never weaken or delete assertions just to go green.
 - Prefer deterministic waits, better fixtures, and narrower tests over sleeps.
-- Keep tests inside the project's fast/local and full/CI-parity layers as appropriate
-  (discover from README / package scripts / CI — see `testing` rule).
+- Keep tests inside the project's worktree-proof, fast/local coverage slice, and
+  idle-main complete layers as appropriate (discover from README / package scripts /
+  CI — see `testing` rule). Do not treat the coverage slice as feature-worktree proof.
 - Draft-PR / autonomous runs may touch **test files only** unless a human contract expands scope.
 
 ## Process

@@ -31,8 +31,8 @@ Prefer `/prep` when preparing several trees.
 3. Verification ladder per `testing` rule.
 4. Phase 4b: `@review-code`. Phase 4c: `/review-bugbot` report-only;
    `/review-security` when sensitive. Do not wait on 4c.
-5. Phase 5: `@sync-spec-docs`, lessons, `@project-memory` Phase 5, `HANDOFF.md`
-   with **Manual test** and `ready-for-manual-test` when true.
+5. Phase 5: `@sync-spec-docs`, **`## Lessons learned`**, `@project-memory` Phase 5,
+   `HANDOFF.md` with **Manual test** and `ready-for-manual-test` when true.
 6. After: human tests, then `/ship-local` / `/ship-prod`.
 
 ## Map

@@ -87,7 +87,7 @@ however many trees you prepared (machine-bound; about **3** has been comfortable
 flowchart LR
   n0["<b>night-shift fire</b>"]
   n1["<b>Tests, then code</b><br/>✦ execute-approved-plan<br/>◇ verifier"]
-  n2["<b>Test ladder</b><br/>▣ testing"]
+  n2["<b>Worktree proof</b><br/>▣ testing"]
   n3["<b>Keep tree clean</b><br/>✦ review-code<br/>✦ blast-radius<br/>✦ sync-spec-docs<br/>◇ Bugbot"]
   n4(["<b>Handoff</b><br/>ready for manual test<br/>decisions.tsv"])
   n0 --> n1 --> n2 --> n3 --> n4
@@ -160,15 +160,20 @@ Screenshots: full width. Crop (1) the mark + three overview rows + this legend, 
 - **Prep (anytime, about 2h max):** `/prep` packets → you `/implementation-plan-review` →
   you approve. That yes does **not** authorize merge, push, or production. It does
   authorize local commits in that tree.
-- **Nightshift:** `night-shift fire` — tests first, smallest code, `testing` ladder,
-  review, docs, lessons. Fully autonomous in those worktrees. Agent **stops** at
-  ready-for-manual-test (or parks `BLOCKED.md`). Hard stop never waits for you.
+- **Nightshift:** `night-shift fire` — tests first, smallest code, `testing` ladder
+  (**worktree proof** on the feature tree), review, docs, lessons. Fully autonomous
+  in those worktrees. Agent **stops** at ready-for-manual-test (or parks
+  `BLOCKED.md`). Hard stop never waits for you. Merge-ready = green worktree proof
+  (or docs N/A), not idle-main complete.
 - **Parallelism:** number of night agents = number of approved worktrees. Bound by
   this machine. About **3** has been comfortable on a laptop — a reference, not a
   cap. If the project declares `slots` in `harness.project.yaml` (scarce test DB),
-  a run **waits for a lease** instead of skipping tests.
+  **worktree proof** waits for a pool lease only when a listed suite needs it.
+  Pure unit/UI must not take a slot. Do not skip tests.
 - **After:** `night-shift status` (skim `decisions.tsv`) → you manual-test →
-  `/ship-local` (repeat) → `/ship-prod`. No force-push. No skipped gates.
+  `/ship-local` (repeat) → one **idle-main complete** on idle local default →
+  `/ship-prod`. No force-push. No skipped gates. Do not start complete if another
+  worktree still holds a test-pool lease.
 - **Summary file:** every handoff writes `## Lessons learned`.
 `@project-memory` upserts those into `project_memory.md` and counts `help_count`
 when a later cycle actually used the row.

@@ -80,8 +80,8 @@ Check the diff against each item; skip commentary on items that pass.
    approved contract and red-first evidence authorize it.
 4. Report behavior changes outside the approved contract as a hard stop or
    backlog follow-up; do not broaden scope during review.
-5. Re-run affected targeted tests and the project's relevant gates after
-   runtime-affecting fixes.
+5. Re-run the **worktree proof** after runtime-affecting fixes — not idle-main
+   complete.
 6. **Blast radius** (sensitive diffs only): if the allowlist or diff touches
    shared modules, lifecycle, money, auth, or wire formats, follow
    `@blast-radius`. Write the `## Blast radius` block for `HANDOFF.md`. Skip

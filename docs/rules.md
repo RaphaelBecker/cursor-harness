@@ -10,7 +10,7 @@ Normative text lives in each `.mdc` file — this page is a catalog only.
 | `deep-modules-clean-architecture` | Code globs | Deep modules, clean boundaries | [deep-modules-clean-architecture.mdc](../rules/deep-modules-clean-architecture.mdc) |
 | `doc-routing` | On demand | Keyword → which doc to read; product story first | [doc-routing.mdc](../rules/doc-routing.mdc) |
 | `code-quality` | Code globs | Architecture + craft defaults | [code-quality.mdc](../rules/code-quality.mdc) |
-| `testing` | Code/test globs | Verification ladder SSOT, gates, bug regression | [testing.mdc](../rules/testing.mdc) |
+| `testing` | Code/test globs | Ladder SSOT: worktree proof vs idle-main complete | [testing.mdc](../rules/testing.mdc) |
 | `security-basics` | Code globs | Secrets, boundaries, least privilege | [security-basics.mdc](../rules/security-basics.mdc) |
 
 Only `core-principles` and `developer-communication` are `alwaysApply: true`.

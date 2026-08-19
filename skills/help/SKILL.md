@@ -57,6 +57,7 @@ loads `prep` → memory slice → packet `grill-me` → **one** routed doc.
 - **Prep** = short HIL sitting, anytime. **Nightshift** = unattended build in those trees.
 - Humans create worktrees. Agents and `night-shift` never run `git worktree add`.
 - Product story first → then code → thin contracts only for high-risk seams.
+- Feature tree: **worktree proof**. Idle local main after lands: **idle-main complete**.
 - Unattended hard stop = `.cursor/night-shift/BLOCKED.md`, not a ping.
 - Change a skill/rule/agent/workflow/automation → update `.cursor/HARNESS.md` same change.
 

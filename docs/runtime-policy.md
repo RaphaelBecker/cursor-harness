@@ -23,8 +23,9 @@ Prefer **Composer 2.5** or **Grok 4.6** (first-party pool) for long unattended
 runs. Parallelism is the number of **human-created** worktrees with an approved
 contract — bound by this machine, not a harness cap. About **3** has been
 comfortable on a laptop (reference only). If the project sets `slots` in
-`harness.project.yaml`, wait for a lease; do not skip tests. Do not spawn a
-cloud fleet “because Cursor can.”
+`harness.project.yaml`, **worktree proof** waits for a pool lease only when a
+listed suite needs the stack; pure unit/UI must not take a slot. Do not skip
+tests. Do not spawn a cloud fleet “because Cursor can.”
 
 ## Allowed (local)
 

@@ -4,7 +4,7 @@
 
 | Agent | Job | File |
 | --- | --- | --- |
-| `verifier` | Discover and run typecheck / lint / tests; **report only** | [verifier.md](../agents/verifier.md) |
+| `verifier` | Discover and run worktree proof (types + listed suites); **report only** | [verifier.md](../agents/verifier.md) |
 
 Installed to `.cursor/agents/` when listed in `manifest.yaml`. Readonly. Does not edit code.
 

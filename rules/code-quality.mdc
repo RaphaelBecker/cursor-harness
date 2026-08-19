@@ -48,4 +48,4 @@ alwaysApply: false
 
 - Add or update tests when behavior changes and the project already has a test suite.
 - Prefer focused unit/integration coverage over brittle end-to-end snapshots for pure logic.
-- Full gate discipline lives in the `testing` rule.
+- Worktree proof / idle-main complete live in the `testing` rule.

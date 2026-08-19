@@ -20,16 +20,20 @@ issue_source: none
 
 test:
   discover: true
-  # targeted: npm test --
-  # fast: npm run test:fast
-  # full: npm test
+  # worktree: npm run test:affected --   # optional dispatcher; types + contract list
+  # targeted: npm test --                # implement RED/GREEN
+  # fast: npm run test:fast              # FULL coverage/lint/types slice — not worktree proof
+  # full: npm run test:complete          # idle-main complete only
 
-# Scarce test resource (golden DB pool, device farm). Omit to fire every
-# prepared worktree. Not a harness cap — about 3 parallel agents has been
-# comfortable on a laptop; raise if this machine and the pool allow.
+# Scarce test resource (golden DB pool, device farm). Custom lease is acquired
+# at worktree proof only when a listed suite needs the pool — not at fire.
+# Built-in count (no lease script) is an optional host throttle at fire, not a DB.
+# Omit slots to fire every prepared worktree. About 3 parallel agents has been
+# comfortable on a laptop; that is experience, not a harness cap.
 # slots:
 #   count: 3
-#   lease: ./scripts/lease-test-slot.sh
+#   lease: ./scripts/lease-test-slot.sh  # acquire only when a listed suite needs the pool
+#   status: ./scripts/lease-test-slot.sh # live-lease check: `<script> has-live-leases`
 
 docs:
   routing: .cursor/rules/doc-routing.local.mdc

@@ -193,9 +193,12 @@ def check_project(target: Path, *, harness_root: Path | None = None) -> list[str
         errors.append("test must be a mapping")
     else:
         discover = bool(test.get("discover"))
-        named = any(test.get(k) for k in ("targeted", "fast", "full"))
+        named = any(test.get(k) for k in ("worktree", "targeted", "fast", "full"))
         if not discover and not named:
-            errors.append("test.discover must be true, or set test.targeted / test.fast / test.full")
+            errors.append(
+                "test.discover must be true, or set test.worktree / "
+                "test.targeted / test.fast / test.full"
+            )
 
     slots = data.get("slots")
     if slots not in (None, {}, []):
@@ -205,11 +208,13 @@ def check_project(target: Path, *, harness_root: Path | None = None) -> list[str
             count = slots.get("count")
             if not isinstance(count, int) or count < 1:
                 errors.append("slots.count must be an integer >= 1 when slots is set")
-            lease = str(slots.get("lease") or "").strip()
-            if lease:
-                lease_path = (target / lease).resolve() if not os.path.isabs(lease) else Path(lease)
-                if not lease_path.exists():
-                    errors.append(f"slots.lease does not exist: {lease}")
+            for key in ("lease", "status"):
+                rel = str(slots.get(key) or "").strip()
+                if not rel:
+                    continue
+                script = (target / rel).resolve() if not os.path.isabs(rel) else Path(rel)
+                if not script.exists():
+                    errors.append(f"slots.{key} does not exist: {rel}")
 
     packs = data.get("packs")
     if packs is None:

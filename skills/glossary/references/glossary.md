@@ -31,7 +31,11 @@ lives in the consumer project.
 | **Hook** | Script that runs around agent actions (e.g. block destructive shell commands). |
 | **Automation** | Cloud agent run on a schedule or git/CI event. |
 | **Plan** | Draft or approved implementation plan (often under `.cursor/plans/`). |
-| **Verification ladder** | Targeted tests → fast/local gate → full/CI-parity gate (then rerun failing only, then confirm) — SSOT in the `testing` rule; discovered project commands. |
+| **Worktree proof** | Types + contract-listed suites on the feature worktree. Feature merge-ready. Empty list fails; docs/harness-only may be N/A. |
+| **Idle-main complete** | One full/CI-parity gate on clean local default after `/ship-local`, host idle (no live test-pool lease). Then `/ship-prod`. |
+| **Fast/local coverage slice** | Full lint/types/coverage ratchet (`test.fast` when declared). CI and part of idle-main complete. Not run on feature worktrees. |
+| **Verification ladder** | Targeted RED/GREEN → one worktree proof; idle-main complete after `/ship-local` — SSOT in the `testing` rule; discovered project commands. |
+| **Honest leftover** | Three targeted E2E/int runs can still fill a 3-slot pool. This split shrinks hold time; it does not make parallel E2E free. Same-machine CI still competes if someone pushes while agents test. |
 | **Lessons learned** | Short session summary at Phase 5 handoff. Feeds Candidates; durable Architecture tips wait for Phase 7. |
 | **Candidates** | Scored rows in `project_memory.md` (the project summary) that may later promote into harness packs. |
 | **Help count** | How often a Candidate lesson actually helped a later session. Bumped at most +1 per cycle. |

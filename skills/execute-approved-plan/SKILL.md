@@ -37,10 +37,12 @@ if unattended → BLOCKED.md; else stop.
   **`/ship-local` only**.
 - **Local verification is always agent-allowed:** discover and run the project's
   typecheck/lint/test commands yourself. Do **not** ask the human for permission.
-  If `harness.project.yaml` declares `slots`, wait for a slot rather than skipping
-  tests. There is no harness-wide max agent count.
+  Lease a shared test-pool slot only if a listed suite needs it (int / E2E /
+  domain stack). Pure unit/UI must not take a slot. Do not skip tests. There is
+  no harness-wide max agent count.
 - **Verification ladder:** mandatory; run without asking. Normative order lives
-  only in the `testing` rule — read it (not always-on).
+  only in the `testing` rule (worktree proof on this tree; idle-main complete
+  after `/ship-local`) — read it (not always-on).
 - **`project_memory.md`:** do not edit **Architecture** during Phases 2–5. Phase 5
   **must** run `@project-memory` Candidates + cycle status write after lessons.
 - Never push, merge, open a PR, deploy, or sync production secrets.
@@ -113,8 +115,9 @@ if unattended → BLOCKED.md; else stop.
    - Phase 4b summary and Phase 4c Bugbot/Security findings (report only)
    - **`## Blast radius`** when the allowlist was sensitive (from `@blast-radius`);
      omit for copy/docs
-   - **ready-for-manual-test** if required gates are green; otherwise not
-     merge-ready and list what remains
+   - **ready-for-manual-test** if the **worktree proof** is green (or docs/harness
+     N/A); otherwise not merge-ready and list what remains. Do not run idle-main
+     complete on this feature worktree.
 6. Write `.cursor/night-shift/HANDOFF.md` with the same content (include the
    phrase `ready-for-manual-test` when true).
 7. Do not push, merge, or remove worktrees. Remind: morning `night-shift status`,

@@ -20,6 +20,10 @@ explicitly accepts this contract. Night fire skips worktrees that are not
 
 ## Tests
 
+List the **worktree-proof** suites (typecheck + unit / int / UI / one E2E flow /
+domain gate). Empty is not merge-ready. Docs/harness-only: `N/A` or docs-only.
+Do not list the fast/local coverage slice or idle-main complete here.
+
 ## Docs / SemVer
 
 ## Permissions

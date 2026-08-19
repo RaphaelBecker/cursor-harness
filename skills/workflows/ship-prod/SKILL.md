@@ -33,11 +33,17 @@ On the **primary** default-branch checkout:
 1. Branch is the project default (`main`/`master`); working tree clean (no unrelated
    dirty/staged files).
 2. Intended feature commits are ancestors of `HEAD` (post one or more `/ship-local`).
-3. **Test-relevant tip:** green full/CI-parity gate evidence for **this** `HEAD`,
-   or run it now before push (discover from README / package scripts / CI). Docs/harness-only
-   tips may use the project's docs-only ship path when one exists.
-4. `gh` authenticated (`gh auth login`) so watch + failed logs work when GitHub CI is used.
-5. If prod secrets changed: follow the project's documented vault/sync path — never invent one.
+3. **Live-lease check:** if another worktree holds a shared test-pool slot → **STOP**.
+   Do not start idle-main complete on a noisy host. Prefer
+   `./vendor/cursor-harness/runtime/night-shift slots-status` (exit 0 = live / STOP,
+   exit 1 = idle). Or run `slots.status` / `slots.lease has-live-leases` from
+   `harness.project.yaml`.
+4. **Test-relevant tip:** green **idle-main complete** evidence for **this** `HEAD`
+   (`test.full` or the discovered CI-parity gate), or run it now before push — only
+   after the live-lease check is idle. Docs/harness-only tips may use the project's
+   docs-only ship path when one exists.
+5. `gh` authenticated (`gh auth login`) so watch + failed logs work when GitHub CI is used.
+6. If prod secrets changed: follow the project's documented vault/sync path — never invent one.
 
 If preconditions fail → **STOP** and report blockers. Do not push.
 
@@ -88,7 +94,8 @@ check and this tip:
 | Gate | Rule |
 | --- | --- |
 | Human trigger | Required — this skill never self-starts |
-| Local green | Full/CI-parity gate for test-relevant `HEAD` before first push |
+| Local green | Idle-main complete for test-relevant `HEAD` before first push |
+| Live test-pool lease | STOP — do not start complete on a noisy host |
 | Secrets / vault | Do not invent or copy local env to prod; stop if vault/auth unclear |
 | Scope of CI fixes | Only what the red run needs; no drive-by refactors |
 | Hard denies | Do not weaken tests/CI to go green; no force-push; no destructive prod DB ops |
@@ -105,7 +112,7 @@ check and this tip:
 ## Outputs (handoff)
 
 - Local default SHA pushed; which ship command was used
-- Full-gate evidence (ran / reused / N/A docs-only)
+- Idle-main complete evidence (ran / reused / N/A docs-only)
 - CI run id(s); final watched status
 - Fix commits + Bugbot/security reviews used (or “none”)
 - Phase 7 done / skipped (reason)

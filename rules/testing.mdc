@@ -8,7 +8,20 @@ alwaysApply: false
 
 This file is the **SSOT for the verification ladder** (order, repair budgets, gate hygiene).
 Night-shift skills and workflows must point here — do not restate numbered ladder steps
-elsewhere.
+elsewhere. Keep `## Lessons learned` on workflow handoffs (`feature-delivery`,
+`execute-approved-plan`, `ship-local`, `bugfix`, and the other Phase 5 workflows).
+
+## Two quality moments
+
+- **Worktree proof** (feature branch / feature worktree): prove only this change.
+- **Idle-main complete** (primary checkout, local default, after the `/ship-local`
+  batch, host idle): prove the merged whole, once.
+- Then push / CI / prod as this project already does.
+
+Names must match scope. The project's **fast/local coverage slice** (lint + types +
+full unit/int/UI coverage ratchet — `test.fast` when declared) is **not** the
+worktree proof. Do not reuse or rewrite that slice to mean "feature tests." It stays
+the full coverage/lint/types slice for CI and as part of idle-main complete.
 
 ## Definition of done
 
@@ -35,27 +48,61 @@ elsewhere.
 ## Phase 4 — verification ladder (normative)
 
 Discover verification commands from the project's existing sources: `README.md`,
-`package.json` scripts, `Makefile`, `justfile`, `pyproject.toml`, or CI workflows.
-Never invent script names from another project. Prefer this order when the project defines
-the layers:
+`package.json` scripts, `Makefile`, `justfile`, `pyproject.toml`, CI workflows, or
+`harness.project.yaml` (`test.worktree` / `test.targeted` / `test.fast` / `test.full`).
+Never invent script names from another project. Prefer a named npm/make entry when
+set (it may set env flags) over calling an inner bash file.
 
-1. Targeted/dedicated suites for the changed surface
-2. Fast/local gate (if defined)
-3. Full/CI-parity gate once (if defined)
-4. On failure: re-run **only failing** suites/tests — at most **two** code-repair attempts
-   per failing gate and **six** code-repair attempts total across the run
-5. When green: **one confirming** full gate when the project has one
-6. Merge-ready needs final green full gate when the project requires it
+The agent is the thin dispatcher: classify the contract `## Tests` list, then exec
+this project's existing runners and existing lease/bootstrap. Do not invent a second
+test engine (no reimplemented Playwright, Vitest, or DB bootstrap).
+
+1. During implement: dedicated/targeted RED/GREEN for the changed surface (project's
+   existing runners).
+2. Feature-worktree merge-ready proof: **one worktree proof**. Always typecheck when
+   the project has it. Then only the contract-listed suites. If the project declares
+   `test.worktree`, exec that with the list. Otherwise compose typecheck + listed
+   suites via existing runners. Do **not** re-run the same files as a second required
+   gate. Docs/harness-only may be N/A.
+3. Do **not** run the fast/local coverage slice or the idle-main complete gate on a
+   feature worktree.
+4. On failure: re-run **only the failing listed suite** — at most **two** code-repair
+   attempts per failing gate and **six** code-repair attempts total across the run.
+   Do not restart the whole ladder after every fix.
+5. Merge-ready = green worktree proof (or docs/harness N/A). Do not require idle-main
+   complete on the feature branch.
+6. After the `/ship-local` batch is on local default **and** no other worktree holds
+   a test-pool lease: **one** idle-main complete (`test.full` or the discovered
+   CI-parity gate) on the primary checkout.
+7. `/ship-prod` requires that complete (or runs it). If another worktree holds a
+   shared test slot → **STOP**. Do not start complete on a noisy host.
 
 Also:
 
+- Empty contract suite list fails loud (not merge-ready). Docs/harness-only is the
+  N/A exception.
 - Record the exact commands used in the implementation contract and handoff.
-- Harness/docs-only contracts may document N/A for ladder steps in their test field.
-- After runtime-affecting Phase 4b review fixes, re-run affected targeted tests and the
-  relevant project gates.
+- After runtime-affecting Phase 4b review fixes, re-run the worktree proof — not
+  idle-main complete.
 - Optional report-only helper: `verifier` agent.
 - At most **one** retry for a clearly transient infrastructure failure (does not consume a
   code-repair attempt).
+
+## Worktree proof — lease
+
+Lease a shared test DB / pool slot only if a listed suite needs it (integration,
+E2E, domain gates that need the stack). Pure unit/UI must not take a slot. Use the
+project's existing lease/bootstrap — do not reimplement.
+
+Custom `slots.lease` is a test-pool script: acquire at proof time, not when
+`night-shift fire` starts the agent. Built-in `slots.count` without a lease script
+is an optional host throttle at fire, not a DB.
+
+## Honest leftover
+
+Three targeted E2E/int runs can still fill a 3-slot pool. This split shrinks hold
+time; it does not make parallel E2E free. Same-machine CI still competes if someone
+pushes while agents test.
 
 ## Gate hygiene
 

@@ -195,23 +195,62 @@ def discover(repo: Path) -> list[dict[str, str]]:
     return rows
 
 
+def _slot_script(target: Path, project: dict[str, Any], key: str) -> str | None:
+    slots = project.get("slots")
+    if not isinstance(slots, dict):
+        return None
+    raw = str(slots.get(key) or "").strip()
+    if not raw:
+        return None
+    return raw if os.path.isabs(raw) else str(target / raw)
+
+
+def builtin_live_holders(target: Path) -> list[Path]:
+    slot_root = target / NIGHT_DIR / "slots"
+    live: list[Path] = []
+    if not slot_root.is_dir():
+        return live
+    for holder in slot_root.glob("*.pid"):
+        try:
+            pid = int(holder.read_text(encoding="utf-8").strip())
+        except ValueError:
+            continue
+        if pid_running(pid):
+            live.append(holder)
+    return live
+
+
+def has_live_leases(target: Path, project: dict[str, Any]) -> bool:
+    """True when another worktree holds a shared test-pool slot.
+
+    Prefer `<slots.status|slots.lease> has-live-leases`: exit 0 = live (STOP),
+    exit 1 = idle. Any other exit falls back to built-in pid holders.
+    """
+    cmd = _slot_script(target, project, "status") or _slot_script(target, project, "lease")
+    if cmd:
+        proc = subprocess.run(
+            [cmd, "has-live-leases"],
+            cwd=str(target),
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if proc.returncode == 0:
+            return True
+        if proc.returncode == 1:
+            return False
+    return bool(builtin_live_holders(target))
+
+
 def acquire_slot(target: Path, project: dict[str, Any], worktree: Path) -> None:
     slots = project.get("slots")
     if not isinstance(slots, dict) or not slots:
         return
+    # Custom lease is a test-pool script: acquire at worktree proof, not at fire.
+    if _slot_script(target, project, "lease"):
+        return
     count = int(slots.get("count") or 0)
     if count < 1:
-        return
-    lease = str(slots.get("lease") or "").strip()
-    if lease:
-        cmd = lease if os.path.isabs(lease) else str(target / lease)
-        proc = subprocess.run(
-            [cmd, "acquire", str(worktree)],
-            cwd=str(target),
-            check=False,
-        )
-        if proc.returncode != 0:
-            raise RuntimeError(f"slots.lease acquire failed ({proc.returncode}): {cmd}")
         return
     # Built-in file lock pool when count is set without a custom lease command.
     slot_root = target / NIGHT_DIR / "slots"
@@ -367,6 +406,24 @@ def cmd_status(target: Path) -> int:
     return 0
 
 
+def cmd_slots_status(target: Path) -> int:
+    """Exit 0 if another worktree holds a test-pool slot (STOP); 1 if idle."""
+    errors = check_project(target)
+    if errors:
+        for err in errors:
+            print(f"  - {err}", file=sys.stderr)
+        return 2
+    project = load_project(target)
+    live = has_live_leases(target, project)
+    holders = builtin_live_holders(target)
+    if live:
+        extra = f" ({len(holders)} built-in pid holder(s))" if holders else ""
+        print(f"live{extra}")
+        return 0
+    print("idle")
+    return 1
+
+
 def harness_root_from_file() -> Path:
     return Path(__file__).resolve().parent.parent
 
@@ -382,6 +439,10 @@ def main(argv: list[str] | None = None) -> int:
     fire = sub.add_parser("fire", help="start one local agent per approved worktree")
     fire.add_argument("--dry-run", action="store_true")
     sub.add_parser("status", help="morning board")
+    sub.add_parser(
+        "slots-status",
+        help="exit 0 if another worktree holds a test-pool slot (STOP); 1 if idle",
+    )
 
     args = parser.parse_args(argv)
     target = Path(args.target).resolve()
@@ -394,6 +455,8 @@ def main(argv: list[str] | None = None) -> int:
             return cmd_fire(target, dry_run=args.dry_run)
         if args.cmd == "status":
             return cmd_status(target)
+        if args.cmd == "slots-status":
+            return cmd_slots_status(target)
     except RuntimeError as exc:
         print(str(exc), file=sys.stderr)
         return 1

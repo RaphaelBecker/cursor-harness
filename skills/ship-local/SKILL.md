@@ -41,8 +41,9 @@ and ask if the tree has contract-irrelevant dirt.
 
 ## Preconditions
 
-1. Phase 5 handoff exists with merge-ready evidence (prefer green full/CI-parity gate for
-   test-relevant work; docs/harness-only may note N/A per contract).
+1. Phase 5 handoff exists with merge-ready evidence (prefer green **worktree proof**
+   for test-relevant work; docs/harness-only may note N/A per contract). **Do not
+   require idle-main complete on the feature worktree.**
 2. `## Lessons learned` + `@project-memory` Phase 5 Candidates / cycle status done
    (this skill does not invent lessons).
 3. Feature worktree path, feature branch name, and primary default-branch root are known.
@@ -111,7 +112,9 @@ On clean local default:
 2. Confirm migrations/docs/code from the feature are present (spot-check paths from the
    Phase 5 allowlist / handoff).
 3. Confirm no conflict markers remain: search for `<<<<<<<`, `=======`, `>>>>>>>`.
-4. Do **not** run remote push. Optionally note which project push/deploy path applies
+4. Do **not** run remote push. Do **not** run idle-main complete as part of landing
+   one feature. If other feature worktrees or live test-pool leases remain, say so
+   in the handoff. Optionally note which project push/deploy path applies
    (discover from README / CI / deploy docs).
 
 ### 6) Cleanup
@@ -130,9 +133,10 @@ Only after step 5 succeeds:
 - Conflicts resolved (file list + one-line how) or “none”
 - Worktree removed / branch deleted
 - Echo **Cycle status** from `project_memory.md`
-- Next human step: `/ship-prod` (preferred watched deliver), or project push/deploy
-  scripts if they drive remote themselves
-- State clearly: **local default is ready for remote deliver** (or list blockers)
+- Next human step: `/ship-prod` (owns the one idle-main complete, then watched
+  deliver), or project push/deploy scripts if they drive remote themselves
+- State clearly: **local default is ready for idle-main complete / remote deliver**
+  when no other trees or live test-pool leases remain (or list blockers)
 
 ## Conflict resolution (auto — required)
 

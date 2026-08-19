@@ -26,10 +26,13 @@ routed doc row — do not bulk-read `docs/`.
   `.cursor/night-shift/contract.md`. Optional board text: `/batch-issue-refine`
   (`github-board` pack).
 - **Nightshift** — `night-shift fire` runs `@execute-approved-plan` unattended in
-  each approved worktree. Ladder (`testing` rule), `@review-code` (4b), `/review-bugbot`
+  each approved worktree. Ladder (`testing` rule: **worktree proof**, then
+  **idle-main complete** after `/ship-local`), `@review-code` (4b), `/review-bugbot`
   4c report-only, docs, Candidates, **Manual test** handoff. Append-only
   `decisions.tsv`. Park `BLOCKED.md` instead of waiting.
-- **After** — `night-shift status` + manual tests, then `/ship-local` / `/ship-prod`.
+- **After** — `night-shift status` + manual tests, then `/ship-local` (worktree
+  proof is merge-ready), one **idle-main complete** on idle local default, then
+  `/ship-prod`.
 - **Autonomous** — local CLI/SDK hygiene stubs. Cloud `/automate` is overflow.
 - **Map rule** — Any new skill, rule, agent, workflow, or automation stub must update **this file**.
 
@@ -66,9 +69,9 @@ test suite, frontend tokens, docs-to-user-stories, performance.
 | --- | --- |
 | `grill-me` | Packet of hard questions (conversational grill is an escape hatch) |
 | `implementation-plan-review` | Turn a plan into an executable contract (you trigger it) |
-| `execute-approved-plan` | Nightshift: build, ladder, 4b/4c, docs, lessons → Candidates, HANDOFF.md, decisions.tsv |
+| `execute-approved-plan` | Nightshift: build, worktree proof, 4b/4c, docs, lessons → Candidates, HANDOFF.md, decisions.tsv |
 | `project-memory` | Phase 1 load; Phase 5 scored Candidates; Phase 7 Architecture + staged harness promote ask |
-| `ship-local` | Human-triggered reliable local merge: refresh default, absorb main-ahead, auto-resolve conflicts, land feature, clean worktree (no remote push) |
+| `ship-local` | Human-triggered local merge: worktree proof is merge-ready; land feature; clean worktree (no remote push, no idle-main complete) |
 | `sync-spec-docs` | Update product acceptance / thin contracts after code changes |
 | `review-code` | Phase 4b: fix-capable maintainability review after green ladder |
 | `blast-radius` | Explicit: one proven safety fact beyond the diff (skip copy/docs) |
@@ -91,7 +94,7 @@ test suite, frontend tokens, docs-to-user-stories, performance.
 | `extract-deep-module` | One extract or collapse per run |
 | `dependency-direction-fix` | One cycle or wrong-way dependency per run |
 | `wait-what` | Re-pitch the last message in plain words |
-| `ship-prod` | Human-triggered prod delivery: local green → project ship → watch CI → fix red (+ Bugbot) → Phase 7 |
+| `ship-prod` | Human-triggered prod delivery: idle-main complete (STOP if live lease) → project ship → watch CI → fix red (+ Bugbot) → Phase 7 |
 | `review-docs` | Doc drift audit (report default) |
 | `test-harness-optimize` | Faster/less flaky tests without weaker asserts |
 
@@ -118,7 +121,7 @@ test suite, frontend tokens, docs-to-user-stories, performance.
 | `deep-modules-clean-architecture` | Code globs | Deep modules, clean boundaries |
 | `doc-routing` | On demand | Which doc to read; product story first |
 | `code-quality` | Code globs | Architecture + craft defaults |
-| `testing` | Code/test globs | Ladder SSOT, gates, bug regression |
+| `testing` | Code/test globs | Ladder SSOT: worktree proof vs idle-main complete |
 | `security-basics` | Code globs | Secrets, boundaries, least privilege |
 
 ---
@@ -127,7 +130,7 @@ test suite, frontend tokens, docs-to-user-stories, performance.
 
 | Agent | Job |
 | --- | --- |
-| `verifier` | Discover and run project typecheck/lint/tests; report only |
+| `verifier` | Discover and run worktree proof; report only |
 | Bugbot / Security Review | Built-in Cursor reviewers (Phase 4c) |
 | `ci-investigator` | Built-in: short root-cause of one failed CI check |
 | `explore` | Built-in: fast codebase map |

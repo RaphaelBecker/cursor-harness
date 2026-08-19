@@ -2,7 +2,8 @@
 name: glossary
 description: >-
   Shared plain-language definitions for harness process terms (module, prep,
-  nightshift, contract, verification ladder, and more). Use when a human or agent
+  nightshift, contract, worktree proof, idle-main complete, verification ladder,
+  and more). Use when a human or agent
   uses an ambiguous term, when writing plans or handoffs, or when aligning
   vocabulary before implementation.
 ---

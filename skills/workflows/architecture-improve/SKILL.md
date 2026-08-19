@@ -28,7 +28,8 @@ Thin orchestrator. One smell per run. Reuse existing skills.
 1. `@execute-approved-plan`
 2. Phase 3 is **only** `@extract-deep-module` or
    `@dependency-direction-fix` as the contract named.
-3. Ladder, `@review-code`, Phase 4c report-only, Phase 5 handoff.
+3. Ladder per `testing` rule, `@review-code`, Phase 4c report-only, Phase 5
+   handoff with **`## Lessons learned`**.
 4. After: human tests, then `/ship-local` / `/ship-prod`.
 
 Do not add a skill that "improves architecture" in general. Sensitive

@@ -19,7 +19,8 @@ Follow `core-principles`:
   **you** run `implementation-plan-review` → approve `.cursor/night-shift/contract.md`
 - **Nightshift:** `night-shift fire` → `execute-approved-plan` unattended (park `BLOCKED.md`,
   never wait). Local Cursor CLI — see harness `docs/runtime-policy.md`.
-- **After:** `night-shift status` + manual tests. Then `/ship-local` then `/ship-prod`
+- **After:** `night-shift status` + manual tests. Then `/ship-local` (merge-ready =
+  **worktree proof**) → one **idle-main complete** on idle local default → `/ship-prod`
 - Agents do not create or manage git worktrees except during human-triggered `/ship-local`
 - Remote push and deploy stay human-owned unless you explicitly ask via `/ship-prod`
 

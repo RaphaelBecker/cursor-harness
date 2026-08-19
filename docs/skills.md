@@ -14,11 +14,11 @@ Default install is **`core`**. Optional pack sets: `github-board`, `market-ux`, 
 | `implementation-plan-review` | Human `/implementation-plan-review` after reading the draft plan | [implementation-plan-review](../skills/implementation-plan-review/SKILL.md) |
 | `execute-approved-plan` | Nightshift after explicit contract approval | [execute-approved-plan](../skills/execute-approved-plan/SKILL.md) |
 | `project-memory` | Phase 1 load; Phase 5 Candidates; Phase 7 promote ask | [project-memory](../skills/project-memory/SKILL.md) |
-| `review-code` | Phase 4b after a green ladder | [review-code](../skills/review-code/SKILL.md) |
+| `review-code` | Phase 4b after a green worktree proof | [review-code](../skills/review-code/SKILL.md) |
 | `blast-radius` | Sensitive diff: one proven safety fact | [blast-radius](../skills/blast-radius/SKILL.md) |
 | `diagnose-bug` | Non-trivial `/bugfix` prep: tight red command | [diagnose-bug](../skills/diagnose-bug/SKILL.md) |
 | `sync-spec-docs` | Phase 5 product-story / acceptance updates | [sync-spec-docs](../skills/sync-spec-docs/SKILL.md) |
-| `ship-local` | Human `/ship-local` — local merge + current worktree cleanup | [ship-local](../skills/ship-local/SKILL.md) |
+| `ship-local` | Human `/ship-local` — land feature (merge-ready = worktree proof) | [ship-local](../skills/ship-local/SKILL.md) |
 
 ## Workflow orchestrators
 
@@ -31,7 +31,7 @@ Thin sequences. Do not duplicate their steps here.
 | `feature-delivery` | core | New feature / page | [feature-delivery](../skills/workflows/feature-delivery/SKILL.md) |
 | `bugfix` | core | Defect | [bugfix](../skills/workflows/bugfix/SKILL.md) |
 | `architecture-improve` | core | One module smell | [architecture-improve](../skills/workflows/architecture-improve/SKILL.md) |
-| `ship-prod` | core | Watched remote ship + CI fix + Phase 7 | [ship-prod](../skills/workflows/ship-prod/SKILL.md) |
+| `ship-prod` | core | Idle-main complete → watched remote ship + CI fix + Phase 7 | [ship-prod](../skills/workflows/ship-prod/SKILL.md) |
 | `batch-issue-refine` | github-board | Ready-column GitHub texts (no code) | [batch-issue-refine](../skills/workflows/batch-issue-refine/SKILL.md) |
 
 ## Optional pack skills
