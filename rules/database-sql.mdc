@@ -1,0 +1,33 @@
+---
+description: Supabase/Postgres migrations, views, RPCs, and schema-sync guardrails.
+globs: supabase/migrations/**/*.sql
+alwaysApply: false
+---
+
+# Database & SQL
+
+## Thin backend
+
+Heavy aggregations belong in SQL (views/RPCs), not application loops over raw
+rows. If a view lacks a field, propose `ALTER VIEW` / a migration rather than
+patching in app code.
+
+## Row Level Security (mandatory)
+
+Every new user-data table must `ENABLE ROW LEVEL SECURITY` and define at least
+one `CREATE POLICY`. See `verify-rls-policies`.
+
+## Migration workflow (isolated-test first)
+
+1. `supabase migration new`; never edit applied historical migrations.
+2. Validate on the project's isolated test DB (discover bootstrap from README /
+   package scripts). Never mutate personal-local as a verification step.
+3. Regenerate generated DB types from the test DB URL.
+4. Remote push requires a separate explicit user instruction.
+5. NEVER run `supabase db reset` (or the project's wipe-local equivalent) unless
+   the human explicitly asks.
+
+## Anti-drift
+
+After schema changes, refresh the project's database inventory doc if `doc-routing`
+maps one.

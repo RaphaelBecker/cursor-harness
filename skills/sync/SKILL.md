@@ -35,7 +35,10 @@ Do **not** copy a project’s domain rules, agents, MCP, plans, or one-repo scri
 | `<source>/.cursor/automations/` | `automations/` |
 | SOURCE hooks / mcp / plans | usually **SKIP** (consumer-local) |
 
-This skill runs with workspace root = **cursor-harness** (the portable pack repo).
+This skill runs with workspace root = **cursor-harness** (the portable pack repo, or
+`vendor/cursor-harness` inside a consumer). Commit only inside that git checkout.
+Never stage consumer overlays (`HARNESS.local.md`, domain rules, `mcp.json`,
+`project_memory.md`) into the harness remote.
 
 ## Activation
 
@@ -113,7 +116,7 @@ For each PORT item:
 After edits, search the portable tree (exclude `.git`, smoke temps):
 
 ```bash
-rg -i 'ratiofolio|push:main|push:docs|test:fast|test:complete|polestar|hetzner|mds-pipeline|supabase-prod|knip' \
+rg -i 'ratiofolio|push:main|push:docs|test:fast|test:complete|polestar|hetzner|mds-pipeline|supabase-prod|knip|twr|klinechart|golden ticker|uf-' \
   --glob '!.git/**' --glob '!.smoke-tmp/**' .
 ```
 

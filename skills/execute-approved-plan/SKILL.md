@@ -1,12 +1,9 @@
 ---
 name: execute-approved-plan
 description: >-
-  Autonomously executes an explicitly approved implementation contract through
-  lifecycle Phases 2-5 (code, docs, review, versioning). Local verification is
-  always agent-executable via the testing-rule ladder. Auto-activate in a
-  worktree that has an approved night-shift contract, including unattended
-  `night-shift fire` (CURSOR_HARNESS_UNATTENDED=1). Never pushes, merges,
-  deploys, or weakens a required gate. Do not create or manage git worktrees.
+  Autonomously run an approved implementation contract through Phases 2-5.
+  Auto-activate in a worktree holding an approved night-shift contract,
+  including unattended `night-shift fire`. Never push, merge, or deploy.
 ---
 
 # Execute an approved implementation contract

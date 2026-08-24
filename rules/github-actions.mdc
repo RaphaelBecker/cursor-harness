@@ -1,0 +1,19 @@
+---
+description: GitHub Actions workflow security, runtime, and deployment guardrails.
+globs: .github/workflows/**/*.{yml,yaml}
+alwaysApply: false
+---
+
+# GitHub Actions guardrails
+
+- Read the project's CI/deploy docs before changing workflow topology.
+- Prefer one workflow SSOT; split **jobs**, not extra workflow files, unless the
+  contract says otherwise.
+- Pin every external `uses:` action to a full immutable commit SHA with a
+  version comment.
+- Least-privilege `permissions`. Non-cancelling production concurrency.
+- Do not cache `node_modules`, secrets, env files, database state, or reports.
+- Fail-closed path classification: docs/rules-only must not deploy.
+- Never parallelize tests that share mutable golden data or one test database.
+- Deploy remains human-owned unless the project already automates it.
+- Use `review-github-actions` for non-trivial audits.

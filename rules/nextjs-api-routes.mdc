@@ -1,0 +1,30 @@
+---
+description: Next.js App Router route handlers and server actions conventions.
+globs: src/app/**/route.ts
+alwaysApply: false
+---
+
+# Next.js route handlers
+
+## Return types
+
+Every handler needs an explicit return type (`NextResponse` or `Response`).
+Never return `null` or implicit `undefined` on error paths. Use explicit
+`NextResponse.json(...)` (or equivalent).
+
+## Thin backend
+
+Validate input, call a query/RPC/service, shape the response. Do not implement
+heavy domain math in the handler; read pre-aggregated views when they exist.
+
+## External vendors
+
+Do not call paid/external vendor HTTP APIs from route handlers when the project
+already ingests that data into the DB. Read local tables. Enqueue ingest on
+cache miss via the project's documented RPC — do not duplicate eligibility
+logic across routes.
+
+## Secrets
+
+Server-only secrets never leak to the client. Admin/service-role clients stay
+in server contexts.

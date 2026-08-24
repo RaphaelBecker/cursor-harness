@@ -1,13 +1,9 @@
 ---
 name: review-code
 description: >-
-  Diff-scoped self code review against expert engineering principles (SOLID,
-  DRY, KISS, YAGNI, cohesion/coupling, fail-fast, performance and security
-  hygiene). Runs as Phase 4b of the lifecycle after the verification ladder is
-  green and before Phase 5 documentation. Applies behavior-preserving fixes plus
-  red-first corrections expressly covered by an approved implementation contract;
-  out-of-scope behavior findings are reported. Independent bug/security pass is
-  Phase 4c via /review-bugbot and /review-security (report only).
+  Phase 4b diff-scoped code review (SOLID, DRY, KISS, YAGNI, coupling,
+  fail-fast, security hygiene) after the verification ladder is green and
+  before Phase 5 docs. Fixes within contract scope; reports the rest.
 ---
 
 # Code review (Phase 4b — post-green, pre-docs)

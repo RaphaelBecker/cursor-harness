@@ -1,0 +1,31 @@
+---
+description: TypeScript + React conventions for Next.js App Router apps.
+globs: src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# TypeScript & React
+
+## Separation of concerns
+
+- Business logic lives in hooks (`use*`) or service/lib modules, never inside
+  presentational components.
+- Presentational components receive data and handlers via props. They own no
+  fetching, no API calls, and no domain computation.
+- A file that mixes JSX with data orchestration is a refactor target: extract
+  `use<Feature>` and pass results down.
+
+## Data fetching
+
+- Fetch at the page or feature-container level. Prefer one server fetch (RSC)
+  or one aggregating API response over sequential client waterfalls.
+- Do not compute heavy aggregations in JS/TS loops over raw rows when a SQL
+  view exists (`database-sql` if the `supabase` pack is installed).
+
+## Types
+
+- Strict TS; no implicit `any`. Prefer generated DB types when present.
+- Run the project's typecheck after non-trivial edits.
+
+Marketing / static landing routes may opt out of data-fetching rules — keep
+them static and provider-free. Brand copy stays in consumer overlay rules.

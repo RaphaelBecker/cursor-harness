@@ -1,5 +1,6 @@
 ---
 name: implementation-plan-review
+disable-model-invocation: true
 description: >-
   Critically evaluate a user-provided implementation plan (UX, performance, KISS,
   YAGNI, modularity, scalability, maintainability, architectural reuse, lifecycle

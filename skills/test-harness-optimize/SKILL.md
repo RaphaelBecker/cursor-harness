@@ -1,5 +1,6 @@
 ---
 name: test-harness-optimize
+disable-model-invocation: true
 description: >-
   Improve test speed, flake resistance, or coverage without weakening assertions.
   Use for suite tuning, flake hardening, or coverage gaps. Never “fix” tests by

@@ -1,5 +1,6 @@
 ---
 name: night-shift
+disable-model-invocation: true
 description: >-
   Fire and status for unattended Nightshift execute in existing human-created
   Cursor worktrees. Use when the developer wants to launch, check, or read the

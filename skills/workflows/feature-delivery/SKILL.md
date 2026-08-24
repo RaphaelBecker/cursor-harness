@@ -1,5 +1,6 @@
 ---
 name: feature-delivery
+disable-model-invocation: true
 description: >-
   Prep-then-Nightshift spine for a new feature or page in a human-created Cursor
   worktree. Use during /prep when packing several trees, or for one tree.

@@ -39,7 +39,19 @@ docs:
   routing: .cursor/rules/doc-routing.local.mdc
 memory: project_memory.md
 
-# core is always installed. Add github-board, market-ux, bdd as needed.
+# Optional exclusive lock for /ship-local (one land at a time). The command
+# must accept acquire / release. If omitted, ship-local uses `.cursor/ship-local.lock`.
+# ship:
+#   lock: ./scripts/ship-local-lock.sh
+
+# Optional afterFileEdit autofix — copy templates/hooks/autofix.example.sh to
+# `.cursor/hooks/autofix.sh` (consumer-owned; install preserves project hooks).
+# autofix:
+#   js: npx eslint --fix
+#   py: ruff format
+
+# core is always installed. Optional: github-board, market-ux, bdd, vitest,
+# playwright, supabase, nextjs, github-actions, quality-audit.
 packs:
   - core
 

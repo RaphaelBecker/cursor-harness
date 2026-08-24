@@ -5,6 +5,7 @@ and automation stubs. Cursor is the current coding platform.
 
 - Project interface: `harness.project.yaml` (required)
 - Inventory: `.cursor/HARNESS.md` (type `/help` for a cheat sheet; `/glossary` for terms)
+- Domain overlay: `.cursor/HARNESS.local.md` when present (read after the portable map)
 - Rules: `.cursor/rules/`
 - Skills: `.cursor/skills/` (including `workflows/`)
 - Agents: `.cursor/agents/`
@@ -50,10 +51,13 @@ Thin orchestrators: `/prep`, `/night-shift`, `/feature-delivery`, `/bugfix`,
 Copy `templates/harness.project.yaml` to the repo root first. Add local rules under
 `.cursor/rules/` with names that do **not** collide with harness-managed files.
 Copy `templates/project_memory.example.md` to root `project_memory.md` when you want
-the memory overlay. Optional packs: `github-board`, `market-ux`, `bdd`
-(`install.sh --packs core,github-board`).
+the memory overlay. Copy `templates/HARNESS.local.example.md` to `.cursor/HARNESS.local.md`
+for domain inventory. Optional packs: `github-board`, `market-ux`, `bdd`, `vitest`,
+`playwright`, `supabase`, `nextjs`, `github-actions`, `quality-audit`.
 
 Domain agents, MCP servers, and stack-specific autofix hooks belong in this project —
-not in the portable harness pack.
+not in the portable harness pack. Autofix template: `templates/hooks/autofix.example.sh`.
 
-Update the harness submodule, then re-run `./vendor/cursor-harness/install.sh --target .`.
+Preferred: gitignored clone at `vendor/cursor-harness/` (consumer git never tracks harness
+file contents). Optional: tracked git submodule. After clone/update, re-run
+`./vendor/cursor-harness/install.sh --target .`.

@@ -1,5 +1,6 @@
 ---
 name: prep
+disable-model-invocation: true
 description: >-
   Short workpack preparation (about 2h max, anytime): decision packets with
   recommended answers, contracts in human-created Cursor worktrees, then ready

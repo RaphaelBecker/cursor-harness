@@ -49,7 +49,8 @@ May open a **draft PR** only when changes stay inside:
 | 2–3×/week | Dead-code hygiene | Draft PR only proven unused + green targeted tests |
 | Weekly | Security scan | Report only |
 | Weekly | Spec acceptance drift | Report: recent code vs routed acceptance docs |
-| Weekly | Harness + doc-routing integrity | Report: skills/rules not in HARNESS; dead routed paths |
+| Weekly | Harness + doc-routing integrity | Report: skills/rules not in HARNESS; dead routed paths; resident-context budget |
+| Weekly | Codebase / architecture health | Report: hotspots + layer leaks (`quality-audit`) |
 
 **Activate first (human):** Daily test health → Lint hygiene → CI failure triage.
 
@@ -135,6 +136,9 @@ Steps:
 - **Output:** **report only**
 - **Prompt idea:** Check skills/rules/agents/workflows against `.cursor/HARNESS.md`;
   flag dead routed paths in `doc-routing` (+ local overrides); no auto edits.
+- **Also report resident-context budget** here when the project ships a budget command —
+  this job owns that metric, so do not add a second audit path for it. Report the total,
+  any unexpected `alwaysApply: true` rule, and any routing keyword that went missing.
 
 ### 7) CI failure triage
 
@@ -142,6 +146,15 @@ Steps:
 - **Output:** diagnose; draft PR only for flake/test allowlist fixes
 - **Prompt idea:** Prefer `gh run rerun --failed` for pure flakes; fix real failures with
   evidence; never weaken gates.
+
+---
+
+### 8) Codebase / architecture health
+
+- **Trigger:** cron weekly
+- **Output:** **report only**
+- **Prompt idea:** Follow `.cursor/skills/workflows/codebase-health-audit/SKILL.md`.
+  Hotspots + module-boundary leaks. No auto fixes. `quality-audit` pack.
 
 ---
 

@@ -1,5 +1,6 @@
 ---
 name: ship-local
+disable-model-invocation: true
 description: >-
   Human-triggered local ship that owns the git merge workflow: commit feature work,
   bring local default branch up to date, integrate main-ahead into the feature branch,
@@ -48,16 +49,42 @@ and ask if the tree has contract-irrelevant dirt.
    (this skill does not invent lessons).
 3. Feature worktree path, feature branch name, and primary default-branch root are known.
 4. No unrelated dirty/staged files on feature or default-branch checkouts.
-5. **Blast radius:** if the landed allowlist touches shared modules, lifecycle,
+5. **Exclusive lock (mandatory, one `/ship-local` at a time).** Parallel worktrees
+   must not land on local default together — merge conflicts become unresolvable.
+   Before touching the default branch (protocol step 2), acquire the lock (see
+   **Exclusive lock** below). If acquire fails → **STOP**. Do not merge, do not
+   resolve, do not remove a worktree. Tell the human who holds the lock and to
+   retry after that land finishes.
+6. **Blast radius:** if the landed allowlist touches shared modules, lifecycle,
    money, auth, or wire formats, the handoff must contain `## Blast radius`
    with a safety fact at trust-ladder step 4 (ran it) or labeled **unproven**.
    If that block is missing, run `@blast-radius` and write it **before**
    merging. Skip copy-only and docs-only lands.
 
+## Exclusive lock
+
+Serialize all `/ship-local` runs onto one local default branch.
+
+1. If `harness.project.yaml` sets `ship.lock`, run that command with `acquire`,
+   then later `release`. Example: `./scripts/ship-local-lock.sh acquire`.
+2. If `ship.lock` is omitted, use the portable lockfile:
+   - Acquire: create `.cursor/ship-local.lock` containing `pid\tbranch\tworktree\tiso-ts`.
+     `mkdir` the parent if needed. If the file exists, read it. If the holder
+     worktree is gone, or the timestamp is older than 30 minutes, replace it
+     (stale). Otherwise **STOP** and report the holder branch.
+   - Release: delete `.cursor/ship-local.lock` only if this run created or owns it.
+     Never delete another worktree’s live lock.
+3. Acquire **before** protocol step 2 (refresh local default). Release only after
+   cleanup succeeds, or after a hard stop this run caused while holding the lock.
+
 ## Reliable merge protocol (do in order)
 
 Record SHAs at each step in the handoff. Use the project's default branch name
 (`main` or `master`).
+
+### 0) Acquire exclusive lock
+
+Run the lock acquire from **Exclusive lock**. Stop if it fails.
 
 ### 1) Commit feature tip
 
@@ -124,7 +151,8 @@ Only after step 5 succeeds:
 1. `git worktree remove` for **this** feature worktree only.
 2. Delete the merged local feature branch with `git branch -d` (not `-D` unless the
    human explicitly confirms).
-3. Leave the agent on the primary default-branch checkout.
+3. Release the exclusive lock (see **Exclusive lock**).
+4. Leave the agent on the primary default-branch checkout.
 
 ### 7) Handoff
 
@@ -132,6 +160,7 @@ Only after step 5 succeeds:
 - Whether `origin/<default>` was FF’d into local default
 - Conflicts resolved (file list + one-line how) or “none”
 - Worktree removed / branch deleted
+- Lock released (command or `.cursor/ship-local.lock`)
 - Echo **Cycle status** from `project_memory.md`
 - Next human step: `/ship-prod` (owns the one idle-main complete, then watched
   deliver), or project push/deploy scripts if they drive remote themselves

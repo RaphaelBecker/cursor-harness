@@ -31,5 +31,13 @@ implementations must adhere to John Ousterhout's principles from
 - **Self-contained files:** One responsibility per module, with a clear predictable boundary.
 - **Type safety:** Strict, explicit types (or language equivalents) on module inputs, outputs,
   and interfaces. No loose untyped boundaries at architectural seams.
+- **Illegal states:** Make them unrepresentable (discriminated unions, required fields,
+  parse at the edge). Design signatures so the failure cannot occur; fail explicitly
+  when it still can.
+- **Error translation:** Translate at the owning layer. Domain and UI never see
+  driver errors, vendor payloads, or stack traces. Do not swallow; log at the owner;
+  callers get a typed empty/error fallback.
+- **Interface tests:** New behavior must be unit-testable at the module interface
+  without mocking the whole app.
 - **Incremental refactoring:** When changing complex code, do not rewrite the whole file
   unless necessary. Isolate tangled logic into deep, testable components.

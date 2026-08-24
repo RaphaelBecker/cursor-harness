@@ -1,12 +1,9 @@
 ---
 name: project-memory
 description: >-
-  Loads domain-relevant Architecture tips and scored Candidates from
-  project_memory.md in Phase 1; writes Candidates + cycle status in Phase 5;
-  consolidates soft Architecture and proposes staged harness promotions in
-  Phase 7 after watched-green remote ship. Auto-activate on Phase 1 planning,
-  plan review, Phase 5 candidate write, or post-CI Phase 7. Never treat memory
-  as authoritative over code, canonical docs, or harness rules.
+  Bounded `project_memory.md` overlay: Phase 1 load, Phase 5 Candidates +
+  cycle status, Phase 7 promote after green remote ship. Auto-activate on
+  planning, plan review, Phase 5, or Phase 7. Never overrides code or docs.
 ---
 
 # Project memory

@@ -4,7 +4,8 @@ Playbooks the agent follows. Installed to `.cursor/skills/` (workflows under
 `skills/workflows/`). Procedure lives in each `SKILL.md` — this page is a catalog.
 How they chain: [README workflows](../README.md#workflows).
 
-Default install is **`core`**. Optional pack sets: `github-board`, `market-ux`, `bdd`.
+Default install is **`core`**. Optional pack sets: `github-board`, `market-ux`, `bdd`,
+`vitest`, `playwright`, `supabase`, `nextjs`, `github-actions`, `quality-audit`.
 
 ## Spine (prep / nightshift / ship)
 
@@ -33,6 +34,7 @@ Thin sequences. Do not duplicate their steps here.
 | `architecture-improve` | core | One module smell | [architecture-improve](../skills/workflows/architecture-improve/SKILL.md) |
 | `ship-prod` | core | Idle-main complete → watched remote ship + CI fix + Phase 7 | [ship-prod](../skills/workflows/ship-prod/SKILL.md) |
 | `batch-issue-refine` | github-board | Ready-column GitHub texts (no code) | [batch-issue-refine](../skills/workflows/batch-issue-refine/SKILL.md) |
+| `codebase-health-audit` | quality-audit | Whole-repo health scorecard | [codebase-health-audit](../skills/workflows/codebase-health-audit/SKILL.md) |
 
 ## Optional pack skills
 
@@ -44,6 +46,22 @@ Thin sequences. Do not duplicate their steps here.
 | `market-ux-strategy` | market-ux | Feature-only: competitors, minimal UX, edge | [market-ux-strategy](../skills/market-ux-strategy/SKILL.md) |
 | `value-validator` | market-ux | Feature-only: `PROCEED` / `PRUNE` / `DISCARD` | [value-validator](../skills/value-validator/SKILL.md) |
 | `generate-bdd-test-spec` | bdd | Write Given/When/Then before feature tests | [generate-bdd-test-spec](../skills/generate-bdd-test-spec/SKILL.md) |
+| `generate-vitest-test` | vitest | Scaffold Vitest matching project globs | [generate-vitest-test](../skills/generate-vitest-test/SKILL.md) |
+| `implement-unit-tests` | vitest | Implement unit/UI from BDD or bug contract | [implement-unit-tests](../skills/implement-unit-tests/SKILL.md) |
+| `implement-e2e-tests` | playwright | Playwright user-journey craft | [implement-e2e-tests](../skills/implement-e2e-tests/SKILL.md) |
+| `e2e-single-test-triage` | playwright | Interactive one-failure E2E review | [e2e-single-test-triage](../skills/e2e-single-test-triage/SKILL.md) |
+| `fix-flaky-test` | playwright | Isolation vs suite flake protocol | [fix-flaky-test](../skills/fix-flaky-test/SKILL.md) |
+| `add-supabase-migration` | supabase | Migration + RLS + types | [add-supabase-migration](../skills/add-supabase-migration/SKILL.md) |
+| `regen-db-types` | supabase | Regen TS types from test schema | [regen-db-types](../skills/regen-db-types/SKILL.md) |
+| `verify-rls-policies` | supabase | Static RLS coverage | [verify-rls-policies](../skills/verify-rls-policies/SKILL.md) |
+| `inspect-db-schema` | supabase | Read-only schema inspect | [inspect-db-schema](../skills/inspect-db-schema/SKILL.md) |
+| `review-database` | supabase | Schema / thin-backend review | [review-database](../skills/review-database/SKILL.md) |
+| `review-sql-performance` | supabase | Faster SQL, identical results | [review-sql-performance](../skills/review-sql-performance/SKILL.md) |
+| `review-performance` | nextjs | App runtime perf | [review-performance](../skills/review-performance/SKILL.md) |
+| `review-github-actions` | github-actions | CI workflow audit | [review-github-actions](../skills/review-github-actions/SKILL.md) |
+| `audit-hotspots` | quality-audit | Git churn × size | [audit-hotspots](../skills/audit-hotspots/SKILL.md) |
+| `audit-module-boundaries` | quality-audit | Import graph vs layering | [audit-module-boundaries](../skills/audit-module-boundaries/SKILL.md) |
+| `codebase-health-audit` | quality-audit | Whole-repo scorecard | [codebase-health-audit](../skills/workflows/codebase-health-audit/SKILL.md) |
 
 ## Meta / helpers
 

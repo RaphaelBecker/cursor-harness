@@ -27,9 +27,9 @@ Inspired by:
 - [Dexter Horthy — 12-Factor Agents](https://github.com/humanlayer/12-factor-agents)
 
 ```bash
-git submodule add git@github.com:RaphaelBecker/cursor-harness.git vendor/cursor-harness
-cp vendor/cursor-harness/templates/harness.project.yaml harness.project.yaml
-./vendor/cursor-harness/install.sh --target . --mode symlink --with-agents
+git clone git@github.com:RaphaelBecker/cursor-harness.git vendor/cursor-harness
+echo 'vendor/cursor-harness' >> .gitignore
+./vendor/cursor-harness/install.sh --target . --init --mode symlink --with-agents
 ```
 
 Flags and troubleshooting: [docs/install.md](docs/install.md). Product policy stays in
@@ -929,13 +929,14 @@ measurement. No “optimize everything we saw.” Ship still `/ship-local` then
 Full flags, clone, CI, troubleshooting: [docs/install.md](docs/install.md).
 
 ```bash
-git submodule add git@github.com:RaphaelBecker/cursor-harness.git vendor/cursor-harness
-cp vendor/cursor-harness/templates/harness.project.yaml harness.project.yaml
-./vendor/cursor-harness/install.sh --target . --mode symlink --with-agents
+git clone git@github.com:RaphaelBecker/cursor-harness.git vendor/cursor-harness
+echo 'vendor/cursor-harness' >> .gitignore
+./vendor/cursor-harness/install.sh --target . --init --mode symlink --with-agents
 ```
 
-Requires `bash`, `python3` (stdlib), and `git`. Default packs: `core`. Add
-`--packs core,github-board,market-ux,bdd` when you want those optional sets.
+Requires `bash`, `python3` (stdlib), and `git`. Default packs: `core`. Add more
+names under `packs:` in `harness.project.yaml` (or `--packs all`). Preferred
+layout: gitignored vendor clone. Submodule alternative: [docs/install.md](docs/install.md).
 
 ## Layout
 

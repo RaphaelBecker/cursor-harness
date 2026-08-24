@@ -1,5 +1,6 @@
 ---
 name: ship-prod
+disable-model-invocation: true
 description: >-
   Human-triggered production delivery of clean local default branch: verify local
   green, run the project's documented push/deploy path, watch CI, fix red runs

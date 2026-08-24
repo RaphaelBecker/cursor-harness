@@ -5,6 +5,9 @@
 | Agent | Job | File |
 | --- | --- | --- |
 | `verifier` | Discover and run worktree proof (types + listed suites); **report only** | [verifier.md](../agents/verifier.md) |
+| `architecture-health-auditor` | Hotspots + boundary leaks; **report only** (`quality-audit`) | [architecture-health-auditor.md](../agents/architecture-health-auditor.md) |
+| `supabase-architect` | SQL/RLS/view design; **report only** (`supabase`) | [supabase-architect.md](../agents/supabase-architect.md) |
+| `db-schema-auditor` | Dead/orphan DB objects; **report only** (`supabase`) | [db-schema-auditor.md](../agents/db-schema-auditor.md) |
 
 Installed to `.cursor/agents/` when listed in `manifest.yaml`. Readonly. Does not edit code.
 

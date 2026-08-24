@@ -57,3 +57,44 @@ pack_sets:
   bdd:
     skills:
       - generate-bdd-test-spec
+  vitest:
+    skills:
+      - generate-vitest-test
+      - implement-unit-tests
+  playwright:
+    skills:
+      - implement-e2e-tests
+      - e2e-single-test-triage
+      - fix-flaky-test
+  supabase:
+    rules:
+      - database-sql.mdc
+    skills:
+      - add-supabase-migration
+      - regen-db-types
+      - verify-rls-policies
+      - inspect-db-schema
+      - review-database
+      - review-sql-performance
+    agents:
+      - supabase-architect.md
+      - db-schema-auditor.md
+  nextjs:
+    rules:
+      - typescript-react.mdc
+      - nextjs-api-routes.mdc
+    skills:
+      - review-performance
+  github-actions:
+    rules:
+      - github-actions.mdc
+    skills:
+      - review-github-actions
+  quality-audit:
+    skills:
+      - audit-hotspots
+      - audit-module-boundaries
+      - workflows/codebase-health-audit
+    agents:
+      - architecture-health-auditor.md
+

@@ -14,4 +14,9 @@ keyed by `command` path; project hooks are kept). Merge policy:
 `guard-destructive-shell` is `failClosed: true`. Scripts need `python3` on `PATH` in
 the developer environment.
 
+Consumer-owned `afterFileEdit` autofix is **not** installed by the harness. Copy
+[templates/hooks/autofix.example.sh](../templates/hooks/autofix.example.sh) and add
+an `afterFileEdit` entry in project `hooks.json`. Install merges by `command` path
+and leaves that entry alone.
+
 How to add one: [CONTRIBUTING.md](../CONTRIBUTING.md#add-a-hook).

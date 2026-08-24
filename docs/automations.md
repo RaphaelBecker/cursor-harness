@@ -32,6 +32,7 @@ Prefer `project_memory.md` over cloud Automations `MEMORIES.md`.
 | Security scan | Weekly | Report only |
 | Spec acceptance drift | Weekly | Report only |
 | Harness + doc-routing integrity | Weekly | Report only |
+| Codebase / architecture health | Weekly | Report only (`quality-audit` pack) |
 
 Activate first: daily test health → lint hygiene → CI failure triage.
 

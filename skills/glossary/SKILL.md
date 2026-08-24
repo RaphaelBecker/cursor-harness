@@ -1,5 +1,6 @@
 ---
 name: glossary
+disable-model-invocation: true
 description: >-
   Shared plain-language definitions for harness process terms (module, prep,
   nightshift, contract, worktree proof, idle-main complete, verification ladder,

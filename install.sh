@@ -13,7 +13,7 @@ Options:
   --target <path>     Project root to install into (default: auto-detect)
   --mode <symlink|copy>
                       Install mode (default: symlink, or manifest defaults.mode)
-  --packs <list>      Comma-separated pack sets: core,github-board,market-ux,bdd
+  --packs <list>      Comma-separated pack sets from manifest.yaml pack_sets,
                       or all. Default: packs from harness.project.yaml, else core
   --init              Copy templates/harness.project.yaml if the target has none
   --check             Validate harness.project.yaml and exit (no install)
@@ -24,9 +24,10 @@ Options:
   -h, --help          Show this help
 
 Examples:
-  ./vendor/cursor-harness/install.sh --target . --init
+  git clone git@github.com:RaphaelBecker/cursor-harness.git vendor/cursor-harness
+  echo 'vendor/cursor-harness' >> .gitignore
+  ./vendor/cursor-harness/install.sh --target . --init --mode symlink --with-agents
   ./vendor/cursor-harness/install.sh --target . --packs core,github-board --check
-  ./vendor/cursor-harness/install.sh --target . --mode copy --with-agents
 EOF
 }
 
@@ -271,8 +272,26 @@ for agent in "${AGENTS[@]:-}"; do
   install_path "${HARNESS_ROOT}/agents/${agent}" "${CURSOR_DIR}/agents/${agent}" file
 done
 
+AUTOMATION_REL_PATHS=()
 if [[ "${AUTOMATIONS_ENABLED}" -eq 1 ]]; then
-  install_path "${HARNESS_ROOT}/automations" "${CURSOR_DIR}/automations" dir
+  # File-wise so the consumer can add extra stubs beside harness files.
+  # A leftover directory symlink would write into the harness tree — replace it.
+  auto_dest="${CURSOR_DIR}/automations"
+  if [[ -L "$auto_dest" ]]; then
+    if [[ "$DRY_RUN" -eq 1 ]]; then
+      log "DRY-RUN: rm directory symlink $auto_dest"
+    else
+      rm "$auto_dest"
+      log "replaced automations directory symlink with a real directory"
+    fi
+  fi
+  ensure_dir "$auto_dest"
+  while IFS= read -r -d '' auto_src; do
+    rel="${auto_src#"${HARNESS_ROOT}/automations/"}"
+    [[ -z "$rel" || "$rel" == "$auto_src" ]] && continue
+    AUTOMATION_REL_PATHS+=("automations/${rel}")
+    install_path "$auto_src" "${auto_dest}/${rel}" file
+  done < <(find "${HARNESS_ROOT}/automations" -type f -print0 2>/dev/null || true)
 fi
 
 if [[ "${HOOKS_ENABLED}" -eq 1 ]]; then
@@ -343,6 +362,79 @@ dest_path.write_text(json.dumps(project, indent=2) + "\n", encoding="utf-8")
 print(f"merged hooks: {dest_path}")
 PY
   fi
+fi
+
+# Managed .cursor/.gitignore: harness paths (recreated by install). Overlays stay
+# committable: *.local.mdc, HARNESS.local.md, mcp.json, plans/, extra skills, hooks.json.
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  log "DRY-RUN: write managed block in ${CURSOR_DIR}/.gitignore"
+else
+  GITIGNORE_PATHS=("HARNESS.md")
+  for rule in "${RULES[@]:-}"; do
+    [[ -z "${rule:-}" ]] && continue
+    GITIGNORE_PATHS+=("rules/${rule}")
+  done
+  for skill in "${SKILLS[@]:-}"; do
+    [[ -z "${skill:-}" ]] && continue
+    GITIGNORE_PATHS+=("skills/${skill}")
+  done
+  for agent in "${AGENTS[@]:-}"; do
+    [[ -z "${agent:-}" ]] && continue
+    GITIGNORE_PATHS+=("agents/${agent}")
+  done
+  for rel in "${AUTOMATION_REL_PATHS[@]:-}"; do
+    [[ -z "${rel:-}" ]] && continue
+    GITIGNORE_PATHS+=("$rel")
+  done
+  if [[ "${HOOKS_ENABLED}" -eq 1 ]]; then
+    while IFS= read -r -d '' script; do
+      GITIGNORE_PATHS+=("hooks/$(basename "$script")")
+    done < <(find "${HARNESS_ROOT}/hooks/scripts" -type f -print0 2>/dev/null || true)
+  fi
+  python3 - "${CURSOR_DIR}/.gitignore" "${GITIGNORE_PATHS[@]}" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+BEGIN = "# BEGIN cursor-harness managed"
+END = "# END cursor-harness managed"
+HEADER = (
+    "# Paths materialized by cursor-harness install.sh. Recreated on every install.\n"
+    "# Do not edit inside the markers. Project overlays (*.local.mdc, HARNESS.local.md,\n"
+    "# mcp.json, plans/, extra skills, merged hooks.json) stay outside this block.\n"
+)
+dest = Path(sys.argv[1])
+paths = sys.argv[2:]
+seen: set[str] = set()
+lines = [BEGIN, HEADER.rstrip()]
+for p in paths:
+    if p in seen:
+        continue
+    seen.add(p)
+    lines.append(p)
+lines.append(END)
+block = "\n".join(lines) + "\n"
+
+if dest.exists():
+    text = dest.read_text(encoding="utf-8")
+    if BEGIN in text and END in text:
+        dest.write_text(
+            re.sub(
+                re.escape(BEGIN) + r".*?" + re.escape(END) + r"\n?",
+                block,
+                text,
+                count=1,
+                flags=re.S,
+            ),
+            encoding="utf-8",
+        )
+    else:
+        dest.write_text(text.rstrip() + "\n\n" + block, encoding="utf-8")
+else:
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(block, encoding="utf-8")
+print(f"wrote managed gitignore: {dest}")
+PY
 fi
 
 if [[ "$WITH_AGENTS" -eq 1 ]]; then

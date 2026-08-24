@@ -150,10 +150,16 @@ Do **not** edit harness-managed filenames in the consumer repo if they are symli
 - Add a project-owned rule such as `.cursor/rules/my-app-local.mdc`
 - Or copy from `templates/local-override.example.mdc`
 - Extend doc maps via `templates/doc-routing.local.example.mdc`
+- Domain inventory via `templates/HARNESS.local.example.md` → `.cursor/HARNESS.local.md`
 - Seed memory via `templates/project_memory.example.md` → root `project_memory.md`
 - Copy `templates/batch-issue-refine.local.example.md` → `.cursor/batch-issue-refine.local.md` for Ready-column project number, column name, and notes path
-- Add domain agents/MCP/autofix under the consumer `.cursor/` (non-colliding names)
-- Optionally append local rows to a project-owned harness note; do not rewrite portable `HARNESS.md` content in place if it is a symlink — prefer a local companion doc or override
+- Add domain agents/MCP/autofix under the consumer `.cursor/` (non-colliding names). Autofix template: `templates/hooks/autofix.example.sh`
+- Do not rewrite portable `HARNESS.md` if it is a symlink
+
+When the workspace is a **consumer** with `vendor/cursor-harness`, commit harness edits
+**only** inside that clone (its own git). Never `git add` consumer overlays into the
+harness remote. `/sync` still runs with workspace root = the portable pack (the vendor
+checkout or the standalone cursor-harness repo).
 
 ## Checklist before opening a PR
 

@@ -19,8 +19,8 @@ Paste this content (keep it compact):
 ## Cursor harness — cheat sheet
 
 **Harness** = skills + rules + subagents + hooks + automations + workflows + plans.  
-**Map:** [`.cursor/HARNESS.md`](../../HARNESS.md) · **Terms:** `/glossary`  
-**Project file:** `harness.project.yaml`
+**Map:** [`.cursor/HARNESS.md`](../../HARNESS.md) · **Domain overlay:** `.cursor/HARNESS.local.md` when present  
+**Terms:** `/glossary` · **Project file:** `harness.project.yaml`
 
 **Context tax:** Always-on = `core-principles` + `developer-communication`. Prep
 loads `prep` → memory slice → packet `grill-me` → **one** routed doc.
@@ -59,7 +59,7 @@ loads `prep` → memory slice → packet `grill-me` → **one** routed doc.
 - Product story first → then code → thin contracts only for high-risk seams.
 - Feature tree: **worktree proof**. Idle local main after lands: **idle-main complete**.
 - Unattended hard stop = `.cursor/night-shift/BLOCKED.md`, not a ping.
-- Change a skill/rule/agent/workflow/automation → update `.cursor/HARNESS.md` same change.
+- Change a skill/rule/agent/workflow/automation → update `.cursor/HARNESS.md` same change (domain extras → `.cursor/HARNESS.local.md`).
 
 ---
 

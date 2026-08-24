@@ -1,5 +1,6 @@
 ---
 name: grill-me
+disable-model-invocation: true
 description: >-
   Produce a zero-open-question foundation for an implementation contract.
   Default is packet mode (all material questions at once with recommended

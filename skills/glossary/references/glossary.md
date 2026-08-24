@@ -22,6 +22,7 @@ lives in the consumer project.
 | **Deny list** | Areas auto agents must not change (auth, billing, secrets, migrations, …). |
 | **Harness** (Cursor Harness) | The whole agent framework: **skills**, **rules**, **subagents/agents**, **hooks**, **automations**, **workflows**, and **plans**. |
 | **HARNESS.md** | `.cursor/HARNESS.md` — short inventory map of what exists in the harness. |
+| **HARNESS.local.md** | Consumer-only domain inventory. Read after portable `HARNESS.md` when present. |
 | **Workflow** | Named sequence of skills/agents for a job (feature, bug, audit, ship). |
 | **HIL checkpoint** | Hard stop during **prep**: the human must say yes. Nightshift does not wait. |
 | **Batch issue refine** | Optional `github-board` workflow (`/batch-issue-refine`): Ready-column GitHub texts. No implementation. |
@@ -48,4 +49,5 @@ lives in the consumer project.
 | **Tight red loop** | One named command already run that goes red on this bug. Required before hypothesising. |
 | **harness.project.yaml** | Required consumer interface (issue source, tests, optional slots, packs). |
 | **Ship prod** | `/ship-prod` — human-triggered watched remote ship + CI fix + Phase 7. |
+| **Exclusive lock** | One `/ship-local` at a time. `ship.lock` in YAML, or `.cursor/ship-local.lock`. |
 | **Project memory** | Root `project_memory.md` summary: Architecture tips + scored Candidates (`help_count`). Not stronger than code or docs. |

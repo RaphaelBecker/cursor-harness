@@ -1,5 +1,6 @@
 ---
 name: create-workflow
+disable-model-invocation: true
 description: >-
   Guided authoring of a new Prep/Nightshift/Autonomous workflow. Use when the
   developer asks to create a workflow, add a process skill sequence, or wire

@@ -7,28 +7,77 @@ Interface: [templates/harness.project.yaml](../templates/harness.project.yaml).
 
 - `bash`
 - `python3` (stdlib only)
-- `git` (submodule workflow)
+- `git`
 - Cursor CLI `agent` on PATH for `night-shift fire` (not required merely to install)
 
-## Submodule install
+## Gitignored vendor clone (preferred)
+
+Consumer git never tracks harness file contents. Skills/rules still load because Cursor
+reads the filesystem (resolved symlinks under `.cursor/`), not git.
 
 ```bash
 # from the consumer project root
-git submodule add git@github.com:RaphaelBecker/cursor-harness.git vendor/cursor-harness
-cp vendor/cursor-harness/templates/harness.project.yaml harness.project.yaml
-# edit issue_source / packs as needed
-./vendor/cursor-harness/install.sh --target . --mode symlink --with-agents
-git add .gitmodules vendor/cursor-harness .cursor AGENTS.md harness.project.yaml
-git commit -m "Add cursor-harness"
+git clone git@github.com:RaphaelBecker/cursor-harness.git vendor/cursor-harness
+echo 'vendor/cursor-harness' >> .gitignore
+./vendor/cursor-harness/install.sh --target . --init --mode symlink --with-agents
+```
+
+Edit `harness.project.yaml` (`issue_source`, `packs`, test commands). Commit the YAML,
+`AGENTS.md` if created, overlay files (`*.local.mdc`, `HARNESS.local.md`, domain skills),
+and `.cursor/.gitignore` (managed block is written by install). Do **not** commit
+`vendor/cursor-harness/`.
+
+HTTPS remote alternative:
+
+```bash
+git clone https://github.com/RaphaelBecker/cursor-harness.git vendor/cursor-harness
 ```
 
 `--init` copies the YAML if missing. Install **fails closed** without a valid
 `harness.project.yaml` (unless `--no-check`).
 
-HTTPS remote alternative:
+### Fresh clone of a consumer that gitignores the vendor
 
 ```bash
-git submodule add https://github.com/RaphaelBecker/cursor-harness.git vendor/cursor-harness
+git clone <your-project-url>
+git clone git@github.com:RaphaelBecker/cursor-harness.git vendor/cursor-harness
+./vendor/cursor-harness/install.sh --target .
+```
+
+Until bootstrap, harness-managed `.cursor/` paths may be missing or dangling. That is
+expected.
+
+### Update the harness
+
+```bash
+git -C vendor/cursor-harness pull
+./vendor/cursor-harness/install.sh --target .
+```
+
+Commit harness changes **inside** `vendor/cursor-harness` (its own git). Never
+`git add` consumer overlays into the harness remote.
+
+## Tracked submodule (optional)
+
+Pins a harness SHA in the consumer repo. Use when other clones must get the vendor
+via `--recurse-submodules`.
+
+```bash
+git submodule add git@github.com:RaphaelBecker/cursor-harness.git vendor/cursor-harness
+cp vendor/cursor-harness/templates/harness.project.yaml harness.project.yaml
+./vendor/cursor-harness/install.sh --target . --mode symlink --with-agents
+git add .gitmodules vendor/cursor-harness harness.project.yaml AGENTS.md .cursor/.gitignore
+```
+
+Prefer still gitignoring harness-managed `.cursor/` paths (install writes that block)
+so product overlays stay the only committed Cursor files.
+
+Update:
+
+```bash
+git submodule update --remote vendor/cursor-harness
+./vendor/cursor-harness/install.sh --target .
+git add vendor/cursor-harness
 ```
 
 ## What gets installed
@@ -39,14 +88,23 @@ git submodule add https://github.com/RaphaelBecker/cursor-harness.git vendor/cur
 | selected `rules/*.mdc` | `.cursor/rules/` |
 | selected `skills/**` | `.cursor/skills/` (including `workflows/`) |
 | `agents/*.md` | `.cursor/agents/` |
-| `automations/` | `.cursor/automations/` |
+| `automations/*` (files) | `.cursor/automations/` (not a directory symlink) |
 | `hooks/scripts/*` + merge `hooks.json` | `.cursor/hooks/` + `.cursor/hooks.json` |
+| managed gitignore block | `.cursor/.gitignore` |
 | `templates/AGENTS.md` (optional) | project root `AGENTS.md` |
 
-Not installed (run from the submodule): `runtime/night-shift`,
+Not installed (run from the vendor path): `runtime/night-shift`,
 `runtime/log-decision`.
 
-Default pack set is **`core`**. Optional: `github-board`, `market-ux`, `bdd`.
+Default pack set is **`core`**. Optional: `github-board`, `market-ux`, `bdd`,
+`vitest`, `playwright`, `supabase`, `nextjs`, `github-actions`, `quality-audit`.
+
+Domain inventory: copy
+[templates/HARNESS.local.example.md](../templates/HARNESS.local.example.md) →
+`.cursor/HARNESS.local.md`. Keyword maps:
+[templates/doc-routing.local.example.mdc](../templates/doc-routing.local.example.mdc).
+Autofix hook (consumer-owned):
+[templates/hooks/autofix.example.sh](../templates/hooks/autofix.example.sh).
 
 ## install.sh flags
 
@@ -54,7 +112,7 @@ Default pack set is **`core`**. Optional: `github-board`, `market-ux`, `bdd`.
 |------|-------------|
 | `--target <path>` | Project root (default: parent of `vendor/cursor-harness`, else cwd) |
 | `--mode symlink\|copy` | Link or copy packs (default: `symlink`) |
-| `--packs <list>` | `core`, `github-board`, `market-ux`, `bdd`, or `all`. Default: YAML `packs:` |
+| `--packs <list>` | Pack sets from `manifest.yaml`, or `all`. Default: YAML `packs:` |
 | `--init` | Copy `templates/harness.project.yaml` if the target has none |
 | `--check` | Validate `harness.project.yaml` and exit |
 | `--no-check` | Skip the interface check |
@@ -74,30 +132,10 @@ Default pack set is **`core`**. Optional: `github-board`, `market-ux`, `bdd`.
 Discovers **existing** git worktrees only. Never `git worktree add`. Optional
 `launchd` unit: [templates/launchd](../templates/launchd/com.cursor-harness.night-shift.plist.example).
 
-## Update flow
-
-```bash
-git submodule update --remote vendor/cursor-harness
-./vendor/cursor-harness/install.sh --target .
-git add vendor/cursor-harness .cursor
-git commit -m "Update cursor-harness"
-```
-
-## Clone a project that already vendors the harness
-
-```bash
-git clone --recurse-submodules <your-project-url>
-# or after a normal clone:
-git submodule update --init --recursive
-./vendor/cursor-harness/install.sh --target .
-```
-
-If the project committed symlinks, reinstall is only needed after harness updates or when switching to `--mode copy`.
-
 ## CI notes
 
 - Prefer `--mode copy` when runners or packaging steps do not preserve symlinks.
-- Re-run install after submodule checkout in CI if `.cursor/` is not committed.
+- Re-run install after vendor checkout if `.cursor/` harness paths are gitignored.
 - Hook scripts need `python3` on `PATH` in developer environments (hooks run locally in Cursor, not necessarily in CI).
 - Smoke: copy `templates/harness.project.yaml` into the target before install.
 
@@ -106,13 +144,13 @@ If the project committed symlinks, reinstall is only needed after harness update
 | Symptom | Fix |
 |---------|-----|
 | `harness.project.yaml check failed` | Copy the template; set `issue_source` and `packs: [core]` |
-| `refusing to overwrite non-symlink path` | Happens in symlink mode when a real file replaced a harness link — move/rename it, or pass `--force`. Copy mode refreshes pack files on reinstall. |
+| `refusing to overwrite non-symlink path` | Move/rename the overlay, or pass `--force`. Copy mode refreshes pack files on reinstall. |
 | Hooks not firing | Confirm `.cursor/hooks.json` paths; check Cursor Hooks output; ensure scripts are executable |
-| Skill not discovered | Ensure `.cursor/skills/<name>/SKILL.md` exists with `name` + `description` |
+| Skill not discovered | Ensure `.cursor/skills/<name>/SKILL.md` exists with `name` + `description` (symlink or real file) |
 | Workflow skill missing | Nested packs install under `.cursor/skills/workflows/<name>/` |
-| Optional GitHub skills missing | Reinstall with `--packs core,github-board` (and `market-ux` if you want value gates) |
+| Optional pack skills missing | Reinstall with those names in `packs:` or `--packs` |
 | Batch issue refine asks for config | Copy `templates/batch-issue-refine.local.example.md` to `.cursor/batch-issue-refine.local.md` |
 | HARNESS map missing | Re-run install |
-| Submodule empty | `git submodule update --init --recursive` |
+| Vendor empty / dangling symlinks | Clone or pull `vendor/cursor-harness`, then reinstall |
 | `night-shift fire` skips trees | Need `.cursor/night-shift/contract.md` with `status: approved` in that worktree |
 | `agent` not on PATH | Install Cursor CLI; or set `executor.command` in `harness.project.yaml` |

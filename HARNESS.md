@@ -10,12 +10,15 @@ Project interface: **`harness.project.yaml`** (required). Night CLI:
 
 - **Quick cheat sheet:** type `/help` in Agent chat
 - **Full map:** this file (installed as `.cursor/HARNESS.md`)
+- **Domain overlay:** `.cursor/HARNESS.local.md` when present (consumer-only; read after this file)
 - **Terms:** `/glossary`
 
-**Context tax:** always-on = `core-principles` + `developer-communication` only.
-Other rules load on globs or when a skill says to read them. Prep loads
-`prep` → domain `project_memory` slice → packet `grill-me` → **one**
-routed doc row — do not bulk-read `docs/`.
+**Context tax:** always-on **from this pack** = `core-principles` +
+`developer-communication`. Consumer projects may add their own `alwaysApply` rules —
+count those too before adding another. Everything else loads on globs or when a skill
+says to read it, and human-only skills carry `disable-model-invocation: true` so they
+cost nothing until invoked. Prep loads `prep` → domain `project_memory` slice → packet
+`grill-me` → **one** routed doc row — do not bulk-read `docs/`.
 
 ---
 
@@ -53,6 +56,7 @@ routed doc row — do not bulk-read `docs/`.
 | Architecture improve | One module smell | Prep → Nightshift → `architecture-improve` |
 | Batch issue refine | Ready-column GitHub texts → AI-ready, no code | Optional `github-board` → `/batch-issue-refine` |
 | Ship prod | Clean local default → watched CI → green → Phase 7 | Hybrid → `/ship-prod` |
+| Codebase health audit | Whole-repo scorecard (hotspots + layer leaks) | Prep (report) → Nightshift if contracted |
 | Test harness optimize | Flakes, speed, coverage | Prep or Autonomous |
 | Daily quality jobs | Recurring hygiene | Autonomous (local CLI/SDK; see automations README) |
 
@@ -109,6 +113,22 @@ test suite, frontend tokens, docs-to-user-stories, performance.
 | `market-ux-strategy` | `market-ux` | Feature-only competitor benchmark, minimal UX, edge |
 | `value-validator` | `market-ux` | Feature-only `PROCEED` / `PRUNE` / `DISCARD` (HIL 1) |
 | `generate-bdd-test-spec` | `bdd` | Write Given/When/Then before feature tests |
+| `generate-vitest-test` | `vitest` | Scaffold a Vitest file matching project globs |
+| `implement-unit-tests` | `vitest` | Implement unit/UI scenarios from a BDD or bug contract |
+| `implement-e2e-tests` | `playwright` | Playwright user-journey craft (selectors, auth, anti-flake) |
+| `e2e-single-test-triage` | `playwright` | Interactive one-failure E2E design review |
+| `fix-flaky-test` | `playwright` | Isolation vs full-suite flake protocol (standalone) |
+| `add-supabase-migration` | `supabase` | Migration + RLS + types on isolated test DB |
+| `regen-db-types` | `supabase` | Regenerate TS types from test schema |
+| `verify-rls-policies` | `supabase` | Static RLS coverage over migrations |
+| `inspect-db-schema` | `supabase` | Read-only schema inspect |
+| `review-database` | `supabase` | Schema / thin-backend review |
+| `review-sql-performance` | `supabase` | Faster SQL, identical results |
+| `review-performance` | `nextjs` | App runtime perf (not the test suite) |
+| `review-github-actions` | `github-actions` | CI workflow audit (pins, cache, parallelism) |
+| `audit-hotspots` | `quality-audit` | Git churn × size ranking |
+| `audit-module-boundaries` | `quality-audit` | Import graph vs project layering |
+| `codebase-health-audit` | `quality-audit` | Whole-repo scorecard; delegates gates |
 
 ---
 
@@ -123,6 +143,10 @@ test suite, frontend tokens, docs-to-user-stories, performance.
 | `code-quality` | Code globs | Architecture + craft defaults |
 | `testing` | Code/test globs | Ladder SSOT: worktree proof vs idle-main complete |
 | `security-basics` | Code globs | Secrets, boundaries, least privilege |
+| `database-sql` | `supabase` pack / migrations | RLS, thin-backend views, isolated-test migrate |
+| `typescript-react` | `nextjs` pack | SoC, RSC fetch, no logic in presentational components |
+| `nextjs-api-routes` | `nextjs` pack | Thin handlers, explicit returns, no vendor calls |
+| `github-actions` | `github-actions` pack | Pins, least privilege, fail-closed paths |
 
 ---
 
@@ -131,6 +155,9 @@ test suite, frontend tokens, docs-to-user-stories, performance.
 | Agent | Job |
 | --- | --- |
 | `verifier` | Discover and run worktree proof; report only |
+| `architecture-health-auditor` | `quality-audit`: hotspots + boundary leaks; report only |
+| `supabase-architect` | `supabase`: SQL/RLS/view design; report only |
+| `db-schema-auditor` | `supabase`: dead/orphan DB objects; report only |
 | Bugbot / Security Review | Built-in Cursor reviewers (Phase 4c) |
 | `ci-investigator` | Built-in: short root-cause of one failed CI check |
 | `explore` | Built-in: fast codebase map |
@@ -164,6 +191,7 @@ See [`automations/README.md`](automations/README.md) and
 | Security scan | Weekly | Report only |
 | Spec acceptance drift | Weekly | Report only |
 | Harness + doc-routing integrity | Weekly | Report only |
+| Codebase / architecture health | Weekly | Report only (`quality-audit` pack) |
 
 ---
 
@@ -190,4 +218,4 @@ See [`automations/README.md`](automations/README.md) and
 3. Thin system contracts only where the project needs them (security, money, ingest, critical E2E)
 
 Full keyword map: `.cursor/rules/doc-routing.mdc` (+ consumer `doc-routing.local.mdc`).
-Consumer contract: `harness.project.yaml`.
+Domain inventory: `.cursor/HARNESS.local.md` when present. Consumer contract: `harness.project.yaml`.

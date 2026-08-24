@@ -1,5 +1,6 @@
 ---
 name: extract-deep-module
+disable-model-invocation: true
 description: >-
   Extract or collapse one module so a small interface hides rich behavior.
   Use after /architecture-improve approval when the contract names one

@@ -5,7 +5,7 @@
 - **Portable core** — general software-developer guidance; never project- or domain-bound
 - **Maintainable packs** — one concern per rule/skill/hook
 - **Easy to extend** — add a file, register in `manifest.yaml` `pack_sets`, update `HARNESS.md`, reinstall
-- **Easy to integrate** — git submodule + `install.sh` + `harness.project.yaml`
+- **Easy to integrate** — gitignored vendor clone (or optional submodule) + `install.sh` + `harness.project.yaml`
 - **Cursor-native (this pass)** — ship formats Cursor actually loads; night executor is local `agent -p`
 
 Cursor is the current coding platform. The pack stays injectable into any **app**
@@ -21,8 +21,8 @@ repo via a strict project interface. Leaving Cursor is deferred.
 | Process skills + workflows (plan / execute / memory / review) | Stack-specific agents, MCP, autofix hooks |
 | Portable `verifier` agent + automation stubs + **night-shift CLI** | Domain auditors, product MCP servers |
 | Secret + destructive-shell guards | Deploy scripts, private env layout |
-| `.cursor/HARNESS.md` inventory | Extra local HARNESS rows for domain packs |
-| Optional packs (`github-board`, `market-ux`, `bdd`) | Whether to opt in via `packs:` |
+| `.cursor/HARNESS.md` inventory | `.cursor/HARNESS.local.md` for domain packs |
+| Optional packs (`github-board`, `market-ux`, `bdd`, stack packs) | Whether to opt in via `packs:` |
 
 The only **required** consumer file is [`harness.project.yaml`](../templates/harness.project.yaml).
 Templates (`project_memory.example.md`, `doc-routing.local.example.mdc`) remain optional
@@ -53,10 +53,12 @@ cursor-harness/                 consumer project/
   rules/*.mdc          ──►        .cursor/rules/*.mdc  (filtered by pack set)
   skills/<name>/       ──►        .cursor/skills/<name>/
   agents/*.md          ──►        .cursor/agents/*.md
-  automations/         ──►        .cursor/automations/
+  automations/*        ──►        .cursor/automations/*  (files, not a dir symlink)
   hooks/scripts/*      ──►        .cursor/hooks/*
   hooks/hooks.json     ──merge──► .cursor/hooks.json
+  (managed paths)      ──►        .cursor/.gitignore (BEGIN/END markers)
   templates/AGENTS.md  ──opt──►   AGENTS.md
+  templates/HARNESS.local.example.md  ──copy──►  .cursor/HARNESS.local.md (optional)
   templates/harness.project.yaml  ──copy──►  harness.project.yaml (required)
   runtime/night-shift  (not installed; run from vendor path)
   runtime/log-decision (not installed; appends decisions.tsv)
@@ -64,23 +66,29 @@ cursor-harness/                 consumer project/
 
 Authoring paths mirror destinations so contributors do not learn a second schema.
 Nested skills (e.g. `workflows/feature-delivery`) install under `.cursor/skills/workflows/`.
-Human catalogs in `docs/` are **not** installed into `.cursor/` — they stay in the submodule
-and are linked from [README.md](../README.md#contents).
+Human catalogs in `docs/` are **not** installed into `.cursor/` — they stay in the vendor
+tree and are linked from [README.md](../README.md#contents).
 
 ## Distribution model
 
-1. **Submodule** pins a harness revision in the consumer repo (`vendor/cursor-harness`).
+Preferred: **gitignored nested clone** at `vendor/cursor-harness/`. Consumer git never
+tracks harness contents. Optional: tracked **submodule** that pins a SHA.
+
+1. Clone (or submodule-add) into `vendor/cursor-harness`.
 2. **Copy** `templates/harness.project.yaml` to the repo root and fill it.
 3. **`install.sh`** checks that file (fail closed), then materializes packs into `.cursor/`:
-   - `symlink` (default) — consumer always sees the submodule contents
+   - `symlink` (default) — consumer always sees the vendor contents
    - `copy` — snapshots files (better for environments that break symlinks)
    - `--packs` or `packs:` in the YAML selects `core` plus optional sets
+   - writes a managed block in `.cursor/.gitignore` for harness paths
+   - installs automations as **files** so local stubs can sit beside them
 
-Updates are: submodule bump + re-run install.
+Updates are: pull (or submodule bump) + re-run install. Harness commits happen only
+inside the vendor clone.
 
 ## Override strategy
 
-Harness-managed paths may be symlinks. Project-specific guidance should use **new filenames** (see `templates/local-override.example.mdc`) so reinstalls do not fight local edits.
+Harness-managed paths may be symlinks. Project-specific guidance should use **new filenames** (see `templates/local-override.example.mdc`) so reinstalls do not fight local edits. Domain map: `.cursor/HARNESS.local.md`.
 
 `install.sh` refuses to overwrite a non-symlink destination unless `--force` is passed.
 
@@ -96,7 +104,8 @@ Harness entries are identified by their `command` path (e.g. `.cursor/hooks/sess
 ## Pack registry
 
 `manifest.yaml` `pack_sets` is the install source of truth. Default install is **`core`**.
-Optional: `github-board`, `market-ux`, `bdd`. If a file exists on disk but is not in the
+Optional: `github-board`, `market-ux`, `bdd`, `vitest`, `playwright`, `supabase`,
+`nextjs`, `github-actions`, `quality-audit`. If a file exists on disk but is not in the
 selected sets, it is not installed.
 
 ## Worktrees

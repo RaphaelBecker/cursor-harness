@@ -11,7 +11,7 @@ Process / craft that applies to any software project:
 | Lifecycle spine | `core-principles`, `grill-me`, `implementation-plan-review`, `execute-approved-plan`, `project-memory` |
 | Ship spine | `ship-local`, `workflows/ship-prod` |
 | Workflows | `prep`, `night-shift`, `feature-delivery`, `bugfix`, `architecture-improve`, `create-workflow` |
-| Optional packs | `github-board`, `market-ux`, `bdd` (`generate-bdd-test-spec`) stay optional |
+| Optional packs | `github-board`, `market-ux`, `bdd`, `vitest`, `playwright`, `supabase`, `nextjs`, `github-actions`, `quality-audit` |
 | Quality helpers | `review-code`, `review-docs`, `test-harness-optimize`, `blast-radius`, `diagnose-bug` |
 | DX | `help`, `glossary` (process terms only), `HARNESS.md`, automations stubs |
 | Portable agents | Generic report-only verifiers that **discover** project commands |

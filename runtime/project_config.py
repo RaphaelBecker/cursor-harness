@@ -11,8 +11,21 @@ from pathlib import Path
 from typing import Any
 
 ISSUE_SOURCES = {"github", "files", "none"}
-KNOWN_PACKS = ("core", "github-board", "market-ux", "bdd")
-CODE_GLOBS_HINT = "core-principles + developer-communication are always-on; other rules load on globs / skills"
+FALLBACK_PACKS = ("core", "github-board", "market-ux", "bdd")
+CODE_GLOBS_HINT = "core-principles + developer-communication are always-on in this pack; consumer projects may add their own alwaysApply rules; everything else loads on globs / skills"
+
+
+def known_packs_from_manifest(manifest_path: Path | None) -> tuple[str, ...]:
+    if manifest_path is None or not manifest_path.is_file():
+        return FALLBACK_PACKS
+    try:
+        data = load_yaml_file(manifest_path)
+    except YamlError:
+        return FALLBACK_PACKS
+    sets = data.get("pack_sets") or {}
+    if isinstance(sets, dict) and sets:
+        return tuple(str(k) for k in sets.keys())
+    return FALLBACK_PACKS
 
 
 class YamlError(ValueError):
@@ -222,9 +235,11 @@ def check_project(target: Path, *, harness_root: Path | None = None) -> list[str
     elif not isinstance(packs, list) or not packs:
         errors.append("packs must be a non-empty list")
     else:
-        unknown = [p for p in packs if p not in KNOWN_PACKS]
+        manifest_path = (harness_root / "manifest.yaml") if harness_root else None
+        known = known_packs_from_manifest(manifest_path)
+        unknown = [p for p in packs if p not in known]
         if unknown:
-            errors.append(f"unknown packs {unknown} — known: {list(KNOWN_PACKS)}")
+            errors.append(f"unknown packs {unknown} — known: {list(known)}")
         if "core" not in packs:
             errors.append("packs must include core")
 

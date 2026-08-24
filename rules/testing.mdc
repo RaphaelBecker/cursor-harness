@@ -88,6 +88,32 @@ Also:
 - At most **one** retry for a clearly transient infrastructure failure (does not consume a
   code-repair attempt).
 
+## Test failure classification
+
+For every failing test, preserve the intended behavior. Cross-check the assertion
+against the approved contract and canonical docs. Never delete, skip, loosen, or
+mock an internal path merely to get green. Classify before acting:
+
+1. **Introduced regression** — caused by the current approved change. Fix it in
+   scope, keep or strengthen the assertion, re-run the smallest proving suite,
+   continue the ladder.
+2. **In-scope blocker** — a pre-existing app, fixture, selector, or test-infra
+   defect that blocks proving the approved behavior. Fix only when the correction
+   is necessary, bounded by the contract, and covered red-first. If it expands
+   scope, park `BLOCKED.md` (unattended) or report the blocker.
+3. **Outdated test/spec assumption** — canonical behavior changed and the
+   assertion is no longer honest. Update the test together with the spec it
+   represents. If intended behavior is ambiguous, stop and report the decision.
+4. **Out-of-scope failure** — unrelated to the approved change. Record the
+   failing title and evidence; do not alter or skip it. Continue when isolation
+   still proves the in-scope change; otherwise report it as a verification blocker.
+
+## Playwright anti-flake (when the project uses Playwright)
+
+- Prefer precise locators (`getByRole` with `exact: true`, or a unique test id).
+- Never `waitUntil: 'networkidle'` on `page.goto()`. Wait for a critical UI
+  locator instead (`toBeVisible()`).
+
 ## Worktree proof — lease
 
 Lease a shared test DB / pool slot only if a listed suite needs it (integration,

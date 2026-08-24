@@ -1,5 +1,6 @@
 ---
 name: bugfix
+disable-model-invocation: true
 description: >-
   Prep-then-Nightshift spine for a bug fix in a human-created Cursor worktree.
   Failing regression first, then fix under an approved minimal contract.
