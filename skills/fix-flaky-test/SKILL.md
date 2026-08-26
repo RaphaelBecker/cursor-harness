@@ -9,9 +9,8 @@ disable-model-invocation: true
 
 # /fix-flaky-test
 
-Standalone. Do **not** invoke from feature-delivery, bugfix, ship-prod,
-execute-approved-plan, or automations. The isolation + full-suite proof is too
-long for those spines.
+Standalone. Do **not** invoke from prep, ship-prod, execute-approved-plan,
+or automations. The isolation + full-suite proof is too long for those spines.
 
 ## Invocation
 

@@ -8,8 +8,8 @@ alwaysApply: false
 
 This file is the **SSOT for the verification ladder** (order, repair budgets, gate hygiene).
 Night-shift skills and workflows must point here — do not restate numbered ladder steps
-elsewhere. Keep `## Lessons learned` on workflow handoffs (`feature-delivery`,
-`execute-approved-plan`, `ship-local`, `bugfix`, and the other Phase 5 workflows).
+elsewhere. Keep `## Lessons learned` on workflow handoffs (`prep`,
+`execute-approved-plan`, `ship-local`, `ship-prod`, and the other Phase 5 workflows).
 
 ## Two quality moments
 

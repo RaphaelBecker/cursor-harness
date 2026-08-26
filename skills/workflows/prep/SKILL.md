@@ -20,6 +20,9 @@ Thin orchestrator. Reuse `@grill-me` (packet mode), `@implementation-plan-review
 `@project-memory`. Fire is `/night-shift` or
 `./vendor/cursor-harness/runtime/night-shift fire`.
 
+Flavor is a contract `kind`, not a second slash command. Agents that hear
+“new feature”, “bug fix”, or “architecture change” point at **this skill only**.
+
 ## Preconditions
 
 1. `harness.project.yaml` at the repo root. If missing, **park a note** and tell
@@ -34,24 +37,30 @@ Thin orchestrator. Reuse `@grill-me` (packet mode), `@implementation-plan-review
 ## Steps
 
 1. **Items** — from `issue_source` in `harness.project.yaml`:
-   - `github` (only if `github-board` pack is installed): Ready-column ingest.
    - `files`: read `files.path`.
    - `none`: use the worktrees the human already opened and any issue ids they
      named.
 2. **Match trees** — one human-created worktree per item. Skip unmatched items
    with a clear “create a Cursor worktree first” line.
-3. **Packet grill** — `@grill-me` in **packet mode** (all material questions at
+3. **Classify `kind`** — `feature` (default), `bug`, or `architecture`. Write it
+   on the contract. Then:
+   | `kind` | Extra before the packet grill |
+   | --- | --- |
+   | `feature` | none — grill next |
+   | `bug` | `@diagnose-bug` until one named red command exists. Tiny one-file skip only if **the human** asks |
+   | `architecture` | `@architecture-audit` (report) → human picks **one** smell. Allowlist = one extract **or** one cycle fix |
+4. **Packet grill** — `@grill-me` in **packet mode** (all material questions at
    once, each with a recommended answer). Not one-question-at-a-time unless the
    human asks for conversational grill.
-4. **Draft contract** — write `.cursor/night-shift/contract.md` in that
-   worktree (`status: draft`, `commits: authorized`). Copy shape from
-   `templates/night-shift-contract.example.md`. Include **Manual test**
+5. **Draft contract** — write `.cursor/night-shift/contract.md` in that
+   worktree (`status: draft`, `commits: authorized`, `kind:` set). Copy shape
+   from `templates/night-shift-contract.example.md`. Include **Manual test**
    (how to run the app + which acceptance to click).
-5. **Review** — wait for human `/implementation-plan-review` (or batch review of
+6. **Review** — wait for human `/implementation-plan-review` (or batch review of
    packets in this sitting). Then explicit approval.
-6. **Approve** — set `status: approved` only after that yes. That yes does
+7. **Approve** — set `status: approved` only after that yes. That yes does
    **not** authorize merge, push, or production.
-7. **Stop** — remind: `./vendor/cursor-harness/runtime/night-shift fire`
+8. **Stop** — remind: `./vendor/cursor-harness/runtime/night-shift fire`
    (or the launchd unit). Do not start Phases 2–5 in this chat unless the human
    asks to run one tree now.
 

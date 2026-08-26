@@ -2,16 +2,16 @@
 name: diagnose-bug
 description: >-
   Build a tight red-capable loop before hypothesising. Use during non-trivial
-  /bugfix prep, when the developer says diagnose or debug this, or when a
-  night contract is missing the named red command. Do not implement the fix
-  here.
+  /prep when kind is bug, when the developer says diagnose or debug this, or
+  when a night contract is missing the named red command. Do not implement
+  the fix here.
 ---
 
 # Diagnose a bug
 
 No hypothesis until a **tight red-capable loop** exists. This skill finds
-the cause and names the command. `/bugfix` + `@execute-approved-plan` apply
-the fix.
+the cause and names the command. `/prep` (`kind: bug`) +
+`@execute-approved-plan` apply the fix.
 
 Do not invent product commands. Discover them from the project.
 
@@ -66,7 +66,7 @@ Return:
 - the correct test seam for the later RED regression (or "no seam — architecture
   finding")
 
-`/bugfix` records the red command in the contract **Tests** field, then
+`/prep` records the red command in the contract **Tests** field, then
 grills and plans. Night writes the regression at that seam first.
 
 ## Cleanup if you instrumented

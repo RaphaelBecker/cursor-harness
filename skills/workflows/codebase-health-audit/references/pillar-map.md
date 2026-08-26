@@ -12,5 +12,5 @@ another project's script names.
 | Dead code | Project dead-code tool when present | Only if asked |
 | Process | HARNESS map + doc-routing | Flag packs not in HARNESS / HARNESS.local |
 
-Suggested next contracts: one smell → `/architecture-improve`, or one hotspot
-extract — never a whole-repo rewrite.
+Suggested next contracts: one smell → `/prep` with `kind: architecture`, or one
+hotspot extract — never a whole-repo rewrite.

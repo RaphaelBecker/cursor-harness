@@ -13,7 +13,7 @@ if printf '%s' "$command" | grep -Eiq \
   'supabase[[:space:]]+db[[:space:]]+(reset|push)|prisma[[:space:]]+migrate[[:space:]]+reset|drop[[:space:]]+database'; then
   ask=1
 fi
-# Overwriting GitHub issue bodies / closing issues (batch-issue-refine HIL 2).
+# Overwriting GitHub issue bodies / closing issues.
 if printf '%s' "$command" | grep -Eiq 'gh[[:space:]]+issue[[:space:]]+(edit|close|delete|lock)'; then
   ask=1
 fi

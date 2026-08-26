@@ -39,14 +39,13 @@ is the map.
 | Non-trivial prep idea | packet `grill-me`; human triggers `implementation-plan-review` |
 | Non-trivial bug | `@diagnose-bug` until one red command exists; then packet grill |
 | Sensitive diff | `@blast-radius` after green ladder / before `/ship-local` |
-| One module smell | `/architecture-improve` — audit, pick one, then the spine |
+| One module smell | `/prep` with `kind: architecture` — audit, pick one, then the spine |
 | Feature path | `generate-bdd-test-spec` if `bdd` pack installed; else acceptance tests from the contract |
 | Quality pass | `@review-code` (4b) then `/review-bugbot` report-only (4c) |
 | Local land | human `/ship-local` |
 | Remote ship | human `/ship-prod` |
 | Verification report | `verifier` (report-only) |
 | Autonomous quality | Report-only unless step matches draft-PR allowlist |
-| Ready-column issue texts | `/batch-issue-refine` (Day, two HIL gates; no code; not an Automation) |
 
 ## Write for agents (before you save)
 

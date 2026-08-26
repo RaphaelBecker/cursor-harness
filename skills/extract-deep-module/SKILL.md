@@ -3,8 +3,8 @@ name: extract-deep-module
 disable-model-invocation: true
 description: >-
   Extract or collapse one module so a small interface hides rich behavior.
-  Use after /architecture-improve approval when the contract names one
-  extract. One extract or collapse per run.
+  Use after /prep approval when kind is architecture and the contract names
+  one extract. One extract or collapse per run.
 ---
 
 # Extract a deep module
@@ -19,4 +19,4 @@ One extract or collapse. No drive-by refactors.
    the seam is shared). Phase 5 handoff as usual.
 
 If the contract is missing or names a dependency-direction fix instead,
-stop and use that skill or `/architecture-improve`.
+stop and use that skill, or `/prep` with `kind: architecture`.

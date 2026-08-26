@@ -8,13 +8,9 @@
 # `.cursor/night-shift/*.log`, `.cursor/night-shift/slots/`, and
 # `.cursor/night-shift/decisions.tsv` to gitignore.
 
-# github | files | none
+# files | none
 issue_source: none
 
-# github:
-#   owner: my-org-or-user
-#   project: 1          # GitHub Project number (gh project list --owner …)
-#   ready: Ready
 # files:
 #   path: issues/
 
@@ -50,7 +46,7 @@ memory: project_memory.md
 #   js: npx eslint --fix
 #   py: ruff format
 
-# core is always installed. Optional: github-board, market-ux, bdd, vitest,
+# core is always installed. Optional: bdd, vitest,
 # playwright, supabase, nextjs, github-actions, quality-audit.
 packs:
   - core

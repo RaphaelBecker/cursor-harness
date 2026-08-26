@@ -36,5 +36,4 @@ Prefer `project_memory.md` over cloud Automations `MEMORIES.md`.
 
 Activate first: daily test health → lint hygiene → CI failure triage.
 
-Not an automation: `/prep` (HIL workpack) and `/batch-issue-refine`
-(optional github-board pack, two human gates).
+Not an automation: `/prep` (HIL workpack).

@@ -1,14 +1,15 @@
 ---
 status: draft
 commits: authorized
+kind: feature
 issue: ""
 ---
 
 # Implementation contract
 
-Fill during `/prep`. Set `status: approved` only after the human
-explicitly accepts this contract. Night fire skips worktrees that are not
-`approved`.
+Fill during `/prep`. `kind` is `feature` (default), `bug`, or `architecture`.
+Set `status: approved` only after the human explicitly accepts this contract.
+Night fire skips worktrees that are not `approved`.
 
 ## Objective
 
@@ -23,6 +24,10 @@ explicitly accepts this contract. Night fire skips worktrees that are not
 List the **worktree-proof** suites (typecheck + unit / int / UI / one E2E flow /
 domain gate). Empty is not merge-ready. Docs/harness-only: `N/A` or docs-only.
 Do not list the fast/local coverage slice or idle-main complete here.
+
+- `feature`: BDD if the `bdd` pack is installed, else acceptance tests.
+- `bug`: the named red command from `@diagnose-bug`, then the failing regression.
+- `architecture`: prove the one extract **or** the one cycle fix on the allowlist.
 
 ## Docs / SemVer
 

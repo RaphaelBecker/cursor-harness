@@ -1,0 +1,10 @@
+%%{init: {"theme":"base","themeVariables":{"darkMode":true,"fontFamily":"ui-sans-serif, system-ui, sans-serif","fontSize":"17px","background":"#2B313C","lineColor":"#9AA6B8","textColor":"#9AA6B8","primaryTextColor":"#E8EEF7","edgeLabelBackground":"#2B313C"},"flowchart":{"curve":"basis","htmlLabels":false,"nodeSpacing":35,"rankSpacing":48,"padding":16,"useMaxWidth":true}}}%%
+flowchart LR
+  s1["Merge to local main<br/>HIL, ship-local, blast-radius"]
+  s2["Push, CI, prod<br/>HIL, ship-prod<br/>ci-investigator, Bugbot"]
+  s3(["Remember<br/>project-memory"])
+  s1 --> s2 --> s3
+  classDef hil fill:#A34D16,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
+  classDef done fill:#2A6B5C,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
+  class s1,s2 hil
+  class s3 done

@@ -25,9 +25,9 @@ Follow `core-principles`:
 - Agents do not create or manage git worktrees except during human-triggered `/ship-local`
 - Remote push and deploy stay human-owned unless you explicitly ask via `/ship-prod`
 
-Thin orchestrators: `/prep`, `/night-shift`, `/feature-delivery`, `/bugfix`,
-`/architecture-improve`, `/batch-issue-refine` (optional `github-board` pack),
-`/ship-prod`. Author new ones with `/create-workflow`.
+Thin orchestrators: `/prep`, `/night-shift`, `/ship-prod`.
+Author new ones with `/create-workflow`. Flavor of the delivery spine is
+contract `kind` (`feature` / `bug` / `architecture`), not a second slash.
 
 ## Useful skills
 
@@ -52,7 +52,7 @@ Copy `templates/harness.project.yaml` to the repo root first. Add local rules un
 `.cursor/rules/` with names that do **not** collide with harness-managed files.
 Copy `templates/project_memory.example.md` to root `project_memory.md` when you want
 the memory overlay. Copy `templates/HARNESS.local.example.md` to `.cursor/HARNESS.local.md`
-for domain inventory. Optional packs: `github-board`, `market-ux`, `bdd`, `vitest`,
+for domain inventory. Optional packs: `bdd`, `vitest`,
 `playwright`, `supabase`, `nextjs`, `github-actions`, `quality-audit`.
 
 Domain agents, MCP servers, and stack-specific autofix hooks belong in this project —

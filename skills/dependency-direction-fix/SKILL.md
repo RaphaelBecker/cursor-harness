@@ -3,7 +3,7 @@ name: dependency-direction-fix
 disable-model-invocation: true
 description: >-
   Reverse or break one dependency cycle or wrong-way import. Use after
-  /architecture-improve approval when the contract names one cycle. One
+  /prep approval (kind: architecture) when the contract names one cycle. One
   cycle per run.
 ---
 

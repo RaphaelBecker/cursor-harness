@@ -12,6 +12,7 @@ lives in the consumer project.
 | **Connector** | Thin adapter that talks to an outside system (API, DB client). Not business rules. |
 | **SSOT** | Single source of truth — one place that owns a fact; others read or point to it. |
 | **Contract** | Approved plan for what to build: allowlist, acceptance, tests, hard stops. |
+| **kind** | Contract field: `feature` (default), `bug`, or `architecture`. Flavor of `/prep`, not a second slash. |
 | **Prep** | Short HIL sitting (about 2h max, anytime): human creates Cursor worktrees; packet grill; approve contracts. |
 | **Nightshift** | Unattended execute in those trees (`night-shift fire`). Park BLOCKED.md; never wait. |
 | **Packet** | All material questions at once, each with a recommended answer. |
@@ -23,9 +24,8 @@ lives in the consumer project.
 | **Harness** (Cursor Harness) | The whole agent framework: **skills**, **rules**, **subagents/agents**, **hooks**, **automations**, **workflows**, and **plans**. |
 | **HARNESS.md** | `.cursor/HARNESS.md` — short inventory map of what exists in the harness. |
 | **HARNESS.local.md** | Consumer-only domain inventory. Read after portable `HARNESS.md` when present. |
-| **Workflow** | Named sequence of skills/agents for a job (feature, bug, audit, ship). |
+| **Workflow** | Named sequence of skills/agents for a job (the delivery spine, audit, ship). |
 | **HIL checkpoint** | Hard stop during **prep**: the human must say yes. Nightshift does not wait. |
-| **Batch issue refine** | Optional `github-board` workflow (`/batch-issue-refine`): Ready-column GitHub texts. No implementation. |
 | **Skill** | Instructions the agent follows for a task (`SKILL.md`); often run with `/name`. |
 | **Rule** | Always-on (`core-principles`, `developer-communication`) or glob-scoped guardrail (`.mdc`). |
 | **Subagent** / **Agent** | Focused helper (often report-only) under `.cursor/agents/`. |

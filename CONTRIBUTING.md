@@ -10,17 +10,25 @@ root [`HARNESS.md`](HARNESS.md) in the same change. Add a **one-line catalog row
 matching file under [`docs/`](docs/) (`rules.md`, `skills.md`, `agents.md`, `hooks.md`,
 `automations.md`). If you add a **workflow**, also add a short section to
 [`README.md`](README.md#workflows) — do not paste skill steps into the README.
+Workflow charts live in [`docs/diagrams/*.mmd`](docs/diagrams/) and are compiled
+to SVG. Do not paste live mermaid into the README.
 
 ## README flowcharts
 
-Workflow diagrams in [`README.md`](README.md) use a locked mermaid theme so GitHub
-light/dark and screenshots stay consistent. Copy this block.
+Three charts only: prep, night, ship. Source is [`docs/diagrams/*.mmd`](docs/diagrams/).
+Compiled output is [`docs/assets/workflows/*.svg`](docs/assets/workflows/). Edit the
+`.mmd`, run [`scripts/render-diagrams.sh`](scripts/render-diagrams.sh), commit the SVG.
+Do **not** hand-edit the SVG. Do **not** add a fourth chart for `kind`.
+
+Render-time dependency: Node + `npx` + Chrome (Puppeteer), used only by the script.
+The pin lives in the script (`@mermaid-js/mermaid-cli@<pin>`). Not a harness runtime.
 
 Dark slate canvas. **One hue per role** — do not rainbow every node. Unused palette
 colors (pink, lime, neon purple) stay off the charts.
 
 Every node uses the same cool-grey border. Role is the **fill** only. Keep fills
-mid-tone so `#E8EEF7` text stays readable — no gradients.
+mid-tone so `#E8EEF7` text stays readable — no gradients. No HTML in nodes (`<b>`
+breaks GitHub and IDE preview). Quoted labels; mermaid `<br/>` for line breaks.
 
 | Role | Fill / token | Meaning |
 | --- | --- | --- |
@@ -31,40 +39,21 @@ mid-tone so `#E8EEF7` text stays readable — no gradients.
 | Skill | `#3A5F9A` | Playbook / work |
 | HIL / decision | `#A34D16` | You decide (diamond) — orange |
 | Done | `#2A6B5C` | Arrival / ship |
-| Drop | `#7A3D4A` | Stop |
-| Proposed | `#4A4578` dashed | Not installed |
 | You / system | `#3D4554` | Neutral machine step |
 | Mark · skill | `#4C8DFF` | Legend / icon accent |
 | Mark · HIL | `#F5A524` | Legend / icon accent |
-| Mark · subagent | `#22C7E0` | Legend / icon accent |
+| Mark · helper | `#22C7E0` | Legend / icon accent |
 | Mark · rule | `#A8B4C4` | Legend / icon accent |
 
-Overview rows: `fontSize` 17px. Zoom-ins: `fontSize` 15px. Bold the node title; do
-not underline. Done / start nodes use stadium `([])`. HIL decisions use diamond
-`{}`. Do **not** wrap a chart in a mermaid subgraph — GitHub draws a box around it.
-Keep the key **out** of the mermaid block. Put this key under the closing fence
-(bottom-left of the chart). GitHub strips inline CSS — color lives in the chips
+Keep the key **out** of the mermaid block. Color for the key lives in the chips
 (`docs/assets/legend-*.svg`):
 
 ```
-![✦ skill](docs/assets/legend-skill.svg) · ![◉ HIL](docs/assets/legend-hil.svg) · ![◇ subagent](docs/assets/legend-subagent.svg)
+![skill](docs/assets/legend-skill.svg) · ![HIL](docs/assets/legend-hil.svg) · ![helper](docs/assets/legend-subagent.svg)
 ```
 
-```mermaid
-%%{init: {"theme":"base","themeVariables":{"darkMode":true,"fontFamily":"ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif","fontSize":"15px","background":"#2B313C","lineColor":"#9AA6B8","textColor":"#9AA6B8","primaryTextColor":"#E8EEF7","edgeLabelBackground":"#2B313C"},"flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":31,"rankSpacing":48,"padding":16,"useMaxWidth":true}}}%%
-flowchart LR
-  example["<b>Title</b><br/>✦ skill-name"]
-  classDef skill fill:#3A5F9A,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
-  classDef hil fill:#A34D16,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
-  classDef done fill:#2A6B5C,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
-  classDef drop fill:#7A3D4A,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
-  classDef you fill:#3D4554,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
-  classDef proposed fill:#4A4578,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7,stroke-dasharray:6 4
-  class example skill
-```
-
-Canvas `#2B313C`. Icons: skill `#4C8DFF`, HIL `#F5A524`, rule `#A8B4C4`,
-subagent `#22C7E0`.
+Legend chips use ASCII labels (`skill`, `HIL`, `rule`, `helper`). Do not restore
+the unused orphan chips.
 
 ## Add a rule
 
@@ -152,7 +141,6 @@ Do **not** edit harness-managed filenames in the consumer repo if they are symli
 - Extend doc maps via `templates/doc-routing.local.example.mdc`
 - Domain inventory via `templates/HARNESS.local.example.md` → `.cursor/HARNESS.local.md`
 - Seed memory via `templates/project_memory.example.md` → root `project_memory.md`
-- Copy `templates/batch-issue-refine.local.example.md` → `.cursor/batch-issue-refine.local.md` for Ready-column project number, column name, and notes path
 - Add domain agents/MCP/autofix under the consumer `.cursor/` (non-colliding names). Autofix template: `templates/hooks/autofix.example.sh`
 - Do not rewrite portable `HARNESS.md` if it is a symlink
 
@@ -165,7 +153,8 @@ checkout or the standalone cursor-harness repo).
 
 - [ ] Pack registered in `manifest.yaml` `pack_sets`
 - [ ] `HARNESS.md` updated
-- [ ] Matching `docs/` catalog row (and README workflow section if it is a workflow; mermaid uses the README flowchart theme)
+- [ ] Matching `docs/` catalog row (and README workflow section if it is a workflow)
+- [ ] Charts: edit `.mmd`, run `scripts/render-diagrams.sh`, commit SVG (no live mermaid in README)
 - [ ] Rule/skill/agent frontmatter valid
 - [ ] No product names, private paths, or one-repo scripts in shared packs
 - [ ] Hook scripts executable and paths match `hooks.json`

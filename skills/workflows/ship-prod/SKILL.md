@@ -105,7 +105,7 @@ check and this tip:
 
 ## Non-goals
 
-- No feature planning (`grill-me` / plan review) — that is `/feature-delivery`
+- No feature planning (`grill-me` / plan review) — that is `/prep`
 - No local merge / worktree cleanup — that is `/ship-local`
 - No autonomous cloud deploy; no draft-PR automation path
 - No claiming Phase 7 after docs-only pushes
@@ -117,7 +117,7 @@ check and this tip:
 - CI run id(s); final watched status
 - Fix commits + Bugbot/security reviews used (or “none”)
 - Phase 7 done / skipped (reason)
-- Next: keep default branch clean; resume features via `/feature-delivery` as needed
+- Next: keep default branch clean; resume work via `/prep` as needed
 
 ## Map
 

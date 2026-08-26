@@ -25,27 +25,28 @@ Paste this content (keep it compact):
 **Context tax:** Always-on = `core-principles` + `developer-communication`. Prep
 loads `prep` → memory slice → packet `grill-me` → **one** routed doc.
 
-### Stages (not a clock)
+### Delivery (one path)
 
-| You want | You do |
+| You want | You type |
 | --- | --- |
-| Prep (anytime, ~2h max) | You create Cursor worktrees. `/prep` → read packets → `/implementation-plan-review` → **approve** |
-| Fire Nightshift | `./vendor/cursor-harness/runtime/night-shift fire` (or `/night-shift`) |
-| After Nightshift | `night-shift status` (skim `decisions.tsv`) → manual tests → `/ship-local` → `/ship-prod` |
-| One feature in an existing tree | `/feature-delivery` (during prep) |
-| Bug in an existing tree | `/bugfix` (during prep) |
-| One module smell | `/architecture-improve` |
-| Refine Ready issues | `/batch-issue-refine` if `github-board` pack is installed. No code. |
+| Build anything | `/prep` → `/implementation-plan-review` → approve → `/night-shift` → test → `/ship-local` → `/ship-prod` |
+| Fire / status | `/night-shift` |
+| Cheat sheet | `/help` |
 
-### Everyday helpers
+Flavor is contract `kind` (`feature` / `bug` / `architecture`), not a second slash.
+Agents that hear “new feature” point at `/prep` only.
 
-| You want | You do |
+### Side paths (not delivery)
+
+| You want | You type |
 | --- | --- |
 | See everything that exists | Open `.cursor/HARNESS.md` or `/help` |
 | Shared word meaning | `/glossary` |
 | Invent a new workflow | `/create-workflow` (updates HARNESS) |
 | Pull lab harness into this pack | `/sync <path-to-project-or-.cursor>` |
 | Flaky / slow tests | `/test-harness-optimize` |
+| Architecture report | `/architecture-audit` (no edits) |
+| Whole-repo scorecard | `/codebase-health-audit` (`quality-audit` pack) |
 | Doc drift | `/review-docs` (report first) |
 | Hygiene jobs | Stubs in `.cursor/automations/README.md` — not Nightshift |
 | Verify a change | Ask for `verifier` (report only) |
@@ -64,5 +65,3 @@ loads `prep` → memory slice → packet `grill-me` → **one** routed doc.
 ---
 
 If they ask “what next for the workpack?”, point them at `/prep` only.
-If they ask to refine Ready-column GitHub texts, point them at `/batch-issue-refine` only
-when that pack is installed.

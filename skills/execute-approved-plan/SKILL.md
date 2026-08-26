@@ -78,14 +78,19 @@ if unattended → BLOCKED.md; else stop.
 
 ### Phases 2–4
 
-1. **Phase 2:** Bug → write failing regression first at the contract's named
-   red command / seam. If the contract is a non-trivial bug and that command
-   is missing → park `BLOCKED.md` (do not hypothesise). Feature → if
-   `@generate-bdd-test-spec` is installed (`bdd` pack), use it; otherwise write
-   acceptance tests from the contract. Run RED commands on the dedicated/targeted
-   suite.
+1. **Phase 2:** Honor contract `kind` (`feature` if missing):
+   - `feature` — if `@generate-bdd-test-spec` is installed (`bdd` pack), use it;
+     otherwise write acceptance tests from the contract. Run RED on the
+     dedicated/targeted suite.
+   - `bug` — write the failing regression first at the contract's named red
+     command / seam. If that command is missing → park `BLOCKED.md` (do not
+     hypothesise).
+   - `architecture` — run **one** of `@extract-deep-module` or
+     `@dependency-direction-fix` as the allowlist names. Do not do both. Then
+     prove. If the allowlist is neither → park `BLOCKED.md`.
 2. **Phase 3:** Smallest contract-complete change; follow project migration/regen
-   rules when the contract requires them.
+   rules when the contract requires them. Architecture `kind` already did the
+   one refactor in Phase 2 — do not add extra extracts.
 3. **Phase 4 — Verify:** Run the verification ladder without asking.
 4. **Phase 4b — `@review-code`:** After green ladder (or N/A), fix-capable
    maintainability review. Sensitive allowlists also run `@blast-radius`

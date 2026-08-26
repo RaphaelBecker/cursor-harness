@@ -1,0 +1,17 @@
+%%{init: {"theme":"base","themeVariables":{"darkMode":true,"fontFamily":"ui-sans-serif, system-ui, sans-serif","fontSize":"17px","background":"#2B313C","lineColor":"#9AA6B8","textColor":"#9AA6B8","primaryTextColor":"#E8EEF7","edgeLabelBackground":"#2B313C"},"flowchart":{"curve":"basis","htmlLabels":false,"nodeSpacing":35,"rankSpacing":48,"padding":16,"useMaxWidth":true}}}%%
+flowchart LR
+  e1["You open worktrees<br/>one tree, one feature"]
+  e2["Packet grill<br/>grill-me, prep"]
+  e3["Draft contract<br/>.cursor/night-shift/"]
+  e4{"Plan OK?<br/>HIL, implementation-plan-review"}
+  e5(["Approved<br/>commits authorized"])
+  e1 --> e2 --> e3 --> e4
+  e4 -->|Yes| e5
+  classDef skill fill:#3A5F9A,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
+  classDef hil fill:#A34D16,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
+  classDef done fill:#2A6B5C,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
+  classDef you fill:#3D4554,stroke:#A8B4C4,stroke-width:1.4px,color:#E8EEF7
+  class e2,e3 skill
+  class e4 hil
+  class e5 done
+  class e1 you

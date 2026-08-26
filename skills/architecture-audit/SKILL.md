@@ -3,8 +3,8 @@ name: architecture-audit
 disable-model-invocation: true
 description: >-
   Report-only scan for shallow modules, cycles, and layer leaks. Starts from
-  recent git hot spots. Use from /architecture-improve or when the developer
-  asks for an architecture audit. No edits.
+  recent git hot spots. Use from /prep when kind is architecture, or when the
+  developer asks for an architecture audit. No edits.
 ---
 
 # Architecture audit

@@ -22,7 +22,7 @@ repo via a strict project interface. Leaving Cursor is deferred.
 | Portable `verifier` agent + automation stubs + **night-shift CLI** | Domain auditors, product MCP servers |
 | Secret + destructive-shell guards | Deploy scripts, private env layout |
 | `.cursor/HARNESS.md` inventory | `.cursor/HARNESS.local.md` for domain packs |
-| Optional packs (`github-board`, `market-ux`, `bdd`, stack packs) | Whether to opt in via `packs:` |
+| Optional packs (`bdd`, stack packs) | Whether to opt in via `packs:` |
 
 The only **required** consumer file is [`harness.project.yaml`](../templates/harness.project.yaml).
 Templates (`project_memory.example.md`, `doc-routing.local.example.mdc`) remain optional
@@ -65,7 +65,7 @@ cursor-harness/                 consumer project/
 ```
 
 Authoring paths mirror destinations so contributors do not learn a second schema.
-Nested skills (e.g. `workflows/feature-delivery`) install under `.cursor/skills/workflows/`.
+Nested skills (e.g. `workflows/prep`) install under `.cursor/skills/workflows/`.
 Human catalogs in `docs/` are **not** installed into `.cursor/` — they stay in the vendor
 tree and are linked from [README.md](../README.md#contents).
 
@@ -104,7 +104,7 @@ Harness entries are identified by their `command` path (e.g. `.cursor/hooks/sess
 ## Pack registry
 
 `manifest.yaml` `pack_sets` is the install source of truth. Default install is **`core`**.
-Optional: `github-board`, `market-ux`, `bdd`, `vitest`, `playwright`, `supabase`,
+Optional: `bdd`, `vitest`, `playwright`, `supabase`,
 `nextjs`, `github-actions`, `quality-audit`. If a file exists on disk but is not in the
 selected sets, it is not installed.
 

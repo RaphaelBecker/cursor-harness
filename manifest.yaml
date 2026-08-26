@@ -33,27 +33,14 @@ pack_sets:
       - architecture-audit
       - extract-deep-module
       - dependency-direction-fix
-      - workflows/feature-delivery
-      - workflows/bugfix
       - workflows/ship-prod
       - workflows/prep
       - workflows/night-shift
-      - workflows/architecture-improve
     agents:
       - verifier.md
     automations: true
     hooks:
       enabled: true
-  github-board:
-    skills:
-      - workflows/batch-issue-refine
-      - batch-issue-ingest
-      - issue-text-refiner
-      - issue-board-sync
-  market-ux:
-    skills:
-      - market-ux-strategy
-      - value-validator
   bdd:
     skills:
       - generate-bdd-test-spec
@@ -97,4 +84,3 @@ pack_sets:
       - workflows/codebase-health-audit
     agents:
       - architecture-health-auditor.md
-

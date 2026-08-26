@@ -10,8 +10,17 @@ import sys
 from pathlib import Path
 from typing import Any
 
-ISSUE_SOURCES = {"github", "files", "none"}
-FALLBACK_PACKS = ("core", "github-board", "market-ux", "bdd")
+ISSUE_SOURCES = {"files", "none"}
+FALLBACK_PACKS = (
+    "core",
+    "bdd",
+    "vitest",
+    "playwright",
+    "supabase",
+    "nextjs",
+    "github-actions",
+    "quality-audit",
+)
 CODE_GLOBS_HINT = "core-principles + developer-communication are always-on in this pack; consumer projects may add their own alwaysApply rules; everything else loads on globs / skills"
 
 
@@ -183,14 +192,6 @@ def check_project(target: Path, *, harness_root: Path | None = None) -> list[str
         errors.append(
             f"issue_source must be one of {sorted(ISSUE_SOURCES)} (got {source!r})"
         )
-    elif source == "github":
-        gh = data.get("github") or {}
-        if not isinstance(gh, dict) or not str(gh.get("owner") or "").strip():
-            errors.append("issue_source=github requires github.owner")
-        if not isinstance(gh, dict) or gh.get("project") in (None, ""):
-            errors.append("issue_source=github requires github.project (GitHub Project number)")
-        if not isinstance(gh, dict) or not str(gh.get("ready") or "").strip():
-            errors.append("issue_source=github requires github.ready (Status column name)")
     elif source == "files":
         files = data.get("files") or {}
         rel = str((files or {}).get("path") or "").strip() if isinstance(files, dict) else ""

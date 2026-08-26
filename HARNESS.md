@@ -24,10 +24,12 @@ cost nothing until invoked. Prep loads `prep` → domain `project_memory` slice 
 
 ## 1. How work runs
 
+One path. Flavor is contract `kind` (`feature` | `bug` | `architecture`), not a
+second slash.
+
 - **Prep** (anytime, about 2h max) — human creates Cursor worktrees (one tree,
-  one agent, one feature). `/prep`: packet grill → plan review → approve
-  `.cursor/night-shift/contract.md`. Optional board text: `/batch-issue-refine`
-  (`github-board` pack).
+  one agent, one feature). `/prep`: classify `kind` → packet grill → plan review →
+  approve `.cursor/night-shift/contract.md`.
 - **Nightshift** — `night-shift fire` runs `@execute-approved-plan` unattended in
   each approved worktree. Ladder (`testing` rule: **worktree proof**, then
   **idle-main complete** after `/ship-local`), `@review-code` (4b), `/review-bugbot`
@@ -49,12 +51,8 @@ cost nothing until invoked. Prep loads `prep` → domain `project_memory` slice 
 | See what exists | Anytime | Open this file |
 | Create a workflow | Add a new process | `/create-workflow` |
 | Sync from lab | Pull portable diffs from a live `.cursor` | Meta → `/sync` |
-| Prep | Batch packets + contracts into existing worktrees | `/prep` |
+| Prep | Packets + contracts into existing worktrees | `/prep` |
 | Nightshift | Fire / status local `agent -p` in those trees | `/night-shift` |
-| Feature delivery | New feature / page (one tree) | Prep → Nightshift → `feature-delivery` |
-| Bug fix | Defect (one tree) | Prep → Nightshift → `bugfix` |
-| Architecture improve | One module smell | Prep → Nightshift → `architecture-improve` |
-| Batch issue refine | Ready-column GitHub texts → AI-ready, no code | Optional `github-board` → `/batch-issue-refine` |
 | Ship prod | Clean local default → watched CI → green → Phase 7 | Hybrid → `/ship-prod` |
 | Codebase health audit | Whole-repo scorecard (hotspots + layer leaks) | Prep (report) → Nightshift if contracted |
 | Test harness optimize | Flakes, speed, coverage | Prep or Autonomous |
@@ -62,6 +60,9 @@ cost nothing until invoked. Prep loads `prep` → domain `project_memory` slice 
 
 Proposed (not installed): [README workflow ideas](README.md#workflow-ideas) —
 test suite, frontend tokens, docs-to-user-stories, performance.
+
+Agents that hear “new feature”, “bug”, or “architecture change” point at `/prep`
+only.
 
 ---
 
@@ -73,13 +74,13 @@ test suite, frontend tokens, docs-to-user-stories, performance.
 | --- | --- |
 | `grill-me` | Packet of hard questions (conversational grill is an escape hatch) |
 | `implementation-plan-review` | Turn a plan into an executable contract (you trigger it) |
-| `execute-approved-plan` | Nightshift: build, worktree proof, 4b/4c, docs, lessons → Candidates, HANDOFF.md, decisions.tsv |
+| `execute-approved-plan` | Nightshift: honor `kind`, worktree proof, 4b/4c, docs, lessons → Candidates, HANDOFF.md, decisions.tsv |
 | `project-memory` | Phase 1 load; Phase 5 scored Candidates; Phase 7 Architecture + staged harness promote ask |
 | `ship-local` | Human-triggered local merge: worktree proof is merge-ready; land feature; clean worktree (no remote push, no idle-main complete) |
 | `sync-spec-docs` | Update product acceptance / thin contracts after code changes |
 | `review-code` | Phase 4b: fix-capable maintainability review after green ladder |
 | `blast-radius` | Explicit: one proven safety fact beyond the diff (skip copy/docs) |
-| `diagnose-bug` | Tight red command before a non-trivial bug plan |
+| `diagnose-bug` | Tight red command before a non-trivial bug plan (`kind: bug`) |
 | `glossary` | Shared plain-language terms |
 | `help` | Compact developer cheat sheet (`/help`) |
 
@@ -87,16 +88,13 @@ test suite, frontend tokens, docs-to-user-stories, performance.
 
 | Skill | What it does |
 | --- | --- |
-| `prep` | Thin prep orchestrator: packets + contracts in human-created worktrees |
+| `prep` | Thin prep orchestrator: `kind` + packets + contracts in human-created worktrees |
 | `night-shift` | Fire/status CLI wrapper; never creates worktrees |
 | `create-workflow` | Guide a new workflow; update this HARNESS file |
 | `sync` | Pull lab `.cursor` diffs into this portable pack; strip product leaks |
-| `feature-delivery` | Thin orchestrator for full features |
-| `bugfix` | Thin orchestrator for bugs |
-| `architecture-improve` | Thin orchestrator: one smell → audit → grill → one extract or one cycle fix |
 | `architecture-audit` | Report shallow modules, cycles, layer leaks — no edits |
-| `extract-deep-module` | One extract or collapse per run |
-| `dependency-direction-fix` | One cycle or wrong-way dependency per run |
+| `extract-deep-module` | One extract or collapse per run (`kind: architecture`) |
+| `dependency-direction-fix` | One cycle or wrong-way dependency per run (`kind: architecture`) |
 | `wait-what` | Re-pitch the last message in plain words |
 | `ship-prod` | Human-triggered prod delivery: idle-main complete (STOP if live lease) → project ship → watch CI → fix red (+ Bugbot) → Phase 7 |
 | `review-docs` | Doc drift audit (report default) |
@@ -106,12 +104,6 @@ test suite, frontend tokens, docs-to-user-stories, performance.
 
 | Skill | Pack | What it does |
 | --- | --- | --- |
-| `batch-issue-refine` | `github-board` | Ready-batch ingest → refined issue texts → HIL sync |
-| `batch-issue-ingest` | `github-board` | Pull Ready-column issues; triage `BUG FIX` / `NEW FEATURE` |
-| `issue-text-refiner` | `github-board` | Ambiguity-free AI-ready issue bodies + blockers |
-| `issue-board-sync` | `github-board` | Preview + `gh issue edit` script; run only after HIL 2 |
-| `market-ux-strategy` | `market-ux` | Feature-only competitor benchmark, minimal UX, edge |
-| `value-validator` | `market-ux` | Feature-only `PROCEED` / `PRUNE` / `DISCARD` (HIL 1) |
 | `generate-bdd-test-spec` | `bdd` | Write Given/When/Then before feature tests |
 | `generate-vitest-test` | `vitest` | Scaffold a Vitest file matching project globs |
 | `implement-unit-tests` | `vitest` | Implement unit/UI scenarios from a BDD or bug contract |
@@ -145,7 +137,7 @@ test suite, frontend tokens, docs-to-user-stories, performance.
 | `security-basics` | Code globs | Secrets, boundaries, least privilege |
 | `database-sql` | `supabase` pack / migrations | RLS, thin-backend views, isolated-test migrate |
 | `typescript-react` | `nextjs` pack | SoC, RSC fetch, no logic in presentational components |
-| `nextjs-api-routes` | `nextjs` pack | Thin handlers, explicit returns, no vendor calls |
+| `nextjs-api-routes` | `nextjs` pack | Thin handlers, explicit returns, no vendor calls from the app |
 | `github-actions` | `github-actions` pack | Pins, least privilege, fail-closed paths |
 
 ---
@@ -199,7 +191,7 @@ See [`automations/README.md`](automations/README.md) and
 
 | When | Use |
 | --- | --- |
-| Prep | `/prep`, `/feature-delivery`, `/implementation-plan-review` |
+| Prep | `/prep`, `/implementation-plan-review` |
 | Nightshift | `/night-shift` + `@execute-approved-plan`; `@review-code` then `/review-bugbot` |
 | Sensitive diff | `/blast-radius` (or via Phase 4b / `/ship-local`) |
 | Unclear reply | `/wait-what` |

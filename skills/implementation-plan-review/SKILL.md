@@ -4,7 +4,7 @@ disable-model-invocation: true
 description: >-
   Critically evaluate a user-provided implementation plan (UX, performance, KISS,
   YAGNI, modularity, scalability, maintainability, architectural reuse, lifecycle
-  completeness, goal alignment), then produce an executable day-shift contract for
+  completeness, goal alignment), then produce an executable night-shift contract for
   autonomous Phases 2-5. Trigger only when the user explicitly invokes
   /implementation-plan-review or asks for this review after reading the draft plan.
   Do not auto-invoke.

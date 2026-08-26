@@ -96,7 +96,7 @@ git add vendor/cursor-harness
 Not installed (run from the vendor path): `runtime/night-shift`,
 `runtime/log-decision`.
 
-Default pack set is **`core`**. Optional: `github-board`, `market-ux`, `bdd`,
+Default pack set is **`core`**. Optional: `bdd`,
 `vitest`, `playwright`, `supabase`, `nextjs`, `github-actions`, `quality-audit`.
 
 Domain inventory: copy
@@ -149,7 +149,6 @@ Discovers **existing** git worktrees only. Never `git worktree add`. Optional
 | Skill not discovered | Ensure `.cursor/skills/<name>/SKILL.md` exists with `name` + `description` (symlink or real file) |
 | Workflow skill missing | Nested packs install under `.cursor/skills/workflows/<name>/` |
 | Optional pack skills missing | Reinstall with those names in `packs:` or `--packs` |
-| Batch issue refine asks for config | Copy `templates/batch-issue-refine.local.example.md` to `.cursor/batch-issue-refine.local.md` |
 | HARNESS map missing | Re-run install |
 | Vendor empty / dangling symlinks | Clone or pull `vendor/cursor-harness`, then reinstall |
 | `night-shift fire` skips trees | Need `.cursor/night-shift/contract.md` with `status: approved` in that worktree |

@@ -27,7 +27,7 @@ Examples:
   git clone git@github.com:RaphaelBecker/cursor-harness.git vendor/cursor-harness
   echo 'vendor/cursor-harness' >> .gitignore
   ./vendor/cursor-harness/install.sh --target . --init --mode symlink --with-agents
-  ./vendor/cursor-harness/install.sh --target . --packs core,github-board --check
+  ./vendor/cursor-harness/install.sh --target . --packs core,bdd --check
 EOF
 }
 
@@ -265,6 +265,38 @@ for skill in "${SKILLS[@]:-}"; do
   [[ -z "${skill:-}" ]] && continue
   install_path "${HARNESS_ROOT}/skills/${skill}" "${CURSOR_DIR}/skills/${skill}" dir
 done
+
+# Drop leftover skill dests that still point at this harness tree but are not
+# in the current pack list (deleted workflow slashes otherwise stay advertised).
+if [[ -d "${CURSOR_DIR}/skills" ]]; then
+  while IFS= read -r -d '' dest; do
+    target="$(readlink "$dest" || true)"
+    [[ -z "$target" ]] && continue
+    if [[ "$target" != /* ]]; then
+      target="$(cd "$(dirname "$dest")" && pwd)/${target}"
+    fi
+    case "$target" in
+      "${HARNESS_ROOT}/skills"/*) ;;
+      *) continue ;;
+    esac
+    rel="${dest#"${CURSOR_DIR}/skills/"}"
+    keep=0
+    for skill in "${SKILLS[@]:-}"; do
+      if [[ "$skill" == "$rel" ]]; then
+        keep=1
+        break
+      fi
+    done
+    if [[ "$keep" -eq 0 ]]; then
+      if [[ "$DRY_RUN" -eq 1 ]]; then
+        log "DRY-RUN: prune stale skill symlink $dest"
+      else
+        rm "$dest"
+        log "pruned stale skill symlink: $dest"
+      fi
+    fi
+  done < <(find "${CURSOR_DIR}/skills" -type l -print0 2>/dev/null || true)
+fi
 
 for agent in "${AGENTS[@]:-}"; do
   [[ -z "${agent:-}" ]] && continue
