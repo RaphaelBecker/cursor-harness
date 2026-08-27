@@ -17,6 +17,28 @@
         "failClosed": true,
         "timeout": 10
       }
+    ],
+    "postToolUse": [
+      {
+        "command": ".cursor/hooks/context-governor.sh",
+        "failClosed": false,
+        "timeout": 10
+      }
+    ],
+    "preCompact": [
+      {
+        "command": ".cursor/hooks/context-governor.sh",
+        "failClosed": false,
+        "timeout": 10
+      }
+    ],
+    "stop": [
+      {
+        "command": ".cursor/hooks/context-governor.sh",
+        "failClosed": false,
+        "timeout": 10,
+        "loop_limit": 5
+      }
     ]
   }
 }

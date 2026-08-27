@@ -22,9 +22,10 @@ not restate them.
 - Targeted search + ranged reads. Never bulk-read. Never re-read unchanged files.
 - Stay in the smart zone (~160k, or ~60% of the model's window). **Trust Cursor's
  context ring** (click the % next to the prompt) — do not guess and do not use a
- homemade byte estimate. When a context-governor warning cites that ring, finish the
- current step, run `/summarize-session-context`, and continue from the brief it writes.
- Do not park BLOCKED for context size; do not use Cursor's built-in `/summarize`.
+ homemade byte estimate. Compact with Cursor's built-in `/summarize` (the slash that
+ shrinks the ring). The context-governor `stop` hook auto-submits `/summarize` when
+ Cursor includes a token count at/above 60% of the window. Do not park BLOCKED for
+ context size. Do not write a substitute brief in place of `/summarize`.
 - Phase 1: load domain-relevant `project_memory.md` via `@project-memory` (overlay only).
 - Shared terms: `@glossary`. Plain talk with the developer: `developer-communication` rule.
 

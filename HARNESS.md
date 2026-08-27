@@ -166,6 +166,7 @@ Stack- or domain-specific agents belong in the consumer project (not this portab
 | `sessionStart` → `session-bootstrap.sh` | Lifecycle/skills reminder |
 | `beforeSubmitPrompt` → `protect-secrets-prompt.sh` | Secret-pattern guard |
 | `beforeShellExecution` → `guard-destructive-shell.sh` | Confirm destructive DB / force-push / `gh issue edit` |
+| `postToolUse` / `preCompact` / `stop` → `context-governor.sh` | At 60% of the context ring, auto-submit Cursor `/summarize`; silent if Cursor omits token fields |
 
 ---
 
