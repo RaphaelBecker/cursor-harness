@@ -47,10 +47,10 @@ switch, or manage worktrees except `/ship-local` when the human invokes it.
 
 - Human creates worktrees, then `/prep`: packet grill → draft contract in
  `.cursor/night-shift/contract.md` (this item only; never sidecars) → human
- `/implementation-plan-review` → ready (`status: approved`, `commits: authorized`).
- Review does not ask a second yes. Hitting Build starts Phases 2–5. Ready does
- not authorize merge, push, or production. Prep on default is valid when the
- human opened the chat there.
+ `/implementation-plan-review` → Option A/B/C → ready (`status: approved`,
+ `commits: authorized`). Review does not ask a second yes. Hitting Build starts
+ Phases 2–5. Ready does not authorize merge, push, or production. Prep on
+ default is valid when the human opened the chat there.
 - Conversational one-at-a-time grill only if the human asks for that escape hatch.
 - Outside a `/prep` sitting: do not open a long questioning loop. Point at `/prep` (anytime)
  or capture a note — do not pair all day.

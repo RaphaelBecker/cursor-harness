@@ -74,7 +74,7 @@ only.
 | Skill | What it does |
 | --- | --- |
 | `grill-me` | Packet of hard questions (conversational grill is an escape hatch) |
-| `implementation-plan-review` | Review a plan, write approved contract, say ready (you trigger it) |
+| `implementation-plan-review` | Review a plan, pause for A/B/C, write approved contract, say ready |
 | `execute-approved-plan` | Nightshift / Build: honor `kind`, worktree proof, 4b/4c, docs, lessons → Candidates, compact chat last line, HANDOFF.md |
 | `project-memory` | Phase 1 load; Phase 5 scored Candidates (commit with feature); Phase 7 Architecture; list staged ids without waiting |
 | `ship-local` | Human-triggered local merge, or leftover-commit when already on default; release lock before worktree remove |

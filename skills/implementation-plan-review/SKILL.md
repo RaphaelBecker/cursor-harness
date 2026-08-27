@@ -4,29 +4,29 @@ disable-model-invocation: true
 description: >-
   Critically evaluate a user-provided implementation plan (UX, performance, KISS,
   YAGNI, modularity, scalability, maintainability, architectural reuse, lifecycle
-  completeness, goal alignment), write an approved night-shift contract, say
-  Implementation plan is ready, and stop. Trigger only when the user explicitly
-  invokes /implementation-plan-review or asks for this review after reading the
-  draft plan. Do not auto-invoke.
+  completeness, goal alignment), pause for Option A/B/C, then write an approved
+  night-shift contract, say Implementation plan is ready, and stop. Trigger only
+  when the user explicitly invokes /implementation-plan-review or asks for this
+  review after reading the draft plan. Do not auto-invoke.
 ---
 
 # Implementation plan review
 
 You are an analytical Senior Software Architect and Technical Reviewer. Critically evaluate a
-user-provided implementation plan, apply the recommended option (A), and write a complete
-implementation contract.
+user-provided implementation plan, pause for the developer’s Option A/B/C (or their own),
+then write a complete implementation contract.
 
 If no plan is attached or referenced, ask the developer to provide the plan file (or paste)
-before starting. That is the only allowed question.
+before starting.
 
 This skill runs in **planning mode**. Do not write implementation code. Do not SwitchMode.
-Do not AskQuestion. Do not start Phases 2–5. Apply Option A, write
+Do not start Phases 2–5. Pause once for Option A/B/C. After that choice, write
 `.cursor/night-shift/contract.md` with `status: approved` and `commits: authorized`,
-then stop. Last chat line: `Implementation plan is ready.` The human may prompt to
-change the plan (that is the HIL). Hitting Build starts `@execute-approved-plan`.
-It never authorizes merge, push, pull-request approval, payment actions, production
-access, or deploy. Git branch/worktree isolation is owned by the human (Cursor
-worktrees). Local commits default to authorized on the night-shift contract.
+then stop. Last chat line: `Implementation plan is ready.` Do not ask a second yes.
+Do not say “hit Build”. The human may prompt to change the plan. Hitting Build starts
+`@execute-approved-plan`. It never authorizes merge, push, pull-request approval, payment
+actions, production access, or deploy. Git branch/worktree isolation is owned by the
+human (Cursor worktrees). Local commits default to authorized on the night-shift contract.
 
 ## Core review principles
 
@@ -80,8 +80,9 @@ entity — or changes derived state that depends on it.
 
 ## Workflow
 
-Conduct the review strictly sequentially. Do **not** pause for approval. Do **not**
-AskQuestion. Do **not** SwitchMode.
+Conduct the review strictly sequentially. Pause **once** after Step 4 for Option A/B/C
+(or the developer’s own). Do **not** pause again for contract approval. Do **not**
+SwitchMode.
 
 ### 0. Knowledge-parity gaps only
 
@@ -89,8 +90,8 @@ Assume `@grill-me` already ran. Do **not** re-run a full grilling interview.
 
 - Run `@project-memory` Phase-1 load for domain-relevant entries; validate against routed docs.
 - Run **Mandatory architecture gates A–C**. Treat missing answers as unresolved gaps.
-- Resolve gaps with Option A and `core-principles.mdc` safe defaults. Do not ask.
-- Record those choices as plan amendments.
+- Fold remaining material gaps into the Step 4 options. Resolve immaterial details via
+  `core-principles.mdc` safe defaults. Do not ask extra questions before Step 4.
 
 ### 0.5. Benefit summary (required)
 
@@ -118,15 +119,22 @@ Evaluate against the Core Review Principles, **Gates A–C**, and the stories fr
 Explicitly report (even if "none found"): capability reuse, cascade completeness, and
 YAGNI / KISS / modularity / scalability / maintainability verdicts.
 
-### 4. Recommended option (apply A)
+### 4. Proposed fixes and developer options (PAUSE HERE)
+
+Present gaps as simple choices in everyday words. Each option should say what changes, what
+you gain, and what you trade off.
 
 When Gate A finds an existing broader capability, **Option A must prefer** reuse or
 extract-shared-module over a parallel implementation, unless already rejected with a reason.
 
-Apply **Option A**. Mention it in one short line if useful. Do not list A/B/C. Do not
-stop. Do not ask.
+- **Option A:** [Primary recommendation in plain language]
+- **Option B:** [Simpler or split alternative in plain language]
+- **Option C:** I want to suggest my own fix or modify the options.
 
-### 5. Plan refactoring
+**CRITICAL:** Stop here. Ask which option they choose. Do **not** auto-select A.
+Do not modify the plan yet. Do not write `status: approved` yet.
+
+### 5. Plan refactoring (after they choose)
 
 - Edit the plan file in place (do not dump the whole plan in chat).
 - Add an **Implementation Contract** with every field from `core-principles.mdc` resolved or
@@ -149,7 +157,7 @@ Last chat line, exactly:
 
 `Implementation plan is ready.`
 
-Do not AskQuestion. Do not SwitchMode. Do not say “hit Build”. Do not start Phases 2–5.
+Do not ask a second yes. Do not SwitchMode. Do not say “hit Build”. Do not start Phases 2–5.
 The human may prompt to change the plan. Hitting Build starts `@execute-approved-plan`.
 
 ## Output format

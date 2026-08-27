@@ -73,7 +73,7 @@ If they do not, reset first, then draft.
    `templates/night-shift-contract.example.md`. Include **Manual test**
    (how to run the app + which acceptance to click). Delete leftover sidecars.
 6. **Review** — wait for human `/implementation-plan-review` (or batch review of
-   packets in this sitting). That skill applies Option A, writes
+   packets in this sitting). That skill pauses once for Option A/B/C, then writes
    `status: approved`, says `Implementation plan is ready.`, and stops. Do not
    ask a second yes. That write does **not** authorize merge, push, or production.
 7. **Stop** — do not start Phases 2–5. Do not say “hit Build”.
