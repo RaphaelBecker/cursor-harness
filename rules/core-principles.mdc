@@ -46,17 +46,21 @@ switch, or manage worktrees except `/ship-local` when the human invokes it.
 ### Prep (HIL — `/prep`)
 
 - Human creates worktrees, then `/prep`: packet grill → draft contract in
- `.cursor/night-shift/contract.md` → human `/implementation-plan-review` → explicit approve
- (`status: approved`, `commits: authorized`). Approval does not authorize merge, push, or
- production.
+ `.cursor/night-shift/contract.md` (this item only; never sidecars) → human
+ `/implementation-plan-review` → ready (`status: approved`, `commits: authorized`).
+ Review does not ask a second yes. Hitting Build starts Phases 2–5. Ready does
+ not authorize merge, push, or production. Prep on default is valid when the
+ human opened the chat there.
 - Conversational one-at-a-time grill only if the human asks for that escape hatch.
 - Outside a `/prep` sitting: do not open a long questioning loop. Point at `/prep` (anytime)
  or capture a note — do not pair all day.
 
 ### Nightshift (Phases 2–5, unattended)
 
-- `night-shift fire` launches one local `agent -p` per approved worktree. Do not prepend `&`
- (cloud handoff). Do not create worktrees.
+- `night-shift fire` launches one local `agent -p` per approved worktree. Cursor
+ **Build** in the prep chat runs the same `@execute-approved-plan` skill. Skipping
+ fire is fine for one-tree attended work. Do not prepend `&` (cloud handoff).
+ Do not create worktrees.
 - On a hard stop: write `.cursor/night-shift/BLOCKED.md`, exit, leave other trees running.
  Never wait for the human.
 - Local verification and local commits are contract-default authorized when
@@ -73,11 +77,13 @@ switch, or manage worktrees except `/ship-local` when the human invokes it.
 4. **Verify** — ladder per `testing` rule; then `@review-code` (4b); then `/review-bugbot`
  (and `/review-security` when sensitive) as report-only 4c. Do not wait on 4c — summarize it
  in the handoff.
-5. **Document & Finalize** — `@sync-spec-docs`, SemVer if versioned packages changed, handoff
- with **Manual test** recipe, merge-ready status, **`## Lessons learned`**, then
- `@project-memory` Phase 5 Candidates + cycle status (Architecture stays Phase 7-only).
- Write `.cursor/night-shift/HANDOFF.md`.
-6. **Ship** — human `/ship-local` then `/ship-prod` (or the project's deploy scripts).
+5. **Document & Finalize** — `@sync-spec-docs`, SemVer if versioned packages changed.
+ Chat handoff is short; last line `DONE` or `PARTIAL: <gap>`. Long evidence +
+ **`## Lessons learned`** lives in `.cursor/night-shift/HANDOFF.md` (do not commit).
+ `@project-memory` Phase 5 Candidates + cycle status (Architecture stays Phase 7-only);
+ commit `project_memory.md` with the feature.
+6. **Ship** — feature tree: human `/ship-local` then `/ship-prod`. Already on
+ default: `/ship-prod` is enough (it commits leftovers).
 7. **Memory (conditional)** — after watched-green remote ship only: `@project-memory` Phase 7.
 
 **Must run** the verification ladder without asking. Normative steps live only in the
@@ -90,6 +96,11 @@ permissions, **manual test**, handoff evidence — each resolved or `N/A` with r
 prescribe branch or worktree names.
 
 **Safe defaults:** smallest reversible change, refactor before add, mock externals, stay in scope.
+**Dirty leftovers on this checkout:** classify, then absorb night-shift working files
+(reset/delete; do not commit), `project_memory.md` (commit with the feature), generated
+noise (restore), and uncommitted product that belongs to this tip (commit). Secrets /
+`.env*` / vault, a live `/ship-local` on another tree, or foreign-worktree dirt → STOP.
+Never stash.
 **Hard stops (unattended):** scope expansion, unapproved behavior/data, ambiguous deletion,
 credentials, destructive ops, payments, production, push, deploy — **park BLOCKED.md**.
 Local merge and worktree cleanup only via explicit `/ship-local`.

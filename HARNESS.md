@@ -29,15 +29,16 @@ second slash.
 
 - **Prep** (anytime, about 2h max) — human creates Cursor worktrees (one tree,
   one agent, one feature). `/prep`: classify `kind` → packet grill → plan review →
-  approve `.cursor/night-shift/contract.md`.
-- **Nightshift** — `night-shift fire` runs `@execute-approved-plan` unattended in
-  each approved worktree. Ladder (`testing` rule: **worktree proof**, then
-  **idle-main complete** after `/ship-local`), `@review-code` (4b), `/review-bugbot`
-  4c report-only, docs, Candidates, **Manual test** handoff. Append-only
-  `decisions.tsv`. Park `BLOCKED.md` instead of waiting.
-- **After** — `night-shift status` + manual tests, then `/ship-local` (worktree
-  proof is merge-ready), one **idle-main complete** on idle local default, then
-  `/ship-prod`.
+  ready `.cursor/night-shift/contract.md` (this item only; never sidecars).
+- **Nightshift** — Cursor **Build** or `night-shift fire` runs `@execute-approved-plan`
+  (fire is the unattended multi-tree launcher). Ladder (`testing` rule: **worktree proof**,
+  then **idle-main complete** after `/ship-local`), `@review-code` (4b), `/review-bugbot`
+  4c report-only, docs, Candidates, compact chat last line `DONE`/`PARTIAL`. Append-only
+  `decisions.tsv`. Park `BLOCKED.md` instead of waiting. Working `contract.md` /
+  `HANDOFF.md` are gitignored so new trees start clean.
+- **After** — `night-shift status` + manual tests, then `/ship-local` (worktree) or
+  leftover-commit on default; one **idle-main complete** on idle local default
+  (wait live leases, bounded), then `/ship-prod`.
 - **Autonomous** — local CLI/SDK hygiene stubs. Cloud `/automate` is overflow.
 - **Map rule** — Any new skill, rule, agent, workflow, or automation stub must update **this file**.
 
@@ -53,7 +54,7 @@ second slash.
 | Sync from lab | Pull portable diffs from a live `.cursor` | Meta → `/sync` |
 | Prep | Packets + contracts into existing worktrees | `/prep` |
 | Nightshift | Fire / status local `agent -p` in those trees | `/night-shift` |
-| Ship prod | Clean local default → watched CI → green → Phase 7 | Hybrid → `/ship-prod` |
+| Ship prod | Classify leftovers on default → idle-main complete (wait live lease) → watched CI → green → Phase 7 | Hybrid → `/ship-prod` |
 | Codebase health audit | Whole-repo scorecard (hotspots + layer leaks) | Prep (report) → Nightshift if contracted |
 | Test harness optimize | Flakes, speed, coverage | Prep or Autonomous |
 | Daily quality jobs | Recurring hygiene | Autonomous (local CLI/SDK; see automations README) |
@@ -73,10 +74,10 @@ only.
 | Skill | What it does |
 | --- | --- |
 | `grill-me` | Packet of hard questions (conversational grill is an escape hatch) |
-| `implementation-plan-review` | Turn a plan into an executable contract (you trigger it) |
-| `execute-approved-plan` | Nightshift: honor `kind`, worktree proof, 4b/4c, docs, lessons → Candidates, HANDOFF.md, decisions.tsv |
-| `project-memory` | Phase 1 load; Phase 5 scored Candidates; Phase 7 Architecture + staged harness promote ask |
-| `ship-local` | Human-triggered local merge: worktree proof is merge-ready; land feature; clean worktree (no remote push, no idle-main complete) |
+| `implementation-plan-review` | Review a plan, write approved contract, say ready (you trigger it) |
+| `execute-approved-plan` | Nightshift / Build: honor `kind`, worktree proof, 4b/4c, docs, lessons → Candidates, compact chat last line, HANDOFF.md |
+| `project-memory` | Phase 1 load; Phase 5 scored Candidates (commit with feature); Phase 7 Architecture; list staged ids without waiting |
+| `ship-local` | Human-triggered local merge, or leftover-commit when already on default; release lock before worktree remove |
 | `sync-spec-docs` | Update product acceptance / thin contracts after code changes |
 | `review-code` | Phase 4b: fix-capable maintainability review after green ladder |
 | `blast-radius` | Explicit: one proven safety fact beyond the diff (skip copy/docs) |
@@ -96,7 +97,7 @@ only.
 | `extract-deep-module` | One extract or collapse per run (`kind: architecture`) |
 | `dependency-direction-fix` | One cycle or wrong-way dependency per run (`kind: architecture`) |
 | `wait-what` | Re-pitch the last message in plain words |
-| `ship-prod` | Human-triggered prod delivery: idle-main complete (STOP if live lease) → project ship → watch CI → fix red (+ Bugbot) → Phase 7 |
+| `ship-prod` | Human-triggered prod delivery: classify leftovers → wait live lease → idle-main complete → project ship → watch CI → Phase 7 |
 | `review-docs` | Doc drift audit (report default) |
 | `test-harness-optimize` | Faster/less flaky tests without weaker asserts |
 
@@ -192,7 +193,7 @@ See [`automations/README.md`](automations/README.md) and
 | When | Use |
 | --- | --- |
 | Prep | `/prep`, `/implementation-plan-review` |
-| Nightshift | `/night-shift` + `@execute-approved-plan`; `@review-code` then `/review-bugbot` |
+| Nightshift | Cursor Build or `/night-shift` + `@execute-approved-plan`; `@review-code` then `/review-bugbot` |
 | Sensitive diff | `/blast-radius` (or via Phase 4b / `/ship-local`) |
 | Unclear reply | `/wait-what` |
 | Local ship | `/ship-local` after manual tests |

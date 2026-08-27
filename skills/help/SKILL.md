@@ -29,8 +29,8 @@ loads `prep` → memory slice → packet `grill-me` → **one** routed doc.
 
 | You want | You type |
 | --- | --- |
-| Build anything | `/prep` → `/implementation-plan-review` → approve → `/night-shift` → test → `/ship-local` → `/ship-prod` |
-| Fire / status | `/night-shift` |
+| Build anything | `/prep` → `/implementation-plan-review` → Cursor Build (or `/night-shift`) → `/ship-local` (worktree) or `/ship-prod` (already on default) |
+| Fire / status | `/night-shift` (optional; Build in the prep chat is enough for one tree) |
 | Cheat sheet | `/help` |
 
 Flavor is contract `kind` (`feature` / `bug` / `architecture`), not a second slash.
@@ -55,8 +55,11 @@ Agents that hear “new feature” point at `/prep` only.
 
 ### Rules of the road (short)
 
-- **Prep** = short HIL sitting, anytime. **Nightshift** = unattended build in those trees.
+- **Prep** = short HIL sitting, anytime. **Nightshift** = unattended build in those trees
+  (`/night-shift` fire) **or** Cursor Build in the prep chat — same skill.
 - Humans create worktrees. Agents and `night-shift` never run `git worktree add`.
+- New trees start with a draft `contract.md` (gitignore + create-time reset). Never sidecar.
+- Chat after implement/ship ends with `DONE` or `PARTIAL: <exact leftover>`.
 - Product story first → then code → thin contracts only for high-risk seams.
 - Feature tree: **worktree proof**. Idle local main after lands: **idle-main complete**.
 - Unattended hard stop = `.cursor/night-shift/BLOCKED.md`, not a ping.

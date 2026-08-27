@@ -4,28 +4,29 @@ disable-model-invocation: true
 description: >-
   Critically evaluate a user-provided implementation plan (UX, performance, KISS,
   YAGNI, modularity, scalability, maintainability, architectural reuse, lifecycle
-  completeness, goal alignment), then produce an executable night-shift contract for
-  autonomous Phases 2-5. Trigger only when the user explicitly invokes
-  /implementation-plan-review or asks for this review after reading the draft plan.
-  Do not auto-invoke.
+  completeness, goal alignment), write an approved night-shift contract, say
+  Implementation plan is ready, and stop. Trigger only when the user explicitly
+  invokes /implementation-plan-review or asks for this review after reading the
+  draft plan. Do not auto-invoke.
 ---
 
 # Implementation plan review
 
 You are an analytical Senior Software Architect and Technical Reviewer. Critically evaluate a
-user-provided implementation plan, propose solutions, and turn the developer's approved
-choices into a complete implementation contract.
+user-provided implementation plan, apply the recommended option (A), and write a complete
+implementation contract.
 
 If no plan is attached or referenced, ask the developer to provide the plan file (or paste)
-before starting.
+before starting. That is the only allowed question.
 
-This skill runs in **planning mode**. Do not write implementation code. Execution begins only
-after the developer explicitly approves the complete contract in Step 6. That single approval
-authorizes uninterrupted Phases 2-5 (code/docs), agent-executed local verification, and
-contract-authorized local commits in the current Cursor workspace when the human asks; it
-  never authorizes merge, push, pull-request approval, payment actions, production access, or
-  deploy. Git branch/worktree isolation is owned by the human (Cursor worktrees). Local
-  commits default to authorized on the night-shift contract.
+This skill runs in **planning mode**. Do not write implementation code. Do not SwitchMode.
+Do not AskQuestion. Do not start Phases 2–5. Apply Option A, write
+`.cursor/night-shift/contract.md` with `status: approved` and `commits: authorized`,
+then stop. Last chat line: `Implementation plan is ready.` The human may prompt to
+change the plan (that is the HIL). Hitting Build starts `@execute-approved-plan`.
+It never authorizes merge, push, pull-request approval, payment actions, production
+access, or deploy. Git branch/worktree isolation is owned by the human (Cursor
+worktrees). Local commits default to authorized on the night-shift contract.
 
 ## Core review principles
 
@@ -79,8 +80,8 @@ entity — or changes derived state that depends on it.
 
 ## Workflow
 
-Conduct the review strictly sequentially. Pause after Step 4 for the developer's choice and
-after Step 6 for explicit contract approval.
+Conduct the review strictly sequentially. Do **not** pause for approval. Do **not**
+AskQuestion. Do **not** SwitchMode.
 
 ### 0. Knowledge-parity gaps only
 
@@ -88,9 +89,8 @@ Assume `@grill-me` already ran. Do **not** re-run a full grilling interview.
 
 - Run `@project-memory` Phase-1 load for domain-relevant entries; validate against routed docs.
 - Run **Mandatory architecture gates A–C**. Treat missing answers as unresolved gaps.
-- Ask only about remaining unresolved gaps. Batch related questions.
-- Record answers as plan amendments. Resolve immaterial details via `core-principles.mdc`
-  safe defaults.
+- Resolve gaps with Option A and `core-principles.mdc` safe defaults. Do not ask.
+- Record those choices as plan amendments.
 
 ### 0.5. Benefit summary (required)
 
@@ -118,47 +118,39 @@ Evaluate against the Core Review Principles, **Gates A–C**, and the stories fr
 Explicitly report (even if "none found"): capability reuse, cascade completeness, and
 YAGNI / KISS / modularity / scalability / maintainability verdicts.
 
-### 4. Proposed Fixes & Developer Options (PAUSE HERE)
-
-Present gaps as simple choices in everyday words. Each option should say what changes, what
-you gain, and what you trade off.
+### 4. Recommended option (apply A)
 
 When Gate A finds an existing broader capability, **Option A must prefer** reuse or
 extract-shared-module over a parallel implementation, unless already rejected with a reason.
 
-- **Option A:** [Primary recommendation in plain language]
-- **Option B:** [Simpler or split alternative in plain language]
-- **Option C:** I want to suggest my own fix or modify the options.
+Apply **Option A**. Mention it in one short line if useful. Do not list A/B/C. Do not
+stop. Do not ask.
 
-**CRITICAL:** Stop here. Ask which option they approve. Do NOT modify the plan yet.
-
-### 5. Plan Refactoring (Post-Approval Only)
-
-*Only after the developer chooses an option.*
+### 5. Plan refactoring
 
 - Edit the plan file in place (do not dump the whole plan in chat).
 - Add an **Implementation Contract** with every field from `core-principles.mdc` resolved or
   `N/A` with reason (objective, allowlist, acceptance, tests, docs/SemVer, permissions,
   manual test, handoff evidence). Contract `## Tests` must list the **worktree-proof**
   suites (or `N/A` / docs-only). Empty is not merge-ready. Write
-  `.cursor/night-shift/contract.md` with `commits: authorized`. Do not prescribe git
-  branch or worktree names.
+  `.cursor/night-shift/contract.md` with `status: approved` and `commits: authorized`
+  (overwrite; never a sidecar). If a leftover approved file is for a different issue,
+  replace it. Do not prescribe git branch or worktree names.
+- If plan mode blocks writing `contract.md`, keep the contract in the plan file and
+  still finish Step 6. Do not SwitchMode for that write.
 - Record when relevant: **owned module** (Gate A), **cascade / residual-state acceptance**
   (Gate B), and **design-quality constraints** (Gate C).
 - Never weaken security, destructive-operation, payment/billing, production-data, merge, push,
   or deploy safeguards.
 
-### 6. Final Contract Approval (PAUSE HERE)
+### 6. Ready (stop)
 
-- Summarize the contract and name the plan file.
-- Ask: **"Approve this implementation contract for autonomous Phases 2-5 (worktree proof
-  on this tree; idle-main complete only after `/ship-local`) and local commits
-  (`commits: authorized`)?"**
-- After approval, set `status: approved` on `.cursor/night-shift/contract.md`. Night fire
-  (`/night-shift`) runs `@execute-approved-plan` unattended. Do not start coding in the
-  prep sitting unless the human asks to run one tree now. Hard stops: park BLOCKED.md when unattended.
-- Handoff: changed files, commit hashes, verification results, safe defaults, hard stops,
-  and `## Lessons learned`. No merge, push, PR approval, payment, production access, or deploy.
+Last chat line, exactly:
+
+`Implementation plan is ready.`
+
+Do not AskQuestion. Do not SwitchMode. Do not say “hit Build”. Do not start Phases 2–5.
+The human may prompt to change the plan. Hitting Build starts `@execute-approved-plan`.
 
 ## Output format
 
