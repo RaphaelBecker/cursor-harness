@@ -62,6 +62,7 @@ Agents that hear “new feature” point at `/prep` only.
 - Chat after implement/ship ends with `DONE` or `PARTIAL: <exact leftover>`.
 - Product story first → then code → thin contracts only for high-risk seams.
 - Feature tree: **worktree proof**. Idle local main after lands: **idle-main complete**.
+- Complete red + isolate red → `@diagnose-bug` + `/review-bugbot`, then re-prove. Not a flake STOP.
 - Unattended hard stop = `.cursor/night-shift/BLOCKED.md`, not a ping.
 - Change a skill/rule/agent/workflow/automation → update `.cursor/HARNESS.md` same change (domain extras → `.cursor/HARNESS.local.md`).
 

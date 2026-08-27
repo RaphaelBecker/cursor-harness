@@ -84,7 +84,9 @@ switch, or manage worktrees except `/ship-local` when the human invokes it.
  `@project-memory` Phase 5 Candidates + cycle status (Architecture stays Phase 7-only);
  commit `project_memory.md` with the feature.
 6. **Ship** — feature tree: human `/ship-local` then `/ship-prod`. Already on
- default: `/ship-prod` is enough (it commits leftovers).
+ default: `/ship-prod` is enough (it commits leftovers). Local complete red
+ + isolate red → `@diagnose-bug` + `/review-bugbot` (testing rule); not a
+ flake STOP.
 7. **Memory (conditional)** — after watched-green remote ship only: `@project-memory` Phase 7.
 
 **Must run** the verification ladder without asking. Normative steps live only in the

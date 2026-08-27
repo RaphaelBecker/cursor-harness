@@ -78,6 +78,14 @@ test engine (no reimplemented Playwright, Vitest, or DB bootstrap).
    shared test slot → **wait** (bounded; default 20 min), then STOP only if still
    held. Do not start complete on a noisy host. Recover unhealthy slots via the
    project's documented path; do not ask.
+8. **Idle-main complete red:** isolate only the failing listed suite. Isolate
+   **green** → suite-load flake, not a product bug; re-run complete once (the
+   one transient infra retry). Isolate **still red** (same or related
+   assertion) → **not** a flake storm. Read `@diagnose-bug`. Run
+   `/review-bugbot` (and `/review-security` when the surface is auth, access
+   control, billing, admin, or secrets). Do not STOP on billing or mixed
+   assertions until diagnose names the seam or a true hard-stop (secrets,
+   live payments, production). `/fix-flaky-test` stays human-only.
 
 Also:
 

@@ -17,7 +17,7 @@ Default install is **`core`**. Optional pack sets: `bdd`, `vitest`, `playwright`
 | `project-memory` | Phase 1 load; Phase 5 Candidates; Phase 7 promote ask | [project-memory](../skills/project-memory/SKILL.md) |
 | `review-code` | Phase 4b after a green worktree proof | [review-code](../skills/review-code/SKILL.md) |
 | `blast-radius` | Sensitive diff: one proven safety fact | [blast-radius](../skills/blast-radius/SKILL.md) |
-| `diagnose-bug` | Non-trivial `/prep` (`kind: bug`): tight red command | [diagnose-bug](../skills/diagnose-bug/SKILL.md) |
+| `diagnose-bug` | `/prep` (`kind: bug`), or idle-main complete isolate-red / `/ship-prod` unnamed seam: tight red command | [diagnose-bug](../skills/diagnose-bug/SKILL.md) |
 | `sync-spec-docs` | Phase 5 product-story / acceptance updates | [sync-spec-docs](../skills/sync-spec-docs/SKILL.md) |
 | `ship-local` | Human `/ship-local` — land feature, or leftover-commit when already on default | [ship-local](../skills/ship-local/SKILL.md) |
 
@@ -29,7 +29,7 @@ Thin sequences. Do not duplicate their steps here.
 | --- | --- | --- | --- |
 | `prep` | core | Short workpack HIL into existing worktrees | [prep](../skills/workflows/prep/SKILL.md) |
 | `night-shift` | core | Fire / status; never creates worktrees | [night-shift](../skills/workflows/night-shift/SKILL.md) |
-| `ship-prod` | core | Classify leftovers → wait live lease → idle-main complete → watched remote ship + CI fix + Phase 7 | [ship-prod](../skills/workflows/ship-prod/SKILL.md) |
+| `ship-prod` | core | Classify leftovers → wait live lease → idle-main complete → diagnose+Bugbot if isolate-red → watched remote ship + CI fix + Phase 7 | [ship-prod](../skills/workflows/ship-prod/SKILL.md) |
 | `codebase-health-audit` | quality-audit | Whole-repo health scorecard | [codebase-health-audit](../skills/workflows/codebase-health-audit/SKILL.md) |
 
 ## Optional pack skills

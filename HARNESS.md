@@ -37,8 +37,9 @@ second slash.
   `decisions.tsv`. Park `BLOCKED.md` instead of waiting. Working `contract.md` /
   `HANDOFF.md` are gitignored so new trees start clean.
 - **After** — `night-shift status` + manual tests, then `/ship-local` (worktree) or
-  leftover-commit on default; one **idle-main complete** on idle local default
-  (wait live leases, bounded), then `/ship-prod`.
+ leftover-commit on default; one **idle-main complete** on idle local default
+ (wait live leases, bounded), then `/ship-prod`. Complete red + isolate red
+ → `@diagnose-bug` + `/review-bugbot` before push — not a flake STOP.
 - **Autonomous** — local CLI/SDK hygiene stubs. Cloud `/automate` is overflow.
 - **Map rule** — Any new skill, rule, agent, workflow, or automation stub must update **this file**.
 
@@ -54,7 +55,7 @@ second slash.
 | Sync from lab | Pull portable diffs from a live `.cursor` | Meta → `/sync` |
 | Prep | Packets + contracts into existing worktrees | `/prep` |
 | Nightshift | Fire / status local `agent -p` in those trees | `/night-shift` |
-| Ship prod | Classify leftovers on default → idle-main complete (wait live lease) → watched CI → green → Phase 7 | Hybrid → `/ship-prod` |
+| Ship prod | Classify leftovers on default → idle-main complete (wait live lease) → diagnose+Bugbot if isolate-red → watched CI → green → Phase 7 | Hybrid → `/ship-prod` |
 | Codebase health audit | Whole-repo scorecard (hotspots + layer leaks) | Prep (report) → Nightshift if contracted |
 | Test harness optimize | Flakes, speed, coverage | Prep or Autonomous |
 | Daily quality jobs | Recurring hygiene | Autonomous (local CLI/SDK; see automations README) |
@@ -81,7 +82,7 @@ only.
 | `sync-spec-docs` | Update product acceptance / thin contracts after code changes |
 | `review-code` | Phase 4b: fix-capable maintainability review after green ladder |
 | `blast-radius` | Explicit: one proven safety fact beyond the diff (skip copy/docs) |
-| `diagnose-bug` | Tight red command before a non-trivial bug plan (`kind: bug`) |
+| `diagnose-bug` | Tight red command before a bug plan, and when idle-main complete isolate stays red |
 | `glossary` | Shared plain-language terms |
 | `help` | Compact developer cheat sheet (`/help`) |
 
@@ -97,7 +98,7 @@ only.
 | `extract-deep-module` | One extract or collapse per run (`kind: architecture`) |
 | `dependency-direction-fix` | One cycle or wrong-way dependency per run (`kind: architecture`) |
 | `wait-what` | Re-pitch the last message in plain words |
-| `ship-prod` | Human-triggered prod delivery: classify leftovers → wait live lease → idle-main complete → project ship → watch CI → Phase 7 |
+| `ship-prod` | Human-triggered prod delivery: classify leftovers → wait live lease → idle-main complete → diagnose+Bugbot if isolate-red → project ship → watch CI → Phase 7 |
 | `review-docs` | Doc drift audit (report default) |
 | `test-harness-optimize` | Faster/less flaky tests without weaker asserts |
 

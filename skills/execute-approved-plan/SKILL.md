@@ -114,8 +114,10 @@ if unattended → BLOCKED.md; else stop.
    1. Run `/review-bugbot` (or the Bugbot subagent) on branch changes.
    2. If the allowlist touches auth, access control, billing/payments, admin,
       secrets, or other sensitive surfaces, also run `/review-security`.
-   3. Put findings in `HANDOFF.md`. **Do not auto-fix** Bugbot or Security
-      findings. Do **not** wait for the human — leave 4c for after Nightshift.
+   3. Put findings in `HANDOFF.md`. **Run 4c in this sitting** — do not skip
+      or defer the Bugbot/Security run. **Do not auto-fix** those findings
+      in Nightshift (report-only). Do **not** wait for the human to apply
+      them before finishing the handoff.
    4. Re-run the ladder only if a human later approves behavior-changing fixes.
 
 ### Phase 5 — Document, version, lessons, handoff

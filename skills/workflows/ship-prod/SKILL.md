@@ -3,9 +3,10 @@ name: ship-prod
 disable-model-invocation: true
 description: >-
   Human-triggered production delivery of local default branch: classify and
-  absorb this checkout's leftovers, verify local green, run the project's
-  documented push/deploy path, watch CI, fix red runs with bugfix + Bugbot
-  sidekick, then Phase 7 memory after watched green. Use when the developer
+  absorb this checkout's leftovers, verify local green, diagnose + Bugbot
+  when complete stays red after isolate, run the project's documented
+  push/deploy path, watch CI, fix red runs with bugfix + Bugbot sidekick,
+  then Phase 7 memory after watched green. Use when the developer
   runs /ship-prod after work is on local default (often AFK).
 ---
 
@@ -79,6 +80,26 @@ If STOP-class preconditions fail → **STOP** and report blockers. Do not push.
 
 ## Sequence
 
+### 0) Local complete red (before first push)
+
+If idle-main complete is red, do not push. Follow the `testing` rule
+**Idle-main complete red** section. Do **not** call it a flake storm yet.
+
+1. Isolate only the failing listed suite (project's existing runner).
+2. Isolate **green** → suite-load flake. Re-run complete once (the one
+   transient infra retry). If green, continue the ship.
+3. Isolate **still red** (same or related assertion) → read `@diagnose-bug`.
+   Always run `/review-bugbot` in this sitting (and `/review-security` if
+   the surface is auth, access control, billing, admin, or secrets).
+   Write the red command + hypotheses to `HANDOFF.md` immediately.
+4. After diagnose names the seam: smallest fix on this tip → prove with
+   the isolated suite → re-run complete. Repair caps stay in the `testing`
+   rule. Apply only sound, in-scope fixes from Bugbot.
+5. **STOP** only for true hard-stops (secrets, live payments, production,
+   vault) or when diagnose cannot name a seam after the probes. Do **not**
+   STOP merely because the suite is billing or the failures look mixed.
+   Do not invoke `/fix-flaky-test` from this spine.
+
 ### 1) Classify and push
 
 1. Prefer the project's documented ship/deploy script over bare `git push`.
@@ -96,21 +117,24 @@ If STOP-class preconditions fail → **STOP** and report blockers. Do not push.
 
 ### 3) On red — fix loop (Bugbot sidekick)
 
-Treat CI failure as a bug fix (`core-principles` / `bugfix`), scoped to the failing
-check and this tip:
+Treat CI failure as a bug fix (`core-principles` / `@diagnose-bug` when the
+seam is unnamed), scoped to the failing check and this tip:
 
 1. Fetch failed logs via `gh run view --log-failed` (or project equivalent).
 2. Optional first pass: `ci-investigator` for a short root-cause summary.
+   If logs do not name the seam → read `@diagnose-bug`.
 3. **RED first** when the failure reveals an untested path (regression before product fix).
 4. Smallest fix → prove with the narrowest relevant check, then ladder per `testing` rule
    as required for the change class (do not weaken gates).
-5. **Bugbot sidekick:** run `/review-bugbot` when root cause is unclear after reading
-   logs, after one failed fix/re-push, or when the human asks. Also `/review-security`
-   if the failing surface is auth, access control, billing, admin, or secrets.
-   Bugbot stays report-capable reasoning aid — apply only sound, in-scope fixes.
+5. **Bugbot sidekick:** always run `/review-bugbot` when isolate stayed red, when
+   root cause is unclear after reading logs, after one failed fix/re-push, or
+   when the human asks. Also `/review-security` if the failing surface is auth,
+   access control, billing, admin, or secrets. Bugbot stays a report-capable
+   reasoning aid — apply only sound, in-scope fixes.
 6. Commit on default branch → re-run the project's ship command → return to Watch.
-7. Repair budget: follow the `testing` rule. If blocked (flake storm, infra, secrets,
-   ambiguous security/billing), **STOP** and ask the human.
+7. Repair budget: follow the `testing` rule. **STOP** only for true hard-stops
+   (secrets, live payments, production, vault) or when diagnose cannot name a
+   seam. Do not STOP merely because the suite is billing or failures look mixed.
 
 Leftover-container / slot-unhealthy infra: recover via the project path, then
 `gh run rerun --failed` (or equivalent). Do not re-push for that class.
@@ -129,7 +153,7 @@ Leftover-container / slot-unhealthy infra: recover via the project path, then
 | Gate | Rule |
 | --- | --- |
 | Human trigger | Required — this skill never self-starts |
-| Local green | Idle-main complete for test-relevant `HEAD` before first push |
+| Local green | Idle-main complete for test-relevant `HEAD` before first push. Complete red + isolate red → diagnose-bug + Bugbot, then re-prove complete |
 | Live test-pool lease | Wait (bounded), then STOP only if still held |
 | Secrets / vault | Do not invent or copy local env to prod; stop if vault/auth unclear |
 | Scope of CI fixes | Only what the red run needs; no drive-by refactors |
