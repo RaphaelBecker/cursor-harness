@@ -37,7 +37,11 @@ equals the number of ready trees. Custom `slots.lease` is a test-pool script:
 acquire at **worktree proof** only when a listed suite needs the stack — not at
 fire. Pure unit/UI must not take a slot. Do not skip tests. About **3** parallel
 agents has been comfortable on a laptop; that is experience, not a harness cap.
-`slots-status` exit 0 means another worktree holds a pool slot (`/ship-prod` STOP).
+`slots-status` exit 0 means another worktree holds a pool slot. `/ship-prod` **waits**
+(bounded) then STOP only if still held.
+
+Cursor **Build** in a prep chat also runs `@execute-approved-plan`. Fire is for
+unattended multi-tree launch. Skipping fire is fine.
 
 Optional schedule: copy
 `templates/launchd/com.cursor-harness.night-shift.plist.example`.

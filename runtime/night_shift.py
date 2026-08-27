@@ -223,8 +223,9 @@ def builtin_live_holders(target: Path) -> list[Path]:
 def has_live_leases(target: Path, project: dict[str, Any]) -> bool:
     """True when another worktree holds a shared test-pool slot.
 
-    Prefer `<slots.status|slots.lease> has-live-leases`: exit 0 = live (STOP),
-    exit 1 = idle. Any other exit falls back to built-in pid holders.
+    Prefer `<slots.status|slots.lease> has-live-leases`: exit 0 = live,
+    exit 1 = idle. `/ship-prod` waits (bounded) when live. Any other exit
+    falls back to built-in pid holders.
     """
     cmd = _slot_script(target, project, "status") or _slot_script(target, project, "lease")
     if cmd:
@@ -441,7 +442,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("status", help="morning board")
     sub.add_parser(
         "slots-status",
-        help="exit 0 if another worktree holds a test-pool slot (STOP); 1 if idle",
+        help="exit 0 if another worktree holds a test-pool slot (live); 1 if idle",
     )
 
     args = parser.parse_args(argv)

@@ -151,5 +151,6 @@ Discovers **existing** git worktrees only. Never `git worktree add`. Optional
 | Optional pack skills missing | Reinstall with those names in `packs:` or `--packs` |
 | HARNESS map missing | Re-run install |
 | Vendor empty / dangling symlinks | Clone or pull `vendor/cursor-harness`, then reinstall |
-| `night-shift fire` skips trees | Need `.cursor/night-shift/contract.md` with `status: approved` in that worktree |
+| `night-shift fire` skips trees | Need `.cursor/night-shift/contract.md` with `status: approved` **for this item** in that worktree (foreign leftovers must be reset, not executed) |
+| New worktree inherits an approved contract | Gitignore working `contract.md` / `HANDOFF.md` / `BLOCKED.md`; keep a tracked stub. Create-time setup should reset them to draft. |
 | `agent` not on PATH | Install Cursor CLI; or set `executor.command` in `harness.project.yaml` |

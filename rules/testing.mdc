@@ -8,8 +8,8 @@ alwaysApply: false
 
 This file is the **SSOT for the verification ladder** (order, repair budgets, gate hygiene).
 Night-shift skills and workflows must point here — do not restate numbered ladder steps
-elsewhere. Keep `## Lessons learned` on workflow handoffs (`prep`,
-`execute-approved-plan`, `ship-local`, `ship-prod`, and the other Phase 5 workflows).
+elsewhere. Keep `## Lessons learned` in `.cursor/night-shift/HANDOFF.md`. Chat after
+implement or ship ends with `DONE` or `PARTIAL: <exact leftover>`.
 
 ## Two quality moments
 
@@ -71,11 +71,13 @@ test engine (no reimplemented Playwright, Vitest, or DB bootstrap).
    Do not restart the whole ladder after every fix.
 5. Merge-ready = green worktree proof (or docs/harness N/A). Do not require idle-main
    complete on the feature branch.
-6. After the `/ship-local` batch is on local default **and** no other worktree holds
-   a test-pool lease: **one** idle-main complete (`test.full` or the discovered
-   CI-parity gate) on the primary checkout.
+6. After lands are on local default (via `/ship-local` or commits already on default)
+   **and** no other worktree holds a test-pool lease: **one** idle-main complete
+   (`test.full` or the discovered CI-parity gate) on the primary checkout.
 7. `/ship-prod` requires that complete (or runs it). If another worktree holds a
-   shared test slot → **STOP**. Do not start complete on a noisy host.
+   shared test slot → **wait** (bounded; default 20 min), then STOP only if still
+   held. Do not start complete on a noisy host. Recover unhealthy slots via the
+   project's documented path; do not ask.
 
 Also:
 

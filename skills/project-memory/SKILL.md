@@ -52,8 +52,10 @@ preventing context bloat and logic drift.
 | Candidates + Cycle status | Phase 5 (via this skill) and Phase 7 (stage/promote/retire) | After durable handoff lessons; after CI green for promote path |
 
 - Do **not** edit Architecture during Phases 1–5.
-- Commit/push of memory or harness promote edits require an explicit human instruction
-  (or `/ship-prod` Phase 7 path when the human invoked it).
+- Phase 5 Candidates + cycle status is **ship-scoped**. When `commits: authorized`,
+  commit `project_memory.md` with the feature. Do not leave it dirty for a later slash.
+- Phase 7 commit/push of Architecture (and docs-only follow-up) runs when `/ship-prod`
+  invoked it. Do **not** wait for staged-harness approve/reject in that sitting.
 
 ## Phase 1 — load (before plan generation)
 
@@ -74,7 +76,8 @@ preventing context bloat and logic drift.
 Called from `@execute-approved-plan` after handoff `## Lessons learned` exists and before
 ship. Do not merge, push, or manage worktrees here.
 
-1. Keep `## Lessons learned` in the chat handoff (required).
+1. Write `## Lessons learned` in `.cursor/night-shift/HANDOFF.md` (required). Chat
+   stays short; do not dump the lessons table in chat.
 2. For each durable lesson: **upsert** a Candidates row (`active`, `help_count=0` if new,
    `added_at=today`). Same domain+intent → rewrite in place; do not clone rows.
 3. For each loaded candidate **cited as used** this cycle: `help_count += 1`, set
@@ -89,8 +92,9 @@ ship. Do not merge, push, or manage worktrees here.
 - Top helped: `id` (count) · …
 ```
 
-6. Echo the same cycle status in the Phase 5 handoff.
+6. Echo cycle status in `HANDOFF.md`, not as a long chat block.
 7. Do **not** edit Architecture here.
+8. Commit `project_memory.md` with the feature when `commits: authorized`.
 
 ## Phase 7 — consolidate + staged promote ask (after watched green CI)
 
@@ -116,18 +120,17 @@ Then:
    stop and ask the user before overwriting.
 4. Prefer putting new scored process tips into **Candidates** (upsert) rather than growing
    Architecture when the tip is still provisional.
-5. List every `status=staged` id. For each, **propose** a harness edit (target skill/rule/
-   HARNESS + one-line change + why: help_count + age). Do **not** auto-apply.
-6. On explicit human **approve**: apply the smallest harness edit; update HARNESS if
-   inventory changes; set candidate `retired`; **purge** any Architecture bullet that
-   restates the same tip; refresh cycle status. Do not retire until the harness edit landed
-   in the same change set.
-7. On explicit human **reject**: set candidate `retired` (brief reject note allowed in
-   lesson text); refresh cycle status.
-8. If `project_memory.md` and/or harness files changed: leave them local and disclose that
-   state unless the human (or `/ship-prod`) explicitly asks to commit/push via the project's
-   docs-only ship path. Do **not** re-enter Phase 7 after a docs-only push.
-9. If nothing durable and no staged asks, leave the file unchanged and do not commit/push.
+5. List every `status=staged` id in the **short** ship handoff (id + one-line proposed
+   edit). Do **not** wait for approve/reject in this sitting. Do **not** auto-apply.
+6. On explicit human **approve** in a later sitting: apply the smallest harness edit;
+   update HARNESS if inventory changes; set candidate `retired`; **purge** any Architecture
+   bullet that restates the same tip; refresh cycle status. Do not retire until the
+   harness edit landed in the same change set.
+7. On explicit human **reject** in a later sitting: set candidate `retired` (brief reject
+   note allowed in lesson text); refresh cycle status.
+8. If `/ship-prod` invoked this Phase 7 and `project_memory.md` changed: commit and run
+   the project's docs-only ship path. Do **not** re-enter Phase 7 after that push.
+9. If nothing durable and no staged ids, leave the file unchanged and do not commit/push.
 
 ## Non-goals
 

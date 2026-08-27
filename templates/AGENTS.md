@@ -18,10 +18,12 @@ Follow `core-principles`:
 
 - **Prep** (anytime, about 2h max): you create Cursor worktrees. `/prep` packet grill →
   **you** run `implementation-plan-review` → approve `.cursor/night-shift/contract.md`
-- **Nightshift:** `night-shift fire` → `execute-approved-plan` unattended (park `BLOCKED.md`,
-  never wait). Local Cursor CLI — see harness `docs/runtime-policy.md`.
-- **After:** `night-shift status` + manual tests. Then `/ship-local` (merge-ready =
-  **worktree proof**) → one **idle-main complete** on idle local default → `/ship-prod`
+  (this item only; never sidecars)
+- **Nightshift:** Cursor **Build** or `night-shift fire` → `execute-approved-plan`
+  (park `BLOCKED.md`, never wait). Fire is the unattended multi-tree launcher.
+- **After:** `/ship-local` on a feature tree (or leftover-commit if already on default)
+  → one **idle-main complete** (wait live leases, bounded) → `/ship-prod`
+- Chat after implement/ship ends with `DONE` or `PARTIAL: <exact leftover>`
 - Agents do not create or manage git worktrees except during human-triggered `/ship-local`
 - Remote push and deploy stay human-owned unless you explicitly ask via `/ship-prod`
 

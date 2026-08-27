@@ -3,7 +3,8 @@ name: execute-approved-plan
 description: >-
   Autonomously run an approved implementation contract through Phases 2-5.
   Auto-activate in a worktree holding an approved night-shift contract,
-  including unattended `night-shift fire`. Never push, merge, or deploy.
+  including unattended `night-shift fire` and Cursor Build after approval.
+  Never push, merge, or deploy.
 ---
 
 # Execute an approved implementation contract
@@ -17,11 +18,20 @@ Unattended runs (`CURSOR_HARNESS_UNATTENDED=1` or `/night-shift` fire): **never
 wait**. Park `.cursor/night-shift/BLOCKED.md` and exit. Leave other worktrees
 alone.
 
+Attended Cursor **Build** in the same chat as `/prep` uses this same skill.
+Skipping `/night-shift` is fine.
+
 ## Activation gate
 
 Activate when the current worktree has `.cursor/night-shift/contract.md` with
-`status: approved`, or the conversation contains that contract plus explicit
-approval. Do not edit `~/.cursor/plans`.
+`status: approved`, **and** that file is this chat’s item (`issue` / objective
+matches), or the conversation contains that contract plus explicit approval.
+Do not edit `~/.cursor/plans`.
+
+**This-item only.** If `contract.md` is `approved` for a **different** issue
+(leftover from another tree or an earlier land) → treat it as foreign. Reset it
+to the draft stub. **Do not execute it.** Never write `contract-*.md` sidecars.
+Never keep a leftover approved file.
 
 Before editing, restate the contract as a checklist. On material open decisions:
 if unattended → BLOCKED.md; else stop.
@@ -42,9 +52,13 @@ if unattended → BLOCKED.md; else stop.
   after `/ship-local`) — read it (not always-on).
 - **`project_memory.md`:** do not edit **Architecture** during Phases 2–5. Phase 5
   **must** run `@project-memory` Candidates + cycle status write after lessons.
+  That write is **ship-scoped** — commit it with the feature when
+  `commits: authorized`. Do not leave it dirty for a later slash.
 - Never push, merge, open a PR, deploy, or sync production secrets.
 - Never skip/weaken tests or use `--no-verify`.
-- Stage only contract-scoped files.
+- Stage contract-scoped files **plus** Phase 5 `project_memory.md`. Do **not**
+  stage night-shift working files (`contract.md`, `HANDOFF.md`, `BLOCKED.md`,
+  sidecars, `decisions.tsv`).
 - **Commits:** if the contract has `commits: authorized` (prep default),
   make local commits as you go. Do not ask. If the field is missing in an
   unattended run, treat as authorized for this worktree.
@@ -59,9 +73,10 @@ if unattended → BLOCKED.md; else stop.
 
 ### 0. Workspace preflight
 
-1. Confirm the working tree is usable for the contract (no staged/unstaged/untracked
-   contract-irrelevant files). If dirty with unrelated work → **park BLOCKED.md**
-   (unattended) or stop (attended). Never stash/absorb pre-existing work.
+1. Confirm the working tree is usable for the contract. STOP-class dirt
+   (secrets, other worktree, live merge) → **park BLOCKED.md** (unattended) or
+   stop (attended). Never stash. Inherited night-shift sidecars: delete them.
+   Foreign approved `contract.md`: reset to stub and stop (this is not this item).
 2. Do not fetch/rebase/merge for the sake of starting work, and do not create
    branches or worktrees.
 3. Record allowlist and repo-root as the verification cwd.
@@ -99,7 +114,7 @@ if unattended → BLOCKED.md; else stop.
    1. Run `/review-bugbot` (or the Bugbot subagent) on branch changes.
    2. If the allowlist touches auth, access control, billing/payments, admin,
       secrets, or other sensitive surfaces, also run `/review-security`.
-   3. Summarize findings in the handoff. **Do not auto-fix** Bugbot or Security
+   3. Put findings in `HANDOFF.md`. **Do not auto-fix** Bugbot or Security
       findings. Do **not** wait for the human — leave 4c for after Nightshift.
    4. Re-run the ladder only if a human later approves behavior-changing fixes.
 
@@ -107,23 +122,23 @@ if unattended → BLOCKED.md; else stop.
 
 1. Sync docs (`@sync-spec-docs`); SemVer only if the project versions packages
    you touched.
-2. Local commits when `commits: authorized`.
-3. Write handoff `## Lessons learned` (3–7 short actionable bullets).
-4. Run **`@project-memory` Phase 5**.
-5. Handoff **must** also include:
-   - **Manual test** — commands to run the app in this worktree and which
-     acceptance to click (from the contract; update if you learned more)
-   - Verification commands and results
-   - Phase 4b summary and Phase 4c Bugbot/Security findings (report only)
-   - **`## Blast radius`** when the allowlist was sensitive (from `@blast-radius`);
-     omit for copy/docs
-   - **ready-for-manual-test** if the **worktree proof** is green (or docs/harness
-     N/A); otherwise not merge-ready and list what remains. Do not run idle-main
-     complete on this feature worktree.
-6. Write `.cursor/night-shift/HANDOFF.md` with the same content (include the
-   phrase `ready-for-manual-test` when true).
-7. Do not push, merge, or remove worktrees. Remind: morning `night-shift status`,
-   then `/ship-local` then `/ship-prod`.
+2. Write `HANDOFF.md` (working artifact; do not commit) with the long evidence:
+   Manual test, verification commands/results, Phase 4b/4c, blast radius when
+   required, `## Lessons learned` (3–7 short actionable bullets), cycle status,
+   commit SHAs, `ready-for-manual-test` when the worktree proof is green (or
+   docs/harness N/A).
+3. Run **`@project-memory` Phase 5**. Commit `project_memory.md` with the
+   feature when `commits: authorized`.
+4. Local commits when `commits: authorized` (allowlist + memory; not night-shift
+   working files).
+5. **Chat handoff** — 8–12 short lines: product result, proof command +
+   green/red, version if bumped, one-line next step (`/ship-local` on a feature
+   tree, `/ship-prod` if already on default). Do not dump 4b/4c, lessons, or
+   cycle status into chat.
+6. **Required last line:**
+   - `DONE` — contract fully implemented
+   - `PARTIAL: <exact leftover>` — only what was not done
+7. Do not push, merge, or remove worktrees.
 
 ## Park (unattended hard stop)
 
@@ -133,8 +148,6 @@ run. Do not ping. Do not ask.
 
 ## Evidence report
 
-Contract goal, files changed, verification ladder, browser N/A or evidence,
-Phase 4b/4c notes, blast-radius when required, commit IDs, **Manual test**,
-merge-ready / ready-for-manual-test, `## Lessons learned`, cycle status echo,
-pointer to `decisions.tsv`.
+Chat stays compact (see Phase 5). Long evidence lives in `HANDOFF.md`.
 **No remote push, merge, or deployment was performed.**
+**Required last line:** `DONE` or `PARTIAL: <exact leftover>`.

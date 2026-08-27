@@ -43,7 +43,7 @@ Marks: [legend](#legend).
 
 | You want | You type |
 | --- | --- |
-| Build anything | `/prep` → `/implementation-plan-review` → approve → `/night-shift` → test → `/ship-local` → `/ship-prod` |
+| Build anything | `/prep` → `/implementation-plan-review` → approve → Cursor Build (or `/night-shift`) → `/ship-local` (worktree) or `/ship-prod` (already on default) |
 | Fire / status | `/night-shift` |
 | Cheat sheet | `/help` |
 
@@ -62,10 +62,12 @@ questions. **No code.**
 
 **↓ One approved contract per existing worktree**
 
-### 2 · Night fire — `/night-shift`
+### 2 · Night fire — `/night-shift` (or Cursor Build)
 
-One local `agent -p` per approved tree. Agents do not create worktrees. Count is
-however many trees you prepared (machine-bound; about **3** has been comfortable).
+One local `agent -p` per approved tree, **or** Cursor Build in the prep chat
+(same `@execute-approved-plan` skill). Fire is the unattended multi-tree launcher.
+Skipping fire is fine for one-tree attended work. Agents do not create worktrees.
+Count is however many trees you prepared (machine-bound; about **3** has been comfortable).
 
 ![Night](docs/assets/workflows/night.svg)
 
@@ -131,12 +133,14 @@ hand-edit the SVG. Do not paste live mermaid into this README.
   **worktree proof** waits for a pool lease only when a listed suite needs it.
   Pure unit/UI must not take a slot. Do not skip tests.
 - **After:** `night-shift status` (skim `decisions.tsv`) → you manual-test →
-  `/ship-local` (repeat) → one **idle-main complete** on idle local default →
-  `/ship-prod`. No force-push. No skipped gates. Do not start complete if another
-  worktree still holds a test-pool lease.
-- **Summary file:** every handoff writes `## Lessons learned`.
-`@project-memory` upserts those into `project_memory.md` and counts `help_count`
-when a later cycle actually used the row.
+  `/ship-local` (repeat; leftover-commit if already on default) → one **idle-main
+  complete** on idle local default (wait a live test-pool lease, bounded) →
+  `/ship-prod`. No force-push. No skipped gates. `/ship-prod` classifies this
+  checkout's leftovers and continues.
+- **Summary file:** every handoff writes `## Lessons learned` in `HANDOFF.md`.
+ Chat last line is `DONE` or `PARTIAL: <exact leftover>`.
+`@project-memory` upserts those into `project_memory.md` (commit with the feature)
+and counts `help_count` when a later cycle actually used the row.
 
 ## Contents
 

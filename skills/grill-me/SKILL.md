@@ -26,7 +26,7 @@ then, point them at `/prep` (anytime) or note it — do not pair all day.
    a **recommended answer** and a one-line trade-off. The human edits leftovers
    in one sitting (keep prep to about **2h max**).
 4. Record answers in `.cursor/night-shift/contract.md` (or the plan file), not
-   only in chat.
+   only in chat. Never write `contract-*.md` sidecars.
 5. Continue until material open decisions are resolved or explicitly `N/A` per
    `core-principles.mdc` contract fields, including **Manual test**.
 6. Draft or update the implementation plan. Do **not** auto-run

@@ -11,6 +11,10 @@ Fill during `/prep`. `kind` is `feature` (default), `bug`, or `architecture`.
 Set `status: approved` only after the human explicitly accepts this contract.
 Night fire skips worktrees that are not `approved`.
 
+Working `contract.md` / `HANDOFF.md` / `BLOCKED.md` are per-tree artifacts —
+gitignore them in the consumer repo so a new worktree never inherits another
+item's approved pack. Always overwrite `contract.md`. Never write sidecars.
+
 ## Objective
 
 ## Allowlist

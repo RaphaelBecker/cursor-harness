@@ -33,21 +33,22 @@ lives in the consumer project.
 | **Automation** | Cloud agent run on a schedule or git/CI event. |
 | **Plan** | Draft or approved implementation plan (often under `.cursor/plans/`). |
 | **Worktree proof** | Types + contract-listed suites on the feature worktree. Feature merge-ready. Empty list fails; docs/harness-only may be N/A. |
-| **Idle-main complete** | One full/CI-parity gate on clean local default after `/ship-local`, host idle (no live test-pool lease). Then `/ship-prod`. |
+| **Idle-main complete** | One full/CI-parity gate on clean local default after lands, host idle (wait live test-pool lease, bounded). Then `/ship-prod`. |
 | **Fast/local coverage slice** | Full lint/types/coverage ratchet (`test.fast` when declared). CI and part of idle-main complete. Not run on feature worktrees. |
 | **Verification ladder** | Targeted RED/GREEN → one worktree proof; idle-main complete after `/ship-local` — SSOT in the `testing` rule; discovered project commands. |
 | **Honest leftover** | Three targeted E2E/int runs can still fill a 3-slot pool. This split shrinks hold time; it does not make parallel E2E free. Same-machine CI still competes if someone pushes while agents test. |
-| **Lessons learned** | Short session summary at Phase 5 handoff. Feeds Candidates; durable Architecture tips wait for Phase 7. |
+| **Lessons learned** | Short session summary at Phase 5 in `HANDOFF.md`. Feeds Candidates; durable Architecture tips wait for Phase 7. Chat last line is `DONE` or `PARTIAL`. |
 | **Candidates** | Scored rows in `project_memory.md` (the project summary) that may later promote into harness packs. |
 | **Help count** | How often a Candidate lesson actually helped a later session. Bumped at most +1 per cycle. |
 | **Staged** | Candidate that hit help/age thresholds and is ready for a human harness-promote ask. |
 | **Cycle status** | Compact Phase 5 block summarizing new/helped/staged candidate counts. |
 | **Night-shift CLI** | `runtime/night-shift` — discover, fire, status. Never creates worktrees. |
-| **BLOCKED.md** | `.cursor/night-shift/BLOCKED.md` — unattended hard stop. Night does not ping. |
-| **decisions.tsv** | Append-only night log (what, why, evidence pointer, result). Working artifact; do not commit by default. |
+| **BLOCKED.md** | `.cursor/night-shift/BLOCKED.md` — unattended hard stop. Night does not ping. Gitignored working artifact. |
+| **decisions.tsv** | Append-only night log (what, why, evidence pointer, result). Working artifact; do not commit. |
+| **Ship local** | `/ship-local` — land a feature tree onto local default, or leftover-commit when already on default. |
 | **Blast radius** | The one fact a change is safe because of, proven by running code. Unproven stays labeled unproven. |
 | **Tight red loop** | One named command already run that goes red on this bug. Required before hypothesising. |
 | **harness.project.yaml** | Required consumer interface (issue source, tests, optional slots, packs). |
-| **Ship prod** | `/ship-prod` — human-triggered watched remote ship + CI fix + Phase 7. |
+| **Ship prod** | `/ship-prod` — classify leftovers, wait live lease, watched remote ship + CI fix + Phase 7. Chat last line `DONE`/`PARTIAL`. |
 | **Exclusive lock** | One `/ship-local` at a time. `ship.lock` in YAML, or `.cursor/ship-local.lock`. |
 | **Project memory** | Root `project_memory.md` summary: Architecture tips + scored Candidates (`help_count`). Not stronger than code or docs. |
