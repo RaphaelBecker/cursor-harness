@@ -33,7 +33,8 @@ If this checkout **is already** the project default branch:
 1. Acquire the exclusive lock. If acquire fails → **STOP**.
 2. Classify leftovers the same way `/ship-prod` does: commit `project_memory.md` and
    uncommitted product that belongs to this tip; reset night-shift working files to
-   the draft stub (do not commit them); restore generated noise.
+   the draft stub and **delete** `bug-ticket.md` if present (do not commit them);
+   restore generated noise. Prefer the project's `--reset-night-shift` when it exists.
 3. Do **not** merge. Do **not** `git worktree remove` the primary checkout.
 4. Release the lock (**always**, including failure — try/finally).
 5. Chat handoff: default tip SHA; leftovers committed; night-shift reset. Next:
@@ -112,7 +113,8 @@ Run the lock acquire from **Exclusive lock**. Stop if it fails.
 In the **feature** worktree:
 
 1. `git status` — ship-intended files include the allowlist **and** `project_memory.md`.
-2. Reset or delete night-shift working files; do not commit them.
+2. Reset or delete night-shift working files, including `bug-ticket.md`; do not
+   commit them. Prefer the project's `--reset-night-shift` when it exists.
 3. Commit any remaining changes (why-focused message). Tree must be clean on the
    feature branch before merging.
 
@@ -163,7 +165,8 @@ On clean local default:
    Phase 5 allowlist / handoff).
 3. Confirm no conflict markers remain: search for `<<<<<<<`, `=======`, `>>>>>>>`.
 4. Reset night-shift working files on default to the draft stub — do not leave an
-   `approved` contract on default.
+   `approved` contract or a leftover `bug-ticket.md` on default. Prefer the
+   project's `--reset-night-shift` when it exists.
 5. Do **not** run remote push. Do **not** run idle-main complete as part of landing
    one feature. If other feature worktrees or live test-pool leases remain, say so
    in the handoff. Optionally note which project push/deploy path applies

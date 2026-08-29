@@ -52,6 +52,7 @@ Agents that hear “new feature” point at `/prep` only.
 | Verify a change | Ask for `verifier` (report only) |
 | Last message unclear | `/wait-what` |
 | What else could this break | `/blast-radius` |
+| Screenshots show wrong numbers | `/bugticket-from-screenshots` (optional, before `/prep`) |
 
 ### Rules of the road (short)
 

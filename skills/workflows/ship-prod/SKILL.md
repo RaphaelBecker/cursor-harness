@@ -37,7 +37,7 @@ Do **not** auto-run at the end of `/ship-local` or `@execute-approved-plan`.
 | Dirt | Agent does | Still STOP |
 | --- | --- | --- |
 | `project_memory.md` | Commit with a why-message (Phase 5/7 memory is ship-scoped) | — |
-| Night-shift working files (`contract.md`, `contract-*.md`, `HANDOFF.md`, `HANDOFF-*.md`, `BLOCKED.md`, `bdd-spec.md`, `decisions.tsv`) | Delete or reset to the draft stub. Do **not** commit them | — |
+| Night-shift working files (`contract.md`, `contract-*.md`, `HANDOFF.md`, `HANDOFF-*.md`, `BLOCKED.md`, `bdd-spec.md`, `bug-ticket.md`, `decisions.tsv`) | Delete or reset to the draft stub. Do **not** commit them | — |
 | Generated noise the project already documents (rewritten env types, lockfile churn from a complete run) | Restore to HEAD | — |
 | Uncommitted product on this default branch that belongs to the unpushed tip | Commit with a why-message | — |
 | Secrets / `.env*` / vault / credentials | — | Yes |

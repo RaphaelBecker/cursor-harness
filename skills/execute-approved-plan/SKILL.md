@@ -58,7 +58,7 @@ if unattended → BLOCKED.md; else stop.
 - Never skip/weaken tests or use `--no-verify`.
 - Stage contract-scoped files **plus** Phase 5 `project_memory.md`. Do **not**
   stage night-shift working files (`contract.md`, `HANDOFF.md`, `BLOCKED.md`,
-  sidecars, `decisions.tsv`).
+  `bug-ticket.md`, sidecars, `decisions.tsv`).
 - **Commits:** if the contract has `commits: authorized` (prep default),
   make local commits as you go. Do not ask. If the field is missing in an
   unattended run, treat as authorized for this worktree.

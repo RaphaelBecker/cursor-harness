@@ -29,6 +29,7 @@ pack_sets:
       - test-harness-optimize
       - blast-radius
       - diagnose-bug
+      - bugticket-from-screenshots
       - wait-what
       - architecture-audit
       - extract-deep-module

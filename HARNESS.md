@@ -54,6 +54,7 @@ second slash.
 | Create a workflow | Add a new process | `/create-workflow` |
 | Sync from lab | Pull portable diffs from a live `.cursor` | Meta → `/sync` |
 | Prep | Packets + contracts into existing worktrees | `/prep` |
+| Screenshot bug ticket | Optional front door before `/prep` | `/bugticket-from-screenshots` |
 | Nightshift | Fire / status local `agent -p` in those trees | `/night-shift` |
 | Ship prod | Classify leftovers on default → idle-main complete (wait live lease) → diagnose+Bugbot if isolate-red → watched CI → green → Phase 7 | Hybrid → `/ship-prod` |
 | Codebase health audit | Whole-repo scorecard (hotspots + layer leaks) | Prep (report) → Nightshift if contracted |
@@ -83,6 +84,7 @@ only.
 | `review-code` | Phase 4b: fix-capable maintainability review after green ladder |
 | `blast-radius` | Explicit: one proven safety fact beyond the diff (skip copy/docs) |
 | `diagnose-bug` | Tight red command before a bug plan, and when idle-main complete isolate stays red |
+| `bugticket-from-screenshots` | Optional front door: fact-only bug ticket from screenshots; stop before `/prep` |
 | `glossary` | Shared plain-language terms |
 | `help` | Compact developer cheat sheet (`/help`) |
 

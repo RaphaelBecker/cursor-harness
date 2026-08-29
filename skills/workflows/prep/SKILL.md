@@ -51,6 +51,11 @@ If they do not, reset first, then draft.
 ## Steps
 
 1. **Items** — from `issue_source` in `harness.project.yaml`:
+   - If `.cursor/night-shift/bug-ticket.md` exists in this worktree, that file
+     **is** the item text (it replaces the typed bug explanation). Classify
+     `kind: bug`. The ticket's **Test coverage gap** may seed the contract
+     **Tests** field; it does not replace diagnose, grill, or review.
+   - If the file is missing, `/prep` behaves exactly as today.
    - `files`: read `files.path`.
    - `none`: use the worktrees the human already opened and any issue ids they
      named.
