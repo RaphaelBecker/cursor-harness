@@ -31,6 +31,7 @@ pack_sets:
       - diagnose-bug
       - bugticket-from-screenshots
       - wait-what
+      - summarize-plan
       - architecture-audit
       - extract-deep-module
       - dependency-direction-fix

@@ -13,7 +13,7 @@ Process / craft that applies to any software project:
 | Workflows | `prep`, `night-shift`, `ship-prod`, `create-workflow` |
 | Optional packs | `bdd`, `vitest`, `playwright`, `supabase`, `nextjs`, `github-actions`, `quality-audit` |
 | Quality helpers | `review-code`, `review-docs`, `test-harness-optimize`, `blast-radius`, `diagnose-bug` |
-| DX | `help`, `glossary` (process terms only), `HARNESS.md`, automations stubs |
+| DX | `help`, `glossary` (process terms only), `summarize-plan`, `HARNESS.md`, automations stubs |
 | Portable agents | Generic report-only verifiers that **discover** project commands |
 | Architecture rules | Deep modules, developer communication, doc-routing *protocol* (not product keyword dumps) |
 

@@ -62,6 +62,7 @@ Thin sequences. Do not duplicate their steps here.
 | `glossary` | Shared process terms | [glossary](../skills/glossary/SKILL.md) |
 | `create-workflow` | Author a new workflow; update `HARNESS.md` | [create-workflow](../skills/create-workflow/SKILL.md) |
 | `wait-what` | Re-pitch the last message | [wait-what](../skills/wait-what/SKILL.md) |
+| `summarize-plan` | Restate a written plan in simple bullets | [summarize-plan](../skills/summarize-plan/SKILL.md) |
 | `architecture-audit` | Report shallow modules / cycles (no edits) | [architecture-audit](../skills/architecture-audit/SKILL.md) |
 | `extract-deep-module` | One extract or collapse | [extract-deep-module](../skills/extract-deep-module/SKILL.md) |
 | `dependency-direction-fix` | One cycle or wrong-way dependency | [dependency-direction-fix](../skills/dependency-direction-fix/SKILL.md) |

@@ -45,6 +45,7 @@ contract `kind` (`feature` / `bug` / `architecture`), not a second slash.
 - `blast-radius` — proven safety fact on a sensitive diff
 - `diagnose-bug` — tight red command before a non-trivial bug plan
 - `wait-what` — re-pitch the last message
+- `summarize-plan` — restated plan in simple bullets (bugs + tests, or feature + pain)
 - `help` / `glossary` — cheat sheet and shared process terms
 - `sync` — (harness maintainers) pull lab `.cursor` diffs into the portable pack
 

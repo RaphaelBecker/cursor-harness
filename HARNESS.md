@@ -55,6 +55,7 @@ second slash.
 | Sync from lab | Pull portable diffs from a live `.cursor` | Meta → `/sync` |
 | Prep | Packets + contracts into existing worktrees | `/prep` |
 | Screenshot bug ticket | Optional front door before `/prep` | `/bugticket-from-screenshots` |
+| Understand a plan | After the plan exists (before or after review) | `/summarize-plan` |
 | Nightshift | Fire / status local `agent -p` in those trees | `/night-shift` |
 | Ship prod | Classify leftovers on default → idle-main complete (wait live lease) → diagnose+Bugbot if isolate-red → watched CI → green → Phase 7 | Hybrid → `/ship-prod` |
 | Codebase health audit | Whole-repo scorecard (hotspots + layer leaks) | Prep (report) → Nightshift if contracted |
@@ -100,6 +101,7 @@ only.
 | `extract-deep-module` | One extract or collapse per run (`kind: architecture`) |
 | `dependency-direction-fix` | One cycle or wrong-way dependency per run (`kind: architecture`) |
 | `wait-what` | Re-pitch the last message in plain words |
+| `summarize-plan` | Restate a written plan in simple bullets (bugs + tests, or feature + pain) |
 | `ship-prod` | Human-triggered prod delivery: classify leftovers → wait live lease → idle-main complete → diagnose+Bugbot if isolate-red → project ship → watch CI → Phase 7 |
 | `review-docs` | Doc drift audit (report default) |
 | `test-harness-optimize` | Faster/less flaky tests without weaker asserts |
@@ -196,7 +198,7 @@ See [`automations/README.md`](automations/README.md) and
 
 | When | Use |
 | --- | --- |
-| Prep | `/prep`, `/implementation-plan-review` |
+| Prep | `/prep`, `/implementation-plan-review`, `/summarize-plan` |
 | Nightshift | Cursor Build or `/night-shift` + `@execute-approved-plan`; `@review-code` then `/review-bugbot` |
 | Sensitive diff | `/blast-radius` (or via Phase 4b / `/ship-local`) |
 | Unclear reply | `/wait-what` |

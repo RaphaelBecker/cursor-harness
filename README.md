@@ -230,6 +230,7 @@ Orchestrators: [ship-local](skills/ship-local/SKILL.md) ·
 | You want | You type |
 | --- | --- |
 | What can I run? | `/help` — map: [HARNESS.md](HARNESS.md) · words: `/glossary` |
+| Understand a written plan | `/summarize-plan` |
 | Add a new named sequence | `/create-workflow` |
 | Pull proven process from a live project into this pack | `/sync` |
 
