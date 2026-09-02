@@ -33,6 +33,7 @@ Use the plan’s `kind`, title, or acceptance. Then print **one** template
 Everyday words. Short bullets. No jargon, file trees, options, or extra
 sections. Do not invent test names. Omit an empty test group. If the plan
 names no tests on a bug, write **Tests: not listed**.
+Identify trade offs if existing and name them.
 
 ### Bug
 
