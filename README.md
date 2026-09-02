@@ -22,9 +22,21 @@ learns what was useful, not only what was written down.
 
 Inspired by:
 
-- [Matt Pocock](https://github.com/mattpocock)
-- [Learn Harness Engineering](https://walkinglabs.github.io/learn-harness-engineering/en/)
-- [Dexter Horthy — 12-Factor Agents](https://github.com/humanlayer/12-factor-agents)
+| Source | Exceptionally good for |
+| --- | --- |
+| [Matt Pocock](https://github.com/mattpocock) | Teaching agents real engineering habits, not demo ware |
+| [Learn Harness Engineering](https://walkinglabs.github.io/learn-harness-engineering/en/) | Designing a harness, not dumping prompts |
+| [Dexter Horthy — 12-Factor Agents](https://github.com/humanlayer/12-factor-agents) | Production agent architecture (control flow, context, tools) |
+| [Anthropic Skills](https://github.com/anthropics/skills) | Canonical `SKILL.md` shape; docs, data, and design starters |
+| [superpowers](https://github.com/obra/superpowers) | A full spec → plan → TDD → review loop that runs itself |
+| [Karpathy Skills](https://github.com/multica-ai/andrej-karpathy-skills) | Stopping overbuild; surgical diffs that only touch what must change |
+| [Skills for Real Engineers](https://github.com/mattpocock/skills) | Everyday coding skills: grill, TDD, tickets, not vibe-coding demos |
+| [UI/UX Pro Max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | Giving the agent design sense so web and mobile UI stop looking templated |
+| [caveman](https://github.com/JuliusBrussee/caveman) | Terse agent talk and fewer output tokens |
+| [Addy Osmani’s Agent Skills](https://github.com/addyosmani/agent-skills) | Production SDLC skills: spec, test, review, ship |
+| [Taste Skill](https://github.com/Leonxlnx/taste-skill) | Distinctive output instead of generic, safe, boring slop |
+| [Awesome Claude Skills](https://github.com/ComposioHQ/awesome-claude-skills) | Finding other packs worth installing |
+| [I Have ADHD](https://github.com/ayghri/i-have-adhd) | Short, scannable answers that lead with the next action |
 
 ```bash
 git clone git@github.com:RaphaelBecker/cursor-harness.git vendor/cursor-harness
