@@ -32,23 +32,17 @@ Do **not** auto-run at the end of `/ship-local` or `@execute-approved-plan`.
 
 ## Dirt classifier (run first; do not ask)
 
-`git status` on this checkout. Classify every dirty/untracked path. Never stash.
+If `harness.project.yaml` sets `ship.leftovers`, run that command. Add `-- --apply`
+when absorbing (reset night-shift working files and generated noise; it must **not**
+commit). Non-zero exit → **STOP**. Never stash.
 
-| Dirt | Agent does | Still STOP |
-| --- | --- | --- |
-| `project_memory.md` | Commit with a why-message (Phase 5/7 memory is ship-scoped) | — |
-| Night-shift working files (`contract.md`, `contract-*.md`, `HANDOFF.md`, `HANDOFF-*.md`, `BLOCKED.md`, `bdd-spec.md`, `bug-ticket.md`, `decisions.tsv`) | Delete or reset to the draft stub. Do **not** commit them | — |
-| Generated noise the project already documents (rewritten env types, lockfile churn from a complete run) | Restore to HEAD | — |
-| Uncommitted product on this default branch that belongs to the unpushed tip | Commit with a why-message | — |
-| Secrets / `.env*` / vault / credentials | — | Yes |
-| Dirty **other** worktree, or merge-in-progress from a live `/ship-local` | — | Yes |
+If `ship.leftovers` is omitted: reset night-shift working files (do not commit);
+commit `project_memory.md` and tip product; restore generated noise. Secrets /
+`.env*` / vault / other worktree / live merge → **STOP**. Never stash.
 
-No stash of foreign product. Absorb **this checkout's** leftovers so the human can
-leave. After classify, the tree must be clean before idle-main complete.
-
-Reset night-shift files with the project's create-time setup if it has
-`--reset-night-shift`; otherwise copy the tracked stub / vendor template over
-`contract.md` and delete the other working files.
+Absorb **this checkout's** leftovers so the human can leave. After classify, the
+tree must be clean before idle-main complete. Prefer the project's
+`--reset-night-shift` when it exists.
 
 ## Preconditions
 

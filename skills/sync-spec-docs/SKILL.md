@@ -40,6 +40,8 @@ If no row matches, search under `docs/` and `README.md` for the closest SSOT.
 - Update acceptance criteria and user stories when behavior changes.
 - Do **not** re-list component trees or folder maps that duplicate the repo.
 - One source of truth per topic. Remove obsolete instructions instead of
-  duplicating.
+  duplicating. On a checkout that is behind the default branch, edit only the
+  named leftover sentences. Do not delete nearby landed copy. Do not invent
+  skill or script paths that are not in this checkout.
 - Fix dead links you touch; keep counts/inventories accurate when present.
 - Do not invent a new top-level docs tree for a project that already has one.

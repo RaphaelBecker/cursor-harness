@@ -80,7 +80,7 @@ only.
 | `implementation-plan-review` | Review a plan, pause for A/B/C, write approved contract, say ready |
 | `execute-approved-plan` | Nightshift / Build: honor `kind`, worktree proof, 4b/4c, docs, lessons → Candidates, compact chat last line, HANDOFF.md |
 | `project-memory` | Phase 1 load; Phase 5 scored Candidates (commit with feature); Phase 7 Architecture; list staged ids without waiting |
-| `ship-local` | Human-triggered local merge, or leftover-commit when already on default; release lock before worktree remove |
+| `ship-local` | Human-triggered local merge, or leftover-commit when already on default; run `ship.leftovers` when set; release lock before worktree remove |
 | `sync-spec-docs` | Update product acceptance / thin contracts after code changes |
 | `review-code` | Phase 4b: fix-capable maintainability review after green ladder |
 | `blast-radius` | Explicit: one proven safety fact beyond the diff (skip copy/docs) |
@@ -102,7 +102,7 @@ only.
 | `dependency-direction-fix` | One cycle or wrong-way dependency per run (`kind: architecture`) |
 | `wait-what` | Re-pitch the last message in plain words |
 | `summarize-plan` | Restate a written plan in simple bullets (bugs + tests, or feature + pain) |
-| `ship-prod` | Human-triggered prod delivery: classify leftovers → wait live lease → idle-main complete → diagnose+Bugbot if isolate-red → project ship → watch CI → Phase 7 |
+| `ship-prod` | Human-triggered prod delivery: `ship.leftovers` → wait live lease → idle-main complete → diagnose+Bugbot if isolate-red → project ship → watch CI → Phase 7 |
 | `review-docs` | Doc drift audit (report default) |
 | `test-harness-optimize` | Faster/less flaky tests without weaker asserts |
 

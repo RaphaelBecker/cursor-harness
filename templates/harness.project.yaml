@@ -37,8 +37,11 @@ memory: project_memory.md
 
 # Optional exclusive lock for /ship-local (one land at a time). The command
 # must accept acquire / release. If omitted, ship-local uses `.cursor/ship-local.lock`.
+# leftovers: classify dirty paths; `--apply` (or `-- --apply` for npm) absorbs
+# reset-class only and must not commit.
 # ship:
 #   lock: ./scripts/ship-local-lock.sh
+#   leftovers: ./scripts/leftovers-classify.sh
 
 # Optional afterFileEdit autofix — copy templates/hooks/autofix.example.sh to
 # `.cursor/hooks/autofix.sh` (consumer-owned; install preserves project hooks).

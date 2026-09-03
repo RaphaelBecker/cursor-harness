@@ -80,6 +80,9 @@ ship. Do not merge, push, or manage worktrees here.
    stays short; do not dump the lessons table in chat.
 2. For each durable lesson: **upsert** a Candidates row (`active`, `help_count=0` if new,
    `added_at=today`). Same domain+intent → rewrite in place; do not clone rows.
+   Do **not** upsert a candidate that only restates the `testing` rule, `/ship-prod`,
+   `/ship-local`, or `@execute-approved-plan`. Do not stage product-domain ids as
+   harness. Prefer retiring a process lesson after a script owns it.
 3. For each loaded candidate **cited as used** this cycle: `help_count += 1`, set
    `last_helped_at=today`. Max **+1 per id per cycle**. Cite those ids in the handoff.
 4. Run stage check → set qualifying rows to `status=staged`.
@@ -112,7 +115,9 @@ At activation, output this exact message first:
 Then:
 
 1. Retrospect the cycle: architectural shifts, friction, recurring bugs, CI fixes.
-2. For soft Architecture tips: draft at most one bullet per durable lesson:
+2. For soft Architecture tips: draft at most one bullet per durable lesson.
+   Purge Architecture process bullets that a leftover classifier or idle-main
+   gate now owns. Product tips stay. For each remaining tip:
    `* **[Domain/Module]** Actionable rule or root-cause solution. (Target file/folder)`
    Maximum two sentences. Integrate by rewriting for extreme brevity — never append-only.
    Merge duplicates; delete obsolete or contradictory logic.

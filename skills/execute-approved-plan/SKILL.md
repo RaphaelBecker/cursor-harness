@@ -73,10 +73,12 @@ if unattended → BLOCKED.md; else stop.
 
 ### 0. Workspace preflight
 
-1. Confirm the working tree is usable for the contract. STOP-class dirt
-   (secrets, other worktree, live merge) → **park BLOCKED.md** (unattended) or
-   stop (attended). Never stash. Inherited night-shift sidecars: delete them.
-   Foreign approved `contract.md`: reset to stub and stop (this is not this item).
+1. Confirm the working tree is usable for the contract. If `ship.leftovers` is
+   set, run it **without** `--apply` (do not reset this item's `contract.md`).
+   STOP-class dirt (secrets, other worktree, live merge) → **park BLOCKED.md**
+   (unattended) or stop (attended). Never stash. Inherited night-shift sidecars:
+   delete them. Foreign approved `contract.md`: reset to stub and stop (this is
+   not this item).
 2. Do not fetch/rebase/merge for the sake of starting work, and do not create
    branches or worktrees.
 3. Record allowlist and repo-root as the verification cwd.

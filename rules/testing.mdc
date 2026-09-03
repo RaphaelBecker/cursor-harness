@@ -65,7 +65,9 @@ test engine (no reimplemented Playwright, Vitest, or DB bootstrap).
    suites via existing runners. Do **not** re-run the same files as a second required
    gate. Docs/harness-only may be N/A.
 3. Do **not** run the fast/local coverage slice or the idle-main complete gate on a
-   feature worktree.
+   feature worktree. If the project's `test.full` / `test.fast` runner can detect a
+   linked worktree or non-default branch, it should refuse and point at the
+   worktree proof.
 4. On failure: re-run **only the failing listed suite** — at most **two** code-repair
    attempts per failing gate and **six** code-repair attempts total across the run.
    Do not restart the whole ladder after every fix.

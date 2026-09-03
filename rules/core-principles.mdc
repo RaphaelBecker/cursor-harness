@@ -99,11 +99,10 @@ permissions, **manual test**, handoff evidence — each resolved or `N/A` with r
 prescribe branch or worktree names.
 
 **Safe defaults:** smallest reversible change, refactor before add, mock externals, stay in scope.
-**Dirty leftovers on this checkout:** classify, then absorb night-shift working files
-(reset/delete; do not commit), `project_memory.md` (commit with the feature), generated
-noise (restore), and uncommitted product that belongs to this tip (commit). Secrets /
-`.env*` / vault, a live `/ship-local` on another tree, or foreign-worktree dirt → STOP.
-Never stash.
+**Dirty leftovers on this checkout:** run `ship.leftovers` from `harness.project.yaml`
+when set (`-- --apply` to absorb). Else reset night-shift working files (do not
+commit), commit `project_memory.md` and tip product, restore generated noise.
+Secrets / `.env*` / vault / other worktree / live merge → STOP. Never stash.
 **Hard stops (unattended):** scope expansion, unapproved behavior/data, ambiguous deletion,
 credentials, destructive ops, payments, production, push, deploy — **park BLOCKED.md**.
 Local merge and worktree cleanup only via explicit `/ship-local`.
