@@ -63,6 +63,12 @@ if unattended → BLOCKED.md; else stop.
   make local commits as you go. Do not ask. If the field is missing in an
   unattended run, treat as authorized for this worktree.
 
+## Do not drop out
+
+A turn that only announces the next ladder or review step is a failure.
+Invoke that command or skill in the same message. Wait for proof commands
+to finish in this sitting — do not background them and stop.
+
 ## Budgets
 
 - Scope allowlist is absolute.

@@ -30,6 +30,36 @@ until watched green (or a hard stop).
 
 Do **not** auto-run at the end of `/ship-local` or `@execute-approved-plan`.
 
+## Do not drop out
+
+A turn that only announces the next step is a failure. The Shell/tool call
+must be in that same message.
+
+Once `harness.project.yaml` is read, use `ship.leftovers`, `test.full`, and
+the project's documented ship command. Do not rediscover them by reading
+implementation files. Do not load `@project-memory` until watched green
+(Phase 7).
+
+Required moving commands (skip only when already proven for this `HEAD`):
+
+1. Leftovers classify (`ship.leftovers` + `-- --apply` when set)
+2. Wait until the test-pool lease is idle (project wait-idle, else harness
+   `slots-status` poll)
+3. Idle-main complete (`test.full`) on a test-relevant tip — wait for it.
+   If the Shell tool has a wait budget, set it above the gate (often
+   15–45+ minutes). If the tool backgrounds the process, keep polling
+   until it exits. Do not read the test runner instead of running it.
+4. Project ship/push command (watch until terminal if the project wraps
+   watch into that command). Same wait rule as complete.
+5. Phase 7 `@project-memory` only after watched green — list staged ids;
+   do not stop to ask
+
+Ignore compact nags until the current required command has been invoked.
+Never run `/summarize` mid-ship.
+
+Between "pool is idle" / "starting complete" and the `test.full` Shell
+call, there must be no text-only turn.
+
 ## Dirt classifier (run first; do not ask)
 
 If `harness.project.yaml` sets `ship.leftovers`, run that command. Add `-- --apply`

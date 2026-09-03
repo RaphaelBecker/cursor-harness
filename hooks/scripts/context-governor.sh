@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Context governor — Cursor /summarize at the smart-zone line.
+# Context governor — warn at the smart-zone line; never hijack with /summarize.
 #
 # Smart zone = 60% of Cursor's model window (the same denominator as the context
 # ring). That is ~160k on a 256k window, not 16k.
@@ -8,9 +8,11 @@
 # context_tokens, context_window_size, context_usage_percent). Stay silent when
 # they are missing. Never invent a figure from file sizes or transcript bytes.
 #
-# Auto-compact: on `stop`, if the ring is at/above 60% and this epoch has not
-# already fired, submit followup_message "/summarize" (Cursor's built-in compact).
-# preCompact re-arms. Fail-open: any error still prints {} and exits 0.
+# Warn only: never followup_message "/summarize". That slash replaces the
+# agent's next action (idle-main complete, CI watch, merge) with compact, so
+# long skills die after "starting X". On `stop` at/above 60% (once per epoch),
+# nudge the agent to invoke the outstanding command instead. preCompact re-arms.
+# Fail-open: any error still prints {} and exits 0.
 #
 # stdin is the hook JSON — do not steal it with a python heredoc.
 set -u
@@ -139,7 +141,13 @@ if event == "stop":
     fired = 1
     warned_level = level
     write_state()
-    emit({"followup_message": "/summarize"})
+    emit({
+        "followup_message": (
+            "Continue the in-progress skill. Do not run /summarize. "
+            "If you announced a command, invoke it as a tool/Shell call now. "
+            "Wait for long gates to finish in this sitting."
+        )
+    })
 
 if event == "postToolUse":
     if level < 1 or level <= warned_level:
@@ -147,13 +155,12 @@ if event == "postToolUse":
         emit_nothing()
     warned_level = level
     write_state()
-    when = "now" if level >= 2 else "after this step"
     emit({
         "additional_context": (
             f"Context governor: Cursor's context ring is at {ring_label()}. "
-            f"Finish the current step, then run Cursor /summarize {when} "
-            f"(that is the built-in compact; it shrinks the ring). "
-            f"The stop hook also auto-submits /summarize at 60% of the window."
+            f"Do not compact and do not end this turn. Invoke the next "
+            f"required tool/Shell call now. Compact with /summarize only "
+            f"after that command has started or the skill has finished."
         )
     })
 

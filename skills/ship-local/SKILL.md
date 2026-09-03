@@ -26,6 +26,13 @@ merge to local main (and clean up the worktree) after a merge-ready Phase 5 hand
 
 Do **not** auto-run at the end of `@execute-approved-plan`.
 
+## Do not drop out
+
+A turn that only announces the next git step is a failure. Invoke lock
+acquire, leftovers, fetch/merge, and worktree remove as Shell calls in
+the same message as the announcement. Do not stop between "ready to merge"
+and the merge command.
+
 ## Already on default (fast path)
 
 If this checkout **is already** the project default branch:
