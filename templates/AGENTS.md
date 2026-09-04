@@ -17,8 +17,8 @@ and automation stubs. Cursor is the current coding platform.
 Follow `core-principles`:
 
 - **Prep** (anytime, about 2h max): you create Cursor worktrees. `/prep` packet grill →
-  **you** run `implementation-plan-review` → approve `.cursor/night-shift/contract.md`
-  (this item only; never sidecars)
+  **you** run `implementation-plan-review` → approve the one Cursor plan under
+  `.cursor/plans/` (this item only; never `contract.md`)
 - **Nightshift:** Cursor **Build** or `night-shift fire` → `execute-approved-plan`
   (park `BLOCKED.md`, never wait). Fire is the unattended multi-tree launcher.
 - **After:** `/ship-local` on a feature tree (or leftover-commit if already on default)

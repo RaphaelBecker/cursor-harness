@@ -60,7 +60,8 @@ Agents that hear “new feature” point at `/prep` only.
 - **Prep** = short HIL sitting, anytime. **Nightshift** = unattended build in those trees
   (`/night-shift` fire) **or** Cursor Build in the prep chat — same skill.
 - Humans create worktrees. Agents and `night-shift` never run `git worktree add`.
-- New trees start with a draft `contract.md` (gitignore + create-time reset). Never sidecar.
+- One Cursor plan per item (`.cursor/plans/<slug>.md`). Never `contract.md`.
+  Never CreatePlan twice. Ship archives the plan (`status: archived`).
 - Chat after implement/ship ends with `DONE` or `PARTIAL: <exact leftover>`.
 - Product story first → then code → thin contracts only for high-risk seams.
 - Feature tree: **worktree proof**. Idle local main after lands: **idle-main complete**.

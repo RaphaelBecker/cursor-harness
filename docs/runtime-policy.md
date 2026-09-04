@@ -21,7 +21,7 @@ so a night shift uses idle CPU instead of cloud minutes.
 
 Prefer **Composer 2.5** or **Grok 4.6** (first-party pool) for long unattended
 runs. Parallelism is the number of **human-created** worktrees with an approved
-contract — bound by this machine, not a harness cap. About **3** has been
+plan — bound by this machine, not a harness cap. About **3** has been
 comfortable on a laptop (reference only). If the project sets `slots` in
 `harness.project.yaml`, **worktree proof** waits for a pool lease only when a
 listed suite needs the stack; pure unit/UI must not take a slot. Do not skip
@@ -31,14 +31,14 @@ tests. Do not spawn a cloud fleet “because Cursor can.”
 
 | Surface | How to use it |
 | --- | --- |
-| IDE agent in a human-created worktree | Prep plan + Nightshift execute after contract approval |
+| IDE agent in a human-created worktree | Prep plan + Nightshift execute after plan approval |
 | Cursor CLI `agent -p` (no `&` cloud handoff) | `runtime/night-shift fire`; loads `.cursor/` skills, hooks, subagents |
 | SDK **local** runtime (`local: { cwd }`) | Same harness from a script; `Agent.resume` across process boundaries |
 | `/loop` | Recurring ticks **inside an existing local session** (CI watch, hygiene) |
 | `/review-bugbot` / `/review-security` | Phase 4c at handoff, **report-only** — not on every PR event |
 | `.cursor/worktrees.json` | Optional setup commands when Cursor creates a worktree. Agents still must not create/switch worktrees except `/ship-local` |
 
-Example night kick (approved contract already in the worktree):
+Example night kick (approved plan already in the worktree):
 
 ```bash
 ./vendor/cursor-harness/runtime/night-shift fire

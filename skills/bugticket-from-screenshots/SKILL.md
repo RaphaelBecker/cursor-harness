@@ -109,9 +109,10 @@ found, say so — do not invent a flow id.
 
 ### 9. Write the ticket
 
-Write `.cursor/night-shift/bug-ticket.md` in **this** checkout. Print
-that exact text in chat. State the absolute path of the checkout you
-wrote into. Then **stop**.
+Write `.cursor/night-shift/bug-ticket.md` in **this** checkout. First line:
+`SSOT: .cursor/plans/<slug>.md` when a plan already exists, else
+`SSOT: pending`. Print that exact text in chat. State the absolute path of
+the checkout you wrote into. Then **stop**.
 
 This file is working dirt: gitignored, never committed. A new worktree
 reset deletes it. `/ship-local` (and leftover classify on `/ship-prod`)

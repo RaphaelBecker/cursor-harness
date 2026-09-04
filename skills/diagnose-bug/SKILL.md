@@ -10,6 +10,14 @@ description: >-
 
 # Diagnose a bug
 
+## One plan (SSOT)
+
+If this chat already has a plan file URI, that file is the SSOT.
+**Do not call CreatePlan.** Edit the existing file.
+`/prep` may CreatePlan **once**, and only if no plan exists for this item.
+Never write `.cursor/night-shift/contract.md` or `contract-*.md`.
+Sidecars start with `SSOT: .cursor/plans/<slug>.md`.
+
 No hypothesis until a **tight red-capable loop** exists. This skill finds
 the cause and names the command. `/prep` (`kind: bug`) +
 `@execute-approved-plan` apply a planned fix. `/ship-prod` applies the
@@ -68,13 +76,13 @@ Return:
 - the correct test seam for the later RED regression (or "no seam — architecture
   finding")
 
-`/prep` records the red command in the contract **Tests** field, then
-grills and plans. Night writes the regression at that seam first.
+`/prep` records the red command in this item’s Cursor plan **Tests** field, then
+grills and updates that same plan. Night writes the regression at that seam first.
 
 When `/ship-prod` invoked this skill, write the red command, minimised
 repro, and ranked hypotheses into `.cursor/night-shift/HANDOFF.md`
-immediately (so a later `/summarize` cannot wipe them). Then return to
-`/ship-prod`. Do not implement here.
+(first line `SSOT: .cursor/plans/<slug>.md`) immediately (so a later
+`/summarize` cannot wipe them). Then return to `/ship-prod`. Do not implement here.
 
 ## Cleanup if you instrumented
 

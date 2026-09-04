@@ -230,7 +230,7 @@ below applies.
 | Product/source/docs/skills | Integrate both intents; do not silently discard default-ahead bugfixes or feature additions |
 | `project_memory.md` Candidates / cycle status | Keep Architecture union; for Candidates table merge rows by `id` (union); refresh cycle status after merge |
 | Duplicate SemVer bumps | Keep the correct single SemVer for the landed work; note the choice |
-| Night-shift working files | Prefer delete / draft stub; do not land a foreign `approved` contract onto default |
+| Night-shift working files | Prefer delete leftover `contract.md`; do not land a foreign `approved` plan onto default. Leftovers `--apply` archives approved `.cursor/plans/*.md`. |
 
 ### Hard stops (ask human — do not guess)
 

@@ -50,10 +50,11 @@ switch, or manage worktrees except `/ship-local` when the human invokes it.
 
 ### Prep (HIL — `/prep`)
 
-- Human creates worktrees, then `/prep`: packet grill → draft contract in
- `.cursor/night-shift/contract.md` (this item only; never sidecars) → human
- `/implementation-plan-review` → Option A/B/C → ready (`status: approved`,
- `commits: authorized`). Review does not ask a second yes. Hitting Build starts
+- Human creates worktrees, then `/prep`: packet grill → one Cursor plan under
+ `.cursor/plans/<slug>.md` (CreatePlan **once** if none exists; never
+ `contract.md`; never a second plan) → human `/implementation-plan-review` →
+ Option A/B/C → ready (`status: approved`, `commits: authorized`) on **that
+ same file**. Review does not ask a second yes. Hitting Build starts
  Phases 2–5. Ready does not authorize merge, push, or production. Prep on
  default is valid when the human opened the chat there.
 - Conversational one-at-a-time grill only if the human asks for that escape hatch.
@@ -68,7 +69,7 @@ switch, or manage worktrees except `/ship-local` when the human invokes it.
  Do not create worktrees.
 - On a hard stop: write `.cursor/night-shift/BLOCKED.md`, exit, leave other trees running.
  Never wait for the human.
-- Local verification and local commits are contract-default authorized when
+- Local verification and local commits are plan-default authorized when
  `commits: authorized`.
 - Afterwards the human runs `night-shift status`, manual-tests ready trees, then
  `/ship-local` and `/ship-prod`.
@@ -96,11 +97,13 @@ switch, or manage worktrees except `/ship-local` when the human invokes it.
 **Must run** the verification ladder without asking. Normative steps live only in the
 `testing` rule; the Nightshift checklist is `@execute-approved-plan`.
 
-### Contract fields & hard stops
+### Plan fields & hard stops
 
-Executable contract fields: objective, allowlist, non-goals, acceptance, tests, docs/SemVer,
-permissions, **manual test**, handoff evidence — each resolved or `N/A` with reason. Do not
-prescribe branch or worktree names.
+Executable plan fields live on the one Cursor plan: objective, allowlist, non-goals,
+acceptance, tests, docs/SemVer, permissions, **manual test**, handoff evidence — each
+resolved or `N/A` with reason. Do not prescribe branch or worktree names.
+Never write `.cursor/night-shift/contract.md`. Never call CreatePlan when a plan
+already exists for this item.
 
 **Safe defaults:** smallest reversible change, refactor before add, mock externals, stay in scope.
 **Dirty leftovers on this checkout:** run `ship.leftovers` from `harness.project.yaml`

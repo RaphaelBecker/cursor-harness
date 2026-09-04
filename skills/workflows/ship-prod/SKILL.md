@@ -63,8 +63,8 @@ call, there must be no text-only turn.
 ## Dirt classifier (run first; do not ask)
 
 If `harness.project.yaml` sets `ship.leftovers`, run that command. Add `-- --apply`
-when absorbing (reset night-shift working files and generated noise; it must **not**
-commit). Non-zero exit → **STOP**. Never stash.
+when absorbing (reset night-shift working files, archive approved plans, restore
+generated noise; it must **not** commit). Non-zero exit → **STOP**. Never stash.
 
 If `ship.leftovers` is omitted: reset night-shift working files (do not commit);
 commit `project_memory.md` and tip product; restore generated noise. Secrets /

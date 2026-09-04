@@ -9,8 +9,8 @@ description: >-
 
 # Night shift
 
-One local Cursor agent per **existing** worktree that has
-`.cursor/night-shift/contract.md` with `status: approved`.
+One local Cursor agent per **existing** worktree that has exactly one
+`.cursor/plans/*.md` with `status: approved`.
 
 This skill does not implement the feature. The CLI does the fire. Agents inside
 each tree follow `@execute-approved-plan`.
@@ -50,7 +50,7 @@ Optional schedule: copy
 
 1. `night-shift status` — board plus the last few `.cursor/night-shift/decisions.tsv`
    rows per tree (forks, gates, BLOCKED). Do not read the full transcript first.
-2. Manual-test every `ready-for-manual-test` tree (recipe is in the contract /
+2. Manual-test every `ready-for-manual-test` tree (recipe is in the plan /
    handoff)
 3. Human `/ship-local` per finished tree, then `/ship-prod` when the batch
    should leave the machine

@@ -1,17 +1,17 @@
 ---
 name: execute-approved-plan
 description: >-
-  Autonomously run an approved implementation contract through Phases 2-5.
-  Auto-activate in a worktree holding an approved night-shift contract,
-  including unattended `night-shift fire` and Cursor Build after approval.
+  Autonomously run an approved Cursor plan through Phases 2-5.
+  Auto-activate in a worktree holding exactly one approved `.cursor/plans/`
+  file, including unattended `night-shift fire` and Cursor Build after approval.
   Never push, merge, or deploy.
 ---
 
-# Execute an approved implementation contract
+# Execute an approved plan
 
-Turn an approved, zero-open-question implementation contract into reviewed work
+Turn an approved, zero-open-question Cursor plan into reviewed work
 in the **current** Cursor workspace (human-created worktree). Work unattended
-only inside the contract. Follow `core-principles.mdc` for hard stops; this
+only inside that plan. Follow `core-principles.mdc` for hard stops; this
 skill owns the night-shift checklist only.
 
 Unattended runs (`CURSOR_HARNESS_UNATTENDED=1` or `/night-shift` fire): **never
@@ -21,19 +21,28 @@ alone.
 Attended Cursor **Build** in the same chat as `/prep` uses this same skill.
 Skipping `/night-shift` is fine.
 
+## One plan (SSOT)
+
+If this chat already has a plan file URI, that file is the SSOT.
+**Do not call CreatePlan.** Edit the existing file.
+`/prep` may CreatePlan **once**, and only if no plan exists for this item.
+Never write `.cursor/night-shift/contract.md` or `contract-*.md`.
+Sidecars start with `SSOT: .cursor/plans/<slug>.md`.
+
 ## Activation gate
 
-Activate when the current worktree has `.cursor/night-shift/contract.md` with
+Activate when the current worktree has **exactly one** `.cursor/plans/*.md` with
 `status: approved`, **and** that file is this chat’s item (`issue` / objective
-matches), or the conversation contains that contract plus explicit approval.
-Do not edit `~/.cursor/plans`.
+matches), or the conversation contains that plan plus explicit approval.
+Edit that repo plan. Do not edit unrelated plans under the user-home
+`~/.cursor/plans` directory.
 
-**This-item only.** If `contract.md` is `approved` for a **different** issue
-(leftover from another tree or an earlier land) → treat it as foreign. Reset it
-to the draft stub. **Do not execute it.** Never write `contract-*.md` sidecars.
-Never keep a leftover approved file.
+**This-item only.** If the only approved plan is for a **different** issue
+(leftover from another tree or an earlier land) → treat it as foreign. Do not
+execute it. If more than one plan is `approved`, park `BLOCKED.md` (do not guess).
+Delete leftover `contract.md` / `contract-*.md` if present.
 
-Before editing, restate the contract as a checklist. On material open decisions:
+Before editing, restate the plan as a checklist. On material open decisions:
 if unattended → BLOCKED.md; else stop.
 
 ## Non-negotiable boundaries
@@ -56,10 +65,10 @@ if unattended → BLOCKED.md; else stop.
   `commits: authorized`. Do not leave it dirty for a later slash.
 - Never push, merge, open a PR, deploy, or sync production secrets.
 - Never skip/weaken tests or use `--no-verify`.
-- Stage contract-scoped files **plus** Phase 5 `project_memory.md`. Do **not**
+- Stage plan-scoped files **plus** Phase 5 `project_memory.md`. Do **not**
   stage night-shift working files (`contract.md`, `HANDOFF.md`, `BLOCKED.md`,
   `bug-ticket.md`, sidecars, `decisions.tsv`).
-- **Commits:** if the contract has `commits: authorized` (prep default),
+- **Commits:** if the plan has `commits: authorized` (prep default),
   make local commits as you go. Do not ask. If the field is missing in an
   unattended run, treat as authorized for this worktree.
 
@@ -79,12 +88,12 @@ to finish in this sitting — do not background them and stop.
 
 ### 0. Workspace preflight
 
-1. Confirm the working tree is usable for the contract. If `ship.leftovers` is
-   set, run it **without** `--apply` (do not reset this item's `contract.md`).
+1. Confirm the working tree is usable for this plan. If `ship.leftovers` is
+   set, run it **without** `--apply` (do not archive this item's live plan).
    STOP-class dirt (secrets, other worktree, live merge) → **park BLOCKED.md**
    (unattended) or stop (attended). Never stash. Inherited night-shift sidecars:
-   delete them. Foreign approved `contract.md`: reset to stub and stop (this is
-   not this item).
+   delete them. Leftover `contract.md`: delete it. Foreign approved plan: do
+   not execute it.
 2. Do not fetch/rebase/merge for the sake of starting work, and do not create
    branches or worktrees.
 3. Record allowlist and repo-root as the verification cwd.
@@ -101,18 +110,18 @@ to finish in this sitting — do not background them and stop.
 
 ### Phases 2–4
 
-1. **Phase 2:** Honor contract `kind` (`feature` if missing):
+1. **Phase 2:** Honor plan `kind` (`feature` if missing):
    - `feature` — if `@generate-bdd-test-spec` is installed (`bdd` pack), use it;
-     otherwise write acceptance tests from the contract. Run RED on the
+     otherwise write acceptance tests from the plan. Run RED on the
      dedicated/targeted suite.
-   - `bug` — write the failing regression first at the contract's named red
+   - `bug` — write the failing regression first at the plan's named red
      command / seam. If that command is missing → park `BLOCKED.md` (do not
      hypothesise).
    - `architecture` — run **one** of `@extract-deep-module` or
      `@dependency-direction-fix` as the allowlist names. Do not do both. Then
      prove. If the allowlist is neither → park `BLOCKED.md`.
-2. **Phase 3:** Smallest contract-complete change; follow project migration/regen
-   rules when the contract requires them. Architecture `kind` already did the
+2. **Phase 3:** Smallest plan-complete change; follow project migration/regen
+   rules when the plan requires them. Architecture `kind` already did the
    one refactor in Phase 2 — do not add extra extracts.
 3. **Phase 4 — Verify:** Run the verification ladder without asking.
 4. **Phase 4b — `@review-code`:** After green ladder (or N/A), fix-capable
@@ -132,7 +141,8 @@ to finish in this sitting — do not background them and stop.
 
 1. Sync docs (`@sync-spec-docs`); SemVer only if the project versions packages
    you touched.
-2. Write `HANDOFF.md` (working artifact; do not commit) with the long evidence:
+2. Write `HANDOFF.md` (working artifact; do not commit). First line:
+   `SSOT: .cursor/plans/<slug>.md`. Then the long evidence:
    Manual test, verification commands/results, Phase 4b/4c, blast radius when
    required, `## Lessons learned` (3–7 short actionable bullets), cycle status,
    commit SHAs, `ready-for-manual-test` when the worktree proof is green (or
@@ -146,13 +156,14 @@ to finish in this sitting — do not background them and stop.
    tree, `/ship-prod` if already on default). Do not dump 4b/4c, lessons, or
    cycle status into chat.
 6. **Required last line:**
-   - `DONE` — contract fully implemented
+   - `DONE` — plan fully implemented
    - `PARTIAL: <exact leftover>` — only what was not done
 7. Do not push, merge, or remove worktrees.
 
 ## Park (unattended hard stop)
 
-Write `.cursor/night-shift/BLOCKED.md` with: reason, last command, what the
+Write `.cursor/night-shift/BLOCKED.md` with first line
+`SSOT: .cursor/plans/<slug>.md`, then: reason, last command, what the
 human should decide. Append a `decisions.tsv` row (`phase=park`). Exit the
 run. Do not ping. Do not ask.
 

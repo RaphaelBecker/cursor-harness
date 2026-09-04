@@ -30,7 +30,7 @@ the full coverage/lint/types slice for CI and as part of idle-main complete.
 - Never use `--no-verify`, reduced coverage thresholds, focused-only suites, unreviewed
   snapshots, or CI exclusions as "repairs."
 - Never hide pre-existing failures. Record them; hard-stop if they prevent proving the
-  contract.
+  plan.
 - Mock external boundaries (network, paid APIs, production DBs). NEVER hit live production
   services from tests.
 
@@ -42,8 +42,8 @@ the full coverage/lint/types slice for CI and as part of idle-main complete.
   silently.
 - **Feature:** if `@generate-bdd-test-spec` is installed (`bdd` pack), run it for
   Given/When/Then before implementation tests; otherwise write acceptance tests from
-  the contract. Cover happy path, failure, and material edge cases named in the
-  implementation contract.
+  the plan. Cover happy path, failure, and material edge cases named in the
+  approved plan.
 
 ## Phase 4 — verification ladder (normative)
 
@@ -91,9 +91,9 @@ test engine (no reimplemented Playwright, Vitest, or DB bootstrap).
 
 Also:
 
-- Empty contract suite list fails loud (not merge-ready). Docs/harness-only is the
+- Empty plan suite list fails loud (not merge-ready). Docs/harness-only is the
   N/A exception.
-- Record the exact commands used in the implementation contract and handoff.
+- Record the exact commands used in the approved plan and handoff.
 - After runtime-affecting Phase 4b review fixes, re-run the worktree proof — not
   idle-main complete.
 - Optional report-only helper: `verifier` agent.

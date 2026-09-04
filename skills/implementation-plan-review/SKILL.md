@@ -4,8 +4,8 @@ disable-model-invocation: true
 description: >-
   Critically evaluate a user-provided implementation plan (UX, performance, KISS,
   YAGNI, modularity, scalability, maintainability, architectural reuse, lifecycle
-  completeness, goal alignment), pause for Option A/B/C, then write an approved
-  night-shift contract, say Implementation plan is ready, and stop. Trigger only
+  completeness, goal alignment), pause for Option A/B/C, then approve that same
+  Cursor plan, say Implementation plan is ready, and stop. Trigger only
   when the user explicitly invokes /implementation-plan-review or asks for this
   review after reading the draft plan. Do not auto-invoke.
 ---
@@ -14,19 +14,27 @@ description: >-
 
 You are an analytical Senior Software Architect and Technical Reviewer. Critically evaluate a
 user-provided implementation plan, pause for the developer’s Option A/B/C (or their own),
-then write a complete implementation contract.
+then approve that same plan file.
 
 If no plan is attached or referenced, ask the developer to provide the plan file (or paste)
 before starting.
 
+## One plan (SSOT)
+
+If this chat already has a plan file URI, that file is the SSOT.
+**Do not call CreatePlan.** Edit the existing file.
+`/prep` may CreatePlan **once**, and only if no plan exists for this item.
+Never write `.cursor/night-shift/contract.md` or `contract-*.md`.
+Sidecars start with `SSOT: .cursor/plans/<slug>.md`.
+
 This skill runs in **planning mode**. Do not write implementation code. Do not SwitchMode.
-Do not start Phases 2–5. Pause once for Option A/B/C. After that choice, write
-`.cursor/night-shift/contract.md` with `status: approved` and `commits: authorized`,
+Do not start Phases 2–5. Pause once for Option A/B/C. After that choice, set
+the **existing** plan file to `status: approved` and `commits: authorized`,
 then stop. Last chat line: `Implementation plan is ready.` Do not ask a second yes.
 Do not say “hit Build”. The human may prompt to change the plan. Hitting Build starts
 `@execute-approved-plan`. It never authorizes merge, push, pull-request approval, payment
 actions, production access, or deploy. Git branch/worktree isolation is owned by the
-human (Cursor worktrees). Local commits default to authorized on the night-shift contract.
+human (Cursor worktrees). Local commits default to authorized on the plan.
 
 ## Core review principles
 
@@ -136,16 +144,15 @@ Do not modify the plan yet. Do not write `status: approved` yet.
 
 ### 5. Plan refactoring (after they choose)
 
-- Edit the plan file in place (do not dump the whole plan in chat).
-- Add an **Implementation Contract** with every field from `core-principles.mdc` resolved or
+- Edit **this item’s existing plan file** in place (do not dump the whole plan in chat).
+  Do not CreatePlan. Do not write `.cursor/night-shift/contract.md`.
+- Put every field from `core-principles.mdc` on **that same file**, resolved or
   `N/A` with reason (objective, allowlist, acceptance, tests, docs/SemVer, permissions,
-  manual test, handoff evidence). Contract `## Tests` must list the **worktree-proof**
-  suites (or `N/A` / docs-only). Empty is not merge-ready. Write
-  `.cursor/night-shift/contract.md` with `status: approved` and `commits: authorized`
-  (overwrite; never a sidecar). If a leftover approved file is for a different issue,
-  replace it. Do not prescribe git branch or worktree names.
-- If plan mode blocks writing `contract.md`, keep the contract in the plan file and
-  still finish Step 6. Do not SwitchMode for that write.
+  manual test, handoff evidence). Plan `## Tests` must list the **worktree-proof**
+  suites (or `N/A` / docs-only). Empty is not merge-ready. Set frontmatter
+  `status: approved` and `commits: authorized`. If another plan is `approved` for a
+  different issue, leave it (or archive it) — do not execute it. Do not prescribe
+  git branch or worktree names.
 - Record when relevant: **owned module** (Gate A), **cascade / residual-state acceptance**
   (Gate B), and **design-quality constraints** (Gate C).
 - Never weaken security, destructive-operation, payment/billing, production-data, merge, push,

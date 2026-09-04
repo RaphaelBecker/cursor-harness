@@ -24,18 +24,18 @@ cost nothing until invoked. Prep loads `prep` → domain `project_memory` slice 
 
 ## 1. How work runs
 
-One path. Flavor is contract `kind` (`feature` | `bug` | `architecture`), not a
+One path. Flavor is plan `kind` (`feature` | `bug` | `architecture`), not a
 second slash.
 
 - **Prep** (anytime, about 2h max) — human creates Cursor worktrees (one tree,
   one agent, one feature). `/prep`: classify `kind` → packet grill → plan review →
-  ready `.cursor/night-shift/contract.md` (this item only; never sidecars).
+  ready `.cursor/plans/<slug>.md` (this item only; CreatePlan once; never `contract.md`).
 - **Nightshift** — Cursor **Build** or `night-shift fire` runs `@execute-approved-plan`
   (fire is the unattended multi-tree launcher). Ladder (`testing` rule: **worktree proof**,
   then **idle-main complete** after `/ship-local`), `@review-code` (4b), `/review-bugbot`
   4c report-only, docs, Candidates, compact chat last line `DONE`/`PARTIAL`. Append-only
-  `decisions.tsv`. Park `BLOCKED.md` instead of waiting. Working `contract.md` /
-  `HANDOFF.md` are gitignored so new trees start clean.
+  `decisions.tsv`. Park `BLOCKED.md` instead of waiting. Fire needs **exactly one**
+  approved plan in that tree. Ship sets `status: archived`.
 - **After** — `night-shift status` + manual tests, then `/ship-local` (worktree) or
  leftover-commit on default; one **idle-main complete** on idle local default
  (wait live leases, bounded), then `/ship-prod`. Complete red + isolate red
@@ -77,7 +77,7 @@ only.
 | Skill | What it does |
 | --- | --- |
 | `grill-me` | Packet of hard questions (conversational grill is an escape hatch) |
-| `implementation-plan-review` | Review a plan, pause for A/B/C, write approved contract, say ready |
+| `implementation-plan-review` | Review a plan, pause for A/B/C, approve that same plan, say ready |
 | `execute-approved-plan` | Nightshift / Build: honor `kind`, worktree proof, 4b/4c, docs, lessons → Candidates, compact chat last line, HANDOFF.md |
 | `project-memory` | Phase 1 load; Phase 5 scored Candidates (commit with feature); Phase 7 Architecture; list staged ids without waiting |
 | `ship-local` | Human-triggered local merge, or leftover-commit when already on default; run `ship.leftovers` when set; release lock before worktree remove |

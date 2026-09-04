@@ -11,9 +11,9 @@ lives in the consumer project.
 | **Deep module** | Simple interface, rich behavior inside. Prefer this over thin pass-through wrappers. |
 | **Connector** | Thin adapter that talks to an outside system (API, DB client). Not business rules. |
 | **SSOT** | Single source of truth — one place that owns a fact; others read or point to it. |
-| **Contract** | Approved plan for what to build: allowlist, acceptance, tests, hard stops. |
-| **kind** | Contract field: `feature` (default), `bug`, or `architecture`. Flavor of `/prep`, not a second slash. |
-| **Prep** | Short HIL sitting (about 2h max, anytime): human creates Cursor worktrees; packet grill; approve contracts. |
+| **Plan** | The one implementation SSOT for an item (`CreatePlan` → `.cursor/plans/<slug>.md`). Fields live on that file. Never write `contract.md`. Never CreatePlan twice. |
+| **kind** | Plan field: `feature` (default), `bug`, or `architecture`. Flavor of `/prep`, not a second slash. |
+| **Prep** | Short HIL sitting (about 2h max, anytime): human creates Cursor worktrees; packet grill; approve the one Cursor plan. |
 | **Nightshift** | Unattended execute in those trees (`night-shift fire`). Park BLOCKED.md; never wait. |
 | **Packet** | All material questions at once, each with a recommended answer. |
 | **Phase 4b** | Fix-capable maintainability review (`@review-code`) after a green ladder. |
@@ -31,8 +31,7 @@ lives in the consumer project.
 | **Subagent** / **Agent** | Focused helper (often report-only) under `.cursor/agents/`. |
 | **Hook** | Script that runs around agent actions (e.g. block destructive shell commands). |
 | **Automation** | Cloud agent run on a schedule or git/CI event. |
-| **Plan** | Draft or approved implementation plan (often under `.cursor/plans/`). |
-| **Worktree proof** | Types + contract-listed suites on the feature worktree. Feature merge-ready. Empty list fails; docs/harness-only may be N/A. |
+| **Worktree proof** | Types + plan-listed suites on the feature worktree. Feature merge-ready. Empty list fails; docs/harness-only may be N/A. |
 | **Idle-main complete** | One full/CI-parity gate on clean local default after lands, host idle (wait live test-pool lease, bounded). Then `/ship-prod`. |
 | **Fast/local coverage slice** | Full lint/types/coverage ratchet (`test.fast` when declared). CI and part of idle-main complete. Not run on feature worktrees. |
 | **Verification ladder** | Targeted RED/GREEN → one worktree proof; idle-main complete after `/ship-local` — SSOT in the `testing` rule; discovered project commands. |

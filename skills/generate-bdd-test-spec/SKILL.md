@@ -10,6 +10,17 @@ description: >-
 
 # Test Specification Workflow
 
+## One plan (SSOT)
+
+If this chat already has a plan file URI, that file is the SSOT.
+**Do not call CreatePlan.** Edit the existing file.
+`/prep` may CreatePlan **once**, and only if no plan exists for this item.
+Never write `.cursor/night-shift/contract.md` or `contract-*.md`.
+Sidecars start with `SSOT: .cursor/plans/<slug>.md`.
+
+Read that plan. Write scenarios only — this file is not a second plan.
+Put `SSOT: .cursor/plans/<slug>.md` on the first line of the spec.
+
 Act as a senior QA engineer. Analyze the attached implementation plan.
 Produce a structured list of test scenarios in Gherkin format (Given/When/Then) for the
 planned features. Split them into:

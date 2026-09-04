@@ -180,7 +180,7 @@ and counts `help_count` when a later cycle actually used the row.
 [project_memory.example.md](templates/project_memory.example.md) ·
 [doc-routing.local.example.mdc](templates/doc-routing.local.example.mdc) ·
 [local-override.example.mdc](templates/local-override.example.mdc) ·
-[night-shift contract](templates/night-shift-contract.example.md) ·
+[night-shift plan frontmatter](templates/night-shift-plan.example.md) ·
 [night decision log](templates/night-shift-decisions.example.tsv) ·
 [launchd unit](templates/launchd/com.cursor-harness.night-shift.plist.example)
 

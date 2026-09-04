@@ -15,13 +15,23 @@ Read-only. The plan must already exist. Before or after
 `/implementation-plan-review` is fine. Do not review, edit, implement, or
 start Nightshift.
 
+## One plan (SSOT)
+
+If this chat already has a plan file URI, that file is the SSOT.
+**Do not call CreatePlan.** Edit the existing file.
+`/prep` may CreatePlan **once**, and only if no plan exists for this item.
+Never write `.cursor/night-shift/contract.md` or `contract-*.md`.
+Sidecars start with `SSOT: .cursor/plans/<slug>.md`.
+
 ## Find the plan
 
 1. Use the plan the developer attached or named.
-2. Else the newest file under `.cursor/plans/`.
-3. Else `.cursor/night-shift/contract.md` if it is this item.
+2. Else this item’s live plan under `.cursor/plans/` (`status: draft` or
+   `approved`, matching `issue`).
+3. If none: ask for the plan file or a paste. Stop.
 
-If none: ask for the plan file or a paste. Stop.
+Never pick “the newest file” when more than one plan exists. Ignore
+`status: archived`.
 
 ## Classify
 

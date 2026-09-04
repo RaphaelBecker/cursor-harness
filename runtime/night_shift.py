@@ -27,7 +27,7 @@ from project_config import (
 )
 
 NIGHT_DIR = Path(".cursor") / "night-shift"
-CONTRACT_NAME = "contract.md"
+PLANS_DIR = Path(".cursor") / "plans"
 BLOCKED_NAME = "BLOCKED.md"
 STATUS_NAME = "status.json"
 PID_NAME = "agent.pid"
@@ -41,8 +41,8 @@ def night_dir(worktree: Path) -> Path:
     return worktree / NIGHT_DIR
 
 
-def contract_path(worktree: Path) -> Path:
-    return night_dir(worktree) / CONTRACT_NAME
+def plans_dir(worktree: Path) -> Path:
+    return worktree / PLANS_DIR
 
 
 def blocked_path(worktree: Path) -> Path:
@@ -73,17 +73,74 @@ def parse_frontmatter(text: str) -> dict[str, str]:
     return meta
 
 
-def contract_status(worktree: Path) -> str:
-    path = contract_path(worktree)
-    if not path.is_file():
-        return "missing"
-    meta = parse_frontmatter(path.read_text(encoding="utf-8"))
+def plan_frontmatter_status(text: str) -> str:
+    meta = parse_frontmatter(text)
     status = (meta.get("status") or "").lower()
-    if status in {"approved", "draft", "blocked"}:
+    if status in {"approved", "draft", "blocked", "archived", "done"}:
         return status
     if (meta.get("approved") or "").lower() in {"true", "yes"}:
         return "approved"
-    return "draft"
+    return ""
+
+
+def approved_plan_paths(worktree: Path) -> list[Path]:
+    folder = plans_dir(worktree)
+    if not folder.is_dir():
+        return []
+    found: list[Path] = []
+    for path in sorted(folder.glob("*.md")):
+        try:
+            text = path.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        if plan_frontmatter_status(text) == "approved":
+            found.append(path)
+    return found
+
+
+def plan_status(worktree: Path) -> str:
+    approved = approved_plan_paths(worktree)
+    if len(approved) > 1:
+        return "ambiguous"
+    if len(approved) == 1:
+        return "approved"
+    return "missing"
+
+
+def replace_frontmatter_status(text: str, status: str) -> str:
+    if not text.startswith("---"):
+        return f"---\nstatus: {status}\n---\n\n{text}"
+    parts = text.split("---", 2)
+    if len(parts) < 3:
+        return f"---\nstatus: {status}\n---\n\n{text}"
+    lines: list[str] = []
+    found = False
+    for raw in parts[1].splitlines():
+        stripped = raw.strip()
+        if stripped.lower().startswith("status:") and not found:
+            indent = raw[: len(raw) - len(raw.lstrip())]
+            lines.append(f"{indent}status: {status}")
+            found = True
+        else:
+            lines.append(raw)
+    if not found:
+        body = [line for line in lines if line.strip()]
+        lines = ["", f"status: {status}", *body]
+    inner = "\n".join(lines)
+    if not inner.startswith("\n"):
+        inner = "\n" + inner
+    if not inner.endswith("\n"):
+        inner += "\n"
+    return f"---{inner}---{parts[2]}"
+
+
+def archive_approved_plans(worktree: Path) -> list[Path]:
+    archived: list[Path] = []
+    for path in approved_plan_paths(worktree):
+        text = path.read_text(encoding="utf-8")
+        path.write_text(replace_frontmatter_status(text, "archived"), encoding="utf-8")
+        archived.append(path)
+    return archived
 
 
 def list_worktrees(repo: Path) -> list[dict[str, str]]:
@@ -172,11 +229,13 @@ def worktree_state(worktree: Path) -> str:
         if "ready-for-manual-test" in text or "manual test" in text:
             return "ready-for-manual-test"
         return "handoff"
-    status = contract_status(worktree)
+    status = plan_status(worktree)
     if status == "approved":
         return "ready-to-fire"
+    if status == "ambiguous":
+        return "ambiguous-plans"
     if status == "missing":
-        return "no-contract"
+        return "no-plan"
     return status
 
 
@@ -188,7 +247,7 @@ def discover(repo: Path) -> list[dict[str, str]]:
             {
                 "path": str(path),
                 "branch": tree.get("branch", ""),
-                "contract": contract_status(path),
+                "plan": plan_status(path),
                 "state": worktree_state(path),
             }
         )
@@ -290,8 +349,8 @@ def fire_one(
         return f"skip blocked: {worktree}"
     if state == "running":
         return f"skip running: {worktree}"
-    if contract_status(worktree) != "approved":
-        return f"skip (no approved contract): {worktree}"
+    if plan_status(worktree) != "approved":
+        return f"skip (no single approved plan): {worktree}"
 
     night_dir(worktree).mkdir(parents=True, exist_ok=True)
     blocked_path(worktree).unlink(missing_ok=True)
@@ -341,12 +400,12 @@ def cmd_discover(target: Path) -> int:
     if not rows:
         print("no git worktrees found")
         return 0
-    print(f"{'state':<24} {'contract':<12} path")
+    print(f"{'state':<24} {'plan':<12} path")
     for row in rows:
-        print(f"{row['state']:<24} {row['contract']:<12} {row['path']}")
+        print(f"{row['state']:<24} {row['plan']:<12} {row['path']}")
     print(
         "\nHumans create Cursor worktrees. This CLI never runs git worktree add. "
-        "Night agents = prepared trees with status: approved. "
+        "Night agents = trees with exactly one .cursor/plans/*.md status: approved. "
         "About 3 parallel runs has been comfortable on a laptop — not a harness cap."
     )
     return 0
@@ -360,14 +419,14 @@ def cmd_fire(target: Path, *, dry_run: bool) -> int:
         return 1
     project = load_project(target)
     rows = discover(target)
-    approved = [Path(r["path"]) for r in rows if r["contract"] == "approved"]
+    approved = [Path(r["path"]) for r in rows if r["plan"] == "approved"]
     if not approved:
         print(
-            "nothing to fire: no worktree has .cursor/night-shift/contract.md with status: approved",
+            "nothing to fire: no worktree has exactly one .cursor/plans/*.md with status: approved",
             file=sys.stderr,
         )
         print(
-            "Create Cursor worktrees yourself, run /prep, then fire.",
+            "Create Cursor worktrees yourself, run /prep (one CreatePlan), then fire.",
             file=sys.stderr,
         )
         return 1
@@ -407,6 +466,16 @@ def cmd_status(target: Path) -> int:
     return 0
 
 
+def cmd_archive_plans(target: Path) -> int:
+    archived = archive_approved_plans(target)
+    if not archived:
+        print("archive-plans: no approved plans")
+        return 0
+    for path in archived:
+        print(f"archived {path}")
+    return 0
+
+
 def cmd_slots_status(target: Path) -> int:
     """Exit 0 if another worktree holds a test-pool slot (STOP); 1 if idle."""
     errors = check_project(target)
@@ -436,7 +505,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--target", default=".", help="consumer project root (git repo)")
     sub = parser.add_subparsers(dest="cmd", required=True)
     sub.add_parser("check", help="validate harness.project.yaml")
-    sub.add_parser("discover", help="list existing git worktrees and contract state")
+    sub.add_parser("discover", help="list existing git worktrees and plan state")
+    sub.add_parser(
+        "archive-plans",
+        help="set status: archived on approved .cursor/plans/*.md in --target",
+    )
     fire = sub.add_parser("fire", help="start one local agent per approved worktree")
     fire.add_argument("--dry-run", action="store_true")
     sub.add_parser("status", help="morning board")
@@ -458,6 +531,8 @@ def main(argv: list[str] | None = None) -> int:
             return cmd_status(target)
         if args.cmd == "slots-status":
             return cmd_slots_status(target)
+        if args.cmd == "archive-plans":
+            return cmd_archive_plans(target)
     except RuntimeError as exc:
         print(str(exc), file=sys.stderr)
         return 1

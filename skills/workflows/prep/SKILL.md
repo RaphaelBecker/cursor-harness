@@ -3,7 +3,7 @@ name: prep
 disable-model-invocation: true
 description: >-
   Short workpack preparation (about 2h max, anytime): decision packets with
-  recommended answers, contracts in human-created Cursor worktrees, then ready
+  recommended answers, one Cursor plan in human-created worktrees, then ready
   to fire Nightshift or Cursor Build. Do not create worktrees. Do not implement code.
 ---
 
@@ -12,7 +12,7 @@ description: >-
 Short human sitting to assemble the workpack. Not tied to a time of day — run
 it when you have a block (keep it to about **2h max**). Nightshift then executes
 fully autonomously in those worktrees. Cursor **Build** in this same chat also
-runs `@execute-approved-plan` once the contract is approved. `/night-shift` fire
+runs `@execute-approved-plan` once the plan is approved. `/night-shift` fire
 is only the unattended multi-tree launcher — skipping it is fine.
 
 Humans create Cursor worktrees (one tree, one agent, one feature). This skill
@@ -23,18 +23,21 @@ Thin orchestrator. Reuse `@grill-me` (packet mode), `@implementation-plan-review
 `@project-memory`. Fire is Cursor Build, `/night-shift`, or
 `./vendor/cursor-harness/runtime/night-shift fire`.
 
-Flavor is a contract `kind`, not a second slash command. Agents that hear
+Flavor is a plan `kind`, not a second slash command. Agents that hear
 “new feature”, “bug fix”, or “architecture change” point at **this skill only**.
 
-## This-item contract only
+## One plan (SSOT)
 
-Always write `.cursor/night-shift/contract.md` in the current worktree. **Never**
-write sidecars (`contract-*.md`). If a leftover `contract.md` is `status: approved`
-for a **different** `issue` than this chat’s item, replace it with this item’s
-draft — do not keep the foreign file, do not execute it.
+If this chat already has a plan file URI, that file is the SSOT.
+**Do not call CreatePlan.** Edit the existing file.
+`/prep` may CreatePlan **once**, and only if no plan exists for this item.
+Never write `.cursor/night-shift/contract.md` or `contract-*.md`.
+Sidecars start with `SSOT: .cursor/plans/<slug>.md`.
 
-New worktrees should start from a draft stub (gitignore + create-time reset).
-If they do not, reset first, then draft.
+Write the live plan under `.cursor/plans/<slug>.md` in this worktree
+(`status: draft`, `commits: authorized`, `kind:` set, `issue:` this item).
+If a leftover plan is `status: approved` for a **different** `issue`, do not
+execute it — archive it or leave it and CreatePlan once for this item.
 
 ## Preconditions
 
@@ -53,7 +56,7 @@ If they do not, reset first, then draft.
 1. **Items** — from `issue_source` in `harness.project.yaml`:
    - If `.cursor/night-shift/bug-ticket.md` exists in this worktree, that file
      **is** the item text (it replaces the typed bug explanation). Classify
-     `kind: bug`. The ticket's **Test coverage gap** may seed the contract
+     `kind: bug`. The ticket's **Test coverage gap** may seed the plan
      **Tests** field; it does not replace diagnose, grill, or review.
    - If the file is missing, `/prep` behaves exactly as today.
    - `files`: read `files.path`.
@@ -63,7 +66,7 @@ If they do not, reset first, then draft.
    with a clear “create a Cursor worktree first” line, unless this chat is
    already on the intended checkout (including default).
 3. **Classify `kind`** — `feature` (default), `bug`, or `architecture`. Write it
-   on the contract. Then:
+   on the plan. Then:
    | `kind` | Extra before the packet grill |
    | --- | --- |
    | `feature` | none — grill next |
@@ -72,15 +75,15 @@ If they do not, reset first, then draft.
 4. **Packet grill** — `@grill-me` in **packet mode** (all material questions at
    once, each with a recommended answer). Not one-question-at-a-time unless the
    human asks for conversational grill.
-5. **Draft contract** — overwrite `.cursor/night-shift/contract.md` in this
-   worktree (`status: draft`, `commits: authorized`, `kind:` set, `issue:` this
-   item). Copy shape from `contract.example.md` or
-   `templates/night-shift-contract.example.md`. Include **Manual test**
-   (how to run the app + which acceptance to click). Delete leftover sidecars.
+5. **Draft plan** — edit this item’s `.cursor/plans/<slug>.md` (`status: draft`,
+   `commits: authorized`, `kind:` set, `issue:` this item). Include **Manual test**
+   (how to run the app + which acceptance to click). Delete leftover
+   `contract.md` / `contract-*.md` if present. Do not CreatePlan a second file.
 6. **Review** — wait for human `/implementation-plan-review` (or batch review of
-   packets in this sitting). That skill pauses once for Option A/B/C, then writes
-   `status: approved`, says `Implementation plan is ready.`, and stops. Do not
-   ask a second yes. That write does **not** authorize merge, push, or production.
+   packets in this sitting). That skill pauses once for Option A/B/C, then sets
+   the **same plan file** to `status: approved`, says `Implementation plan is ready.`,
+   and stops. Do not ask a second yes. That write does **not** authorize merge,
+   push, or production.
 7. **Stop** — do not start Phases 2–5. Do not say “hit Build”.
 
 ## Map
