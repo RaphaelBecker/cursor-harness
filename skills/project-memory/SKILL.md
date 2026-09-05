@@ -69,7 +69,7 @@ preventing context bloat and logic drift.
 7. Cross-check loaded entries against routed canonical docs (and current code). Drop
    stale or contradictory items from the working set; do not let them steer the plan.
 8. Proceed to `@grill-me` (auto at Phase 1 for non-trivial ideas), then update
-   this item’s existing Cursor plan (CreatePlan only if none exists).
+   this item’s existing `.cursor/plans/<slug>.md` (Write that file if none exists; never CreatePlan).
    Do **not** auto-run `@implementation-plan-review`. Memory load is not plan approval.
    Do not write `.cursor/night-shift/contract.md`.
 

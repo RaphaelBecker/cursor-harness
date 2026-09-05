@@ -21,15 +21,18 @@ before starting.
 
 ## One plan (SSOT)
 
-If this chat already has a plan file URI, that file is the SSOT.
-**Do not call CreatePlan.** Edit the existing file.
-`/prep` may CreatePlan **once**, and only if no plan exists for this item.
+The only implementation plan is this worktree’s `.cursor/plans/<slug>.md`.
+Create it with Write; edit it with StrReplace.
+**Never call CreatePlan.** That tool writes a different file under
+`~/.cursor/plans/<name>_<hash>.plan.md` and is not the SSOT.
+Never copy, sync, or edit `~/.cursor/plans`.
+If a hashed plan URI is already attached to the chat, ignore it for content.
 Never write `.cursor/night-shift/contract.md` or `contract-*.md`.
 Sidecars start with `SSOT: .cursor/plans/<slug>.md`.
 
 This skill runs in **planning mode**. Do not write implementation code. Do not SwitchMode.
 Do not start Phases 2–5. Pause once for Option A/B/C. After that choice, set
-the **existing** plan file to `status: approved` and `commits: authorized`,
+this worktree’s `.cursor/plans/<slug>.md` to `status: approved` and `commits: authorized`,
 then stop. Last chat line: `Implementation plan is ready.` Do not ask a second yes.
 Do not say “hit Build”. The human may prompt to change the plan. Hitting Build starts
 `@execute-approved-plan`. It never authorizes merge, push, pull-request approval, payment
@@ -144,8 +147,8 @@ Do not modify the plan yet. Do not write `status: approved` yet.
 
 ### 5. Plan refactoring (after they choose)
 
-- Edit **this item’s existing plan file** in place (do not dump the whole plan in chat).
-  Do not CreatePlan. Do not write `.cursor/night-shift/contract.md`.
+- Edit **this item’s** `.cursor/plans/<slug>.md` in place (do not dump the whole plan in chat).
+  Never call CreatePlan. Do not write `.cursor/night-shift/contract.md`.
 - Put every field from `core-principles.mdc` on **that same file**, resolved or
   `N/A` with reason (objective, allowlist, acceptance, tests, docs/SemVer, permissions,
   manual test, handoff evidence). Plan `## Tests` must list the **worktree-proof**

@@ -67,8 +67,7 @@ The agent takes the same *process* every run. Keep the skill predictable.
 - **Prune no-ops.** If a sentence does not change default agent behaviour,
   delete the sentence.
 - Same rules apply to the one Cursor plan and AI-ready issue bodies.
-  Never write `.cursor/night-shift/contract.md`. Do not call CreatePlan
-  when a plan already exists for the item.
+  Never write `.cursor/night-shift/contract.md`. Never call CreatePlan.
 
 ## Style
 

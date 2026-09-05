@@ -11,7 +11,7 @@ lives in the consumer project.
 | **Deep module** | Simple interface, rich behavior inside. Prefer this over thin pass-through wrappers. |
 | **Connector** | Thin adapter that talks to an outside system (API, DB client). Not business rules. |
 | **SSOT** | Single source of truth — one place that owns a fact; others read or point to it. |
-| **Plan** | The one implementation SSOT for an item (`CreatePlan` → `.cursor/plans/<slug>.md`). Fields live on that file. Never write `contract.md`. Never CreatePlan twice. |
+| **Plan** | The one implementation SSOT for an item (worktree `.cursor/plans/<slug>.md` only). Fields live on that file. Never write `contract.md`. Never call CreatePlan (`~/.cursor/plans` is not the SSOT). |
 | **kind** | Plan field: `feature` (default), `bug`, or `architecture`. Flavor of `/prep`, not a second slash. |
 | **Prep** | Short HIL sitting (about 2h max, anytime): human creates Cursor worktrees; packet grill; approve the one Cursor plan. |
 | **Nightshift** | Unattended execute in those trees (`night-shift fire`). Park BLOCKED.md; never wait. |

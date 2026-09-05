@@ -28,16 +28,19 @@ Flavor is a plan `kind`, not a second slash command. Agents that hear
 
 ## One plan (SSOT)
 
-If this chat already has a plan file URI, that file is the SSOT.
-**Do not call CreatePlan.** Edit the existing file.
-`/prep` may CreatePlan **once**, and only if no plan exists for this item.
+The only implementation plan is this worktree’s `.cursor/plans/<slug>.md`.
+Create it with Write; edit it with StrReplace.
+**Never call CreatePlan.** That tool writes a different file under
+`~/.cursor/plans/<name>_<hash>.plan.md` and is not the SSOT.
+Never copy, sync, or edit `~/.cursor/plans`.
+If a hashed plan URI is already attached to the chat, ignore it for content.
 Never write `.cursor/night-shift/contract.md` or `contract-*.md`.
 Sidecars start with `SSOT: .cursor/plans/<slug>.md`.
 
 Write the live plan under `.cursor/plans/<slug>.md` in this worktree
 (`status: draft`, `commits: authorized`, `kind:` set, `issue:` this item).
 If a leftover plan is `status: approved` for a **different** `issue`, do not
-execute it — archive it or leave it and CreatePlan once for this item.
+execute it — archive it or leave it and Write a new slug file for this item.
 
 ## Preconditions
 
@@ -78,7 +81,7 @@ execute it — archive it or leave it and CreatePlan once for this item.
 5. **Draft plan** — edit this item’s `.cursor/plans/<slug>.md` (`status: draft`,
    `commits: authorized`, `kind:` set, `issue:` this item). Include **Manual test**
    (how to run the app + which acceptance to click). Delete leftover
-   `contract.md` / `contract-*.md` if present. Do not CreatePlan a second file.
+   `contract.md` / `contract-*.md` if present. Do not write a second plan file.
 6. **Review** — wait for human `/implementation-plan-review` (or batch review of
    packets in this sitting). That skill pauses once for Option A/B/C, then sets
    the **same plan file** to `status: approved`, says `Implementation plan is ready.`,

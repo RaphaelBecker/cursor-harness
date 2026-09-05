@@ -8,7 +8,7 @@ issue: ""
 # Implementation plan
 
 One file per item under `.cursor/plans/<slug>.md`. This is the SSOT.
-Never write `.cursor/night-shift/contract.md`. Never call CreatePlan twice.
+Never write `.cursor/night-shift/contract.md`. Never call CreatePlan.
 
 `kind` is `feature` (default), `bug`, or `architecture`.
 Set `status: approved` only after `/implementation-plan-review`.
