@@ -426,7 +426,7 @@ def cmd_fire(target: Path, *, dry_run: bool) -> int:
             file=sys.stderr,
         )
         print(
-            "Create Cursor worktrees yourself, run /prep (one CreatePlan), then fire.",
+            "Create Cursor worktrees yourself, run /prep (one .cursor/plans/<slug>.md), then fire.",
             file=sys.stderr,
         )
         return 1

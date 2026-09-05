@@ -29,7 +29,7 @@ second slash.
 
 - **Prep** (anytime, about 2h max) — human creates Cursor worktrees (one tree,
   one agent, one feature). `/prep`: classify `kind` → packet grill → plan review →
-  ready `.cursor/plans/<slug>.md` (this item only; CreatePlan once; never `contract.md`).
+  ready `.cursor/plans/<slug>.md` (this item only; never CreatePlan; never `contract.md`).
 - **Nightshift** — Cursor **Build** or `night-shift fire` runs `@execute-approved-plan`
   (fire is the unattended multi-tree launcher). Ladder (`testing` rule: **worktree proof**,
   then **idle-main complete** after `/ship-local`), `@review-code` (4b), `/review-bugbot`

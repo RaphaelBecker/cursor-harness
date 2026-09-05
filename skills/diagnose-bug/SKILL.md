@@ -12,9 +12,12 @@ description: >-
 
 ## One plan (SSOT)
 
-If this chat already has a plan file URI, that file is the SSOT.
-**Do not call CreatePlan.** Edit the existing file.
-`/prep` may CreatePlan **once**, and only if no plan exists for this item.
+The only implementation plan is this worktree’s `.cursor/plans/<slug>.md`.
+Create it with Write; edit it with StrReplace.
+**Never call CreatePlan.** That tool writes a different file under
+`~/.cursor/plans/<name>_<hash>.plan.md` and is not the SSOT.
+Never copy, sync, or edit `~/.cursor/plans`.
+If a hashed plan URI is already attached to the chat, ignore it for content.
 Never write `.cursor/night-shift/contract.md` or `contract-*.md`.
 Sidecars start with `SSOT: .cursor/plans/<slug>.md`.
 
