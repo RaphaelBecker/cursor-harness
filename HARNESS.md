@@ -80,7 +80,7 @@ only.
 | `implementation-plan-review` | Review a plan, pause for A/B/C, approve that same plan, say ready |
 | `execute-approved-plan` | Nightshift / Build: honor `kind`, worktree proof, 4b/4c, docs, lessons → Candidates, compact chat last line, HANDOFF.md |
 | `project-memory` | Phase 1 load; Phase 5 scored Candidates (commit with feature); Phase 7 Architecture; list staged ids without waiting |
-| `ship-local` | Human-triggered local merge, or leftover-commit when already on default; run `ship.leftovers` when set; release lock before worktree remove |
+| `ship-local` | Human-triggered local merge, or leftover-commit when already on default; run `ship.leftovers` when set; release lock, move to default checkout, then bundled cleanup from main |
 | `sync-spec-docs` | Update product acceptance / thin contracts after code changes |
 | `review-code` | Phase 4b: fix-capable maintainability review after green ladder |
 | `blast-radius` | Explicit: one proven safety fact beyond the diff (skip copy/docs) |

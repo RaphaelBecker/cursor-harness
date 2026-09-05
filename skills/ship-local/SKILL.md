@@ -29,9 +29,9 @@ Do **not** auto-run at the end of `@execute-approved-plan`.
 ## Do not drop out
 
 A turn that only announces the next git step is a failure. Invoke lock
-acquire, leftovers, fetch/merge, and worktree remove as Shell calls in
-the same message as the announcement. Do not stop between "ready to merge"
-and the merge command.
+acquire, leftovers, fetch/merge, `move_agent_to_root`, and the bundled
+cleanup script as Shell calls in the same message as the announcement.
+Do not stop between "ready to merge" and the merge command.
 
 ## Already on default (fast path)
 
@@ -58,8 +58,8 @@ this skill alone may:**
 3. Update local default branch (FF from `origin/<default>` when safe).
 4. Merge default ↔ feature (including conflict resolution commits).
 5. Delete the merged local feature branch if safe (`-d`).
-6. Remove **only** the feature worktree used for this cycle (`git worktree remove --force`
-   when the tree has submodules / vendor checkouts).
+6. Remove **only** the feature worktree used for this cycle, via the bundled
+   cleanup script from the primary checkout (never with cwd inside that tree).
 
 Never remove an unrelated worktree. Never stash/absorb unrelated dirty work — **STOP**
 and ask if the tree has STOP-class dirt (secrets, other worktree, live merge). This
@@ -183,21 +183,41 @@ On clean local default:
 ### 6) Release lock, then cleanup
 
 Only after step 5 succeeds. Use try/finally so a failed remove cannot hold the lock.
+Do **not** write “worktree removed” into `HANDOFF.md` until step 6.4 is true.
 
 1. **Release the exclusive lock** (default is now clean).
-2. `git worktree remove --force` for **this** feature worktree only (needed when the
-   tree has submodules / vendor checkouts).
-3. Delete the merged local feature branch with `git branch -d` (not `-D` unless the
-   human explicitly confirms).
-4. Leave the agent on the primary default-branch checkout.
+2. `move_agent_to_root` to the primary default checkout **while the feature tree
+   is still intact**.
+3. Run **only** the bundled script, with `working_directory=<main-root>` (never
+   the feature path). `--force` and orphan-folder delete live in the script;
+   do not hand-roll `git worktree remove` or `rm -rf`.
 
-If remove fails: lock is already free; report the leftover tree. Do not keep the
-lock held for a 30 min TTL.
+   ```bash
+   bash .cursor/skills/ship-local/cleanup-worktree.sh \
+     --main-root "$MAIN" --worktree "$FEATURE" --branch "$BRANCH"
+   ```
+
+   Shell description must cite `/ship-local` step 6 and
+   `$MAIN/.cursor/skills/ship-local/SKILL.md`. Human `/ship-local` is the
+   authorization. If Auto-review blocks: same turn, retry with
+   `request_smart_mode_approval` and that block reason. Do not stop.
+4. Verify: feature path gone, not in `git worktree list`, merged branch gone.
+5. Leave the agent on the primary default-branch checkout.
+
+If Shell fails because fail-closed hooks cannot spawn (chat still bound to a
+half-deleted tree): use **Write** (not Shell) to copy every
+`beforeShellExecution` entry with `failClosed: true` from
+`$MAIN/.cursor/hooks/` into the orphan `.cursor/hooks/`. Discover names from
+`$MAIN/.cursor/hooks.json` — do not hardcode consumer script names. Then rerun
+the cleanup script from main.
+
+If verify fails after that: lock is already free; report the leftover path.
+Do not keep the lock held for a 30 min TTL.
 
 ### 7) Handoff
 
 Chat: ~8–12 short lines. Default tip SHA; feature tip merged; conflicts or none;
-worktree removed; lock released. Next: `/ship-prod`.
+worktree removed (only after step 6.4); lock released. Next: `/ship-prod`.
 
 **Required last line:** `DONE` or `PARTIAL: <exact leftover>`.
 
