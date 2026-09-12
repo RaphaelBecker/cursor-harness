@@ -128,8 +128,9 @@ hand-edit the SVG. Do not paste live mermaid into this README.
 
 - **You** create each Cursor **worktree + branch** (one tree, one agent, one feature).
   Agents do not create, switch, or delete worktrees. The night-shift CLI does not
-  either. The only exception is `/ship-local`, which you trigger — it may merge this
-  feature and remove **this** worktree only.
+  either. Exceptions you trigger: `/ship-local` may merge this feature and remove
+  **this** worktree only; `/clean-worktrees` may reset leftover trees and ghost
+  farm folders so a new batch can start.
 - **Prep (anytime, about 2h max):** `/prep` packets → you `/implementation-plan-review` →
   you approve. That yes does **not** authorize merge, push, or production. It does
   authorize local commits in that tree. Set `kind` on the contract (`feature` default,
@@ -198,6 +199,7 @@ Start each one in a new agent chat (`/name` after install). Each skill should do
 | Assemble the workpack | `/prep` |
 | Fire / status | `/night-shift` or `runtime/night-shift` |
 | Merge locally, then production | `/ship-local` then `/ship-prod` |
+| Reset leftover worktrees | `/clean-worktrees` |
 | Faster, less flaky tests | `/test-harness-optimize` (not delivery) |
 | Hygiene without a feature plan | Local CLI/SDK (`docs/runtime-policy.md`) |
 | Architecture report | `/architecture-audit` (report; not delivery) |
@@ -235,7 +237,8 @@ CLI: [runtime/night-shift](runtime/night-shift)
 Shipping is always **your** call. The agent never pushes or deploys on its own.
 
 Orchestrators: [ship-local](skills/ship-local/SKILL.md) ·
-[ship-prod](skills/workflows/ship-prod/SKILL.md)
+[ship-prod](skills/workflows/ship-prod/SKILL.md) ·
+leftover farm reset: [clean-worktrees](skills/clean-worktrees/SKILL.md)
 
 ### Anytime
 
@@ -245,6 +248,7 @@ Orchestrators: [ship-local](skills/ship-local/SKILL.md) ·
 | Understand a written plan | `/summarize-plan` |
 | Add a new named sequence | `/create-workflow` |
 | Pull proven process from a live project into this pack | `/sync` |
+| Reset leftover worktrees | `/clean-worktrees` |
 
 ## Workflow ideas
 

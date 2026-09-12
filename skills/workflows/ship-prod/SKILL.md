@@ -188,7 +188,7 @@ Leftover-container / slot-unhealthy infra: recover via the project path, then
 ## Non-goals
 
 - No feature planning (`grill-me` / plan review) — that is `/prep`
-- No local merge / worktree cleanup — that is `/ship-local` (skip when already on default)
+- No local merge / one-tree cleanup — that is `/ship-local` (skip when already on default). Leftover farm reset is `/clean-worktrees`.
 - No autonomous cloud deploy; no draft-PR automation path
 - No claiming Phase 7 after docs-only pushes
 

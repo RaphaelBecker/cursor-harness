@@ -19,6 +19,7 @@ pack_sets:
       - execute-approved-plan
       - project-memory
       - ship-local
+      - clean-worktrees
       - review-code
       - sync-spec-docs
       - help

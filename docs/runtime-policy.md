@@ -36,7 +36,7 @@ tests. Do not spawn a cloud fleet “because Cursor can.”
 | SDK **local** runtime (`local: { cwd }`) | Same harness from a script; `Agent.resume` across process boundaries |
 | `/loop` | Recurring ticks **inside an existing local session** (CI watch, hygiene) |
 | `/review-bugbot` / `/review-security` | Phase 4c at handoff, **report-only** — not on every PR event |
-| `.cursor/worktrees.json` | Optional setup commands when Cursor creates a worktree. Agents still must not create/switch worktrees except `/ship-local` |
+| `.cursor/worktrees.json` | Optional setup commands when Cursor creates a worktree. Agents still must not create/switch worktrees except `/ship-local` or `/clean-worktrees` |
 
 Example night kick (approved plan already in the worktree):
 

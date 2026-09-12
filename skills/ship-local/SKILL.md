@@ -205,11 +205,9 @@ Do **not** write “worktree removed” into `HANDOFF.md` until step 6.4 is true
 5. Leave the agent on the primary default-branch checkout.
 
 If Shell fails because fail-closed hooks cannot spawn (chat still bound to a
-half-deleted tree): use **Write** (not Shell) to copy every
-`beforeShellExecution` entry with `failClosed: true` from
-`$MAIN/.cursor/hooks/` into the orphan `.cursor/hooks/`. Discover names from
-`$MAIN/.cursor/hooks.json` — do not hardcode consumer script names. Then rerun
-the cleanup script from main.
+half-deleted tree): `move_agent_to_root` to primary, rerun the cleanup script
+from main. Do **not** write files into the deleted tree (that recreates a ghost
+folder). If a leftover path remains, the human runs `/clean-worktrees`.
 
 If verify fails after that: lock is already free; report the leftover path.
 Do not keep the lock held for a 30 min TTL.

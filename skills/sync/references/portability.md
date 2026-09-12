@@ -9,7 +9,7 @@ Process / craft that applies to any software project:
 | Kind | Examples |
 | --- | --- |
 | Lifecycle spine | `core-principles`, `grill-me`, `implementation-plan-review`, `execute-approved-plan`, `project-memory` |
-| Ship spine | `ship-local`, `workflows/ship-prod` |
+| Ship spine | `ship-local`, `clean-worktrees`, `workflows/ship-prod` |
 | Workflows | `prep`, `night-shift`, `ship-prod`, `create-workflow` |
 | Optional packs | `bdd`, `vitest`, `playwright`, `supabase`, `nextjs`, `github-actions`, `quality-audit` |
 | Quality helpers | `review-code`, `review-docs`, `test-harness-optimize`, `blast-radius`, `diagnose-bug` |

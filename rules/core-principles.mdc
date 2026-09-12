@@ -46,7 +46,8 @@ Two stages. **Not a clock.** Prep runs any time of day and stays short (about **
 Once the workpack is approved, Nightshift runs fully autonomously in the worktrees.
 
 Humans create Cursor worktrees (one tree, one agent, one feature). Agents must not create,
-switch, or manage worktrees except `/ship-local` when the human invokes it.
+switch, or manage worktrees except `/ship-local` or `/clean-worktrees` when the human
+invokes them.
 
 ### Prep (HIL — `/prep`)
 
@@ -111,7 +112,8 @@ commit), commit `project_memory.md` and tip product, restore generated noise.
 Secrets / `.env*` / vault / other worktree / live merge → STOP. Never stash.
 **Hard stops (unattended):** scope expansion, unapproved behavior/data, ambiguous deletion,
 credentials, destructive ops, payments, production, push, deploy — **park BLOCKED.md**.
-Local merge and worktree cleanup only via explicit `/ship-local`.
+Local merge and one-tree cleanup only via explicit `/ship-local`. Leftover farm
+reset via explicit `/clean-worktrees`.
 
 ### Harness sync
 

@@ -38,8 +38,9 @@ second slash.
   approved plan in that tree. Ship sets `status: archived`.
 - **After** — `night-shift status` + manual tests, then `/ship-local` (worktree) or
  leftover-commit on default; one **idle-main complete** on idle local default
- (wait live leases, bounded), then `/ship-prod`. Complete red + isolate red
- → `@diagnose-bug` + `/review-bugbot` before push — not a flake STOP.
+ (wait live leases, bounded), then `/ship-prod`. Leftover farm reset:
+ `/clean-worktrees`. Complete red + isolate red → `@diagnose-bug` +
+ `/review-bugbot` before push — not a flake STOP.
 - **Autonomous** — local CLI/SDK hygiene stubs. Cloud `/automate` is overflow.
 - **Map rule** — Any new skill, rule, agent, workflow, or automation stub must update **this file**.
 
@@ -81,6 +82,7 @@ only.
 | `execute-approved-plan` | Nightshift / Build: honor `kind`, worktree proof, 4b/4c, docs, lessons → Candidates, compact chat last line, HANDOFF.md |
 | `project-memory` | Phase 1 load; Phase 5 scored Candidates (commit with feature); Phase 7 Architecture; list staged ids without waiting |
 | `ship-local` | Human-triggered local merge, or leftover-commit when already on default; run `ship.leftovers` when set; release lock, move to default checkout, then bundled cleanup from main |
+| `clean-worktrees` | Human-triggered farm reset: leftover feature trees, ghost folders, stale Cursor workspace artifacts; ready for a new parallel batch |
 | `sync-spec-docs` | Update product acceptance / thin contracts after code changes |
 | `review-code` | Phase 4b: fix-capable maintainability review after green ladder |
 | `blast-radius` | Explicit: one proven safety fact beyond the diff (skip copy/docs) |
@@ -139,7 +141,7 @@ only.
 | `deep-modules-clean-architecture` | Code globs | Deep modules, clean boundaries |
 | `doc-routing` | On demand | Which doc to read; product story first |
 | `code-quality` | Code globs | Architecture + craft defaults |
-| `testing` | Code/test globs | Ladder SSOT: worktree proof vs idle-main complete |
+| `testing` | Code/test globs | Ladder SSOT: worktree proof vs idle-main complete; isolate uses the full-gate server class |
 | `security-basics` | Code globs | Secrets, boundaries, least privilege |
 | `database-sql` | `supabase` pack / migrations | RLS, thin-backend views, isolated-test migrate |
 | `typescript-react` | `nextjs` pack | SoC, RSC fetch, no logic in presentational components |
@@ -203,6 +205,7 @@ See [`automations/README.md`](automations/README.md) and
 | Sensitive diff | `/blast-radius` (or via Phase 4b / `/ship-local`) |
 | Unclear reply | `/wait-what` |
 | Local ship | `/ship-local` after manual tests |
+| Reset leftover worktrees | `/clean-worktrees` before a new parallel batch |
 | Prod ship | `/ship-prod` after clean local default is ready |
 | Ship / PR | `/autopilot`, `/split-to-prs`, `/loop` to watch CI/deploy |
 | Night hygiene | Local `agent -p` ← stubs in automations README. `/automate` only if the laptop is off |

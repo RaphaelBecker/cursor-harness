@@ -82,7 +82,10 @@ test engine (no reimplemented Playwright, Vitest, or DB bootstrap).
    project's documented path; do not ask.
 8. **Idle-main complete red:** isolate only the failing listed suite. Isolate
    **green** → suite-load flake, not a product bug; re-run complete once (the
-   one transient infra retry). Isolate **still red** (same or related
+   one transient infra retry). Isolate must use the same server class as the
+   full gate when the project has a production-server isolate. Fast Refresh
+   full-reload and test-DB abort/502 after isolate-green are infra (one
+   recycle), not a product edit. Isolate **still red** (same or related
    assertion) → **not** a flake storm. Read `@diagnose-bug`. Run
    `/review-bugbot` (and `/review-security` when the surface is auth, access
    control, billing, admin, or secrets). Do not STOP on billing or mixed

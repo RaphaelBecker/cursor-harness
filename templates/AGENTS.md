@@ -24,7 +24,7 @@ Follow `core-principles`:
 - **After:** `/ship-local` on a feature tree (or leftover-commit if already on default)
   → one **idle-main complete** (wait live leases, bounded) → `/ship-prod`
 - Chat after implement/ship ends with `DONE` or `PARTIAL: <exact leftover>`
-- Agents do not create or manage git worktrees except during human-triggered `/ship-local`
+- Agents do not create or manage git worktrees except during human-triggered `/ship-local` or `/clean-worktrees`
 - Remote push and deploy stay human-owned unless you explicitly ask via `/ship-prod`
 
 Thin orchestrators: `/prep`, `/night-shift`, `/ship-prod`.
@@ -40,6 +40,7 @@ contract `kind` (`feature` / `bug` / `architecture`), not a second slash.
 - `execute-approved-plan` — autonomous Phases 2–5 in the current workspace
 - `project-memory` — Phase 1 load / Phase 5 Candidates / Phase 7 promote ask
 - `ship-local` — reliable local merge onto clean default branch
+- `clean-worktrees` — reset leftover worktrees and stale Cursor workspace artifacts
 - `ship-prod` — watched remote ship + CI fix + Phase 7
 - `review-code` — Phase 4b fix-capable review
 - `blast-radius` — proven safety fact on a sensitive diff

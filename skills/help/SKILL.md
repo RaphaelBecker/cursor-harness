@@ -54,6 +54,7 @@ Agents that hear “new feature” point at `/prep` only.
 | Understand a written plan | `/summarize-plan` (plan must exist) |
 | What else could this break | `/blast-radius` |
 | Screenshots show wrong numbers | `/bugticket-from-screenshots` (optional, before `/prep`) |
+| Reset leftover worktrees | `/clean-worktrees` (before a new parallel batch) |
 
 ### Rules of the road (short)
 
