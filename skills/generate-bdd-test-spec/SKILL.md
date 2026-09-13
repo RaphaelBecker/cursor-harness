@@ -12,17 +12,12 @@ description: >-
 
 ## One plan (SSOT)
 
-The only implementation plan is this worktree’s `.cursor/plans/<slug>.md`.
-Create it with Write; edit it with StrReplace.
-**Never call CreatePlan.** That tool writes a different file under
-`~/.cursor/plans/<name>_<hash>.plan.md` and is not the SSOT.
-Never copy, sync, or edit `~/.cursor/plans`.
-If a hashed plan URI is already attached to the chat, ignore it for content.
-Never write `.cursor/night-shift/contract.md` or `contract-*.md`.
-Sidecars start with `SSOT: .cursor/plans/<slug>.md`.
+The SSOT is the existing Cursor `*.plan.md` for this item. Never create a
+second plan. Never write `.cursor/night-shift/contract.md`.
+Sidecars start with `SSOT: <exact-path-of-that-plan.md>`.
 
-Read that worktree plan. Write scenarios only — this file is not a second plan.
-Put `SSOT: .cursor/plans/<slug>.md` on the first line of the spec.
+Read that `*.plan.md`. Write scenarios only — this file is not a second plan.
+Put `SSOT: <exact-path-of-that-plan.md>` on the first line of the spec.
 
 Act as a senior QA engineer. Analyze the attached implementation plan.
 Produce a structured list of test scenarios in Gherkin format (Given/When/Then) for the

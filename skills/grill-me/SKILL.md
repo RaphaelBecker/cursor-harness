@@ -19,14 +19,9 @@ then, point them at `/prep` (anytime) or note it — do not pair all day.
 
 ## One plan (SSOT)
 
-The only implementation plan is this worktree’s `.cursor/plans/<slug>.md`.
-Create it with Write; edit it with StrReplace.
-**Never call CreatePlan.** That tool writes a different file under
-`~/.cursor/plans/<name>_<hash>.plan.md` and is not the SSOT.
-Never copy, sync, or edit `~/.cursor/plans`.
-If a hashed plan URI is already attached to the chat, ignore it for content.
-Never write `.cursor/night-shift/contract.md` or `contract-*.md`.
-Sidecars start with `SSOT: .cursor/plans/<slug>.md`.
+The SSOT is the existing Cursor `*.plan.md` for this item. Rewrite that file.
+Never create a second plan (no extra CreatePlan, no `.cursor/plans/<slug>.md`,
+no `contract.md`). Sidecars start with `SSOT: <exact-path-of-that-plan.md>`.
 
 ## Packet mode (default)
 
@@ -36,8 +31,7 @@ Sidecars start with `SSOT: .cursor/plans/<slug>.md`.
 3. Emit **one packet**: every material question in a single list. Each item has
    a **recommended answer** and a one-line trade-off. The human edits leftovers
    in one sitting (keep prep to about **2h max**).
-4. Record answers in this item’s existing Cursor plan (`.cursor/plans/<slug>.md`),
-   not only in chat.
+4. Record answers in this item’s existing Cursor `*.plan.md`, not only in chat.
 5. Continue until material open decisions are resolved or explicitly `N/A` per
    `core-principles.mdc` plan fields, including **Manual test**.
 6. Update that same plan file. Do **not** auto-run `@implementation-plan-review`.

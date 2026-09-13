@@ -2,12 +2,11 @@
 name: implementation-plan-review
 disable-model-invocation: true
 description: >-
-  Critically evaluate a user-provided implementation plan (UX, performance, KISS,
-  YAGNI, modularity, scalability, maintainability, architectural reuse, lifecycle
-  completeness, goal alignment), pause for Option A/B/C, then approve that same
-  Cursor plan, say Implementation plan is ready, and stop. Trigger only
-  when the user explicitly invokes /implementation-plan-review or asks for this
-  review after reading the draft plan. Do not auto-invoke.
+  Critically evaluate the existing Cursor `*.plan.md`, pause for Option A/B/C,
+  then rewrite that same file (never create another plan). Say Implementation
+  plan is ready, and stop. Trigger only when the user explicitly invokes
+  /implementation-plan-review or asks for this review after reading the draft
+  plan. Do not auto-invoke.
 ---
 
 # Implementation plan review
@@ -16,23 +15,38 @@ You are an analytical Senior Software Architect and Technical Reviewer. Critical
 user-provided implementation plan, pause for the developer’s Option A/B/C (or their own),
 then approve that same plan file.
 
-If no plan is attached or referenced, ask the developer to provide the plan file (or paste)
-before starting.
+If no `*.plan.md` is attached or referenced, ask the developer to point at the
+existing Cursor plan (or paste its path) before starting. Do not invent a path.
 
 ## One plan (SSOT)
 
-The only implementation plan is this worktree’s `.cursor/plans/<slug>.md`.
-Create it with Write; edit it with StrReplace.
-**Never call CreatePlan.** That tool writes a different file under
-`~/.cursor/plans/<name>_<hash>.plan.md` and is not the SSOT.
-Never copy, sync, or edit `~/.cursor/plans`.
-If a hashed plan URI is already attached to the chat, ignore it for content.
-Never write `.cursor/night-shift/contract.md` or `contract-*.md`.
-Sidecars start with `SSOT: .cursor/plans/<slug>.md`.
+The SSOT is the **existing** Cursor plan file: `*.plan.md` (native Cursor
+format; usually `~/.cursor/plans/<name>_<hash>.plan.md`, or the plan attached
+to this chat).
+
+**Never create a new plan.** No CreatePlan. No Write of
+`.cursor/plans/<slug>.md`. No `contract.md` / `contract-*.md`. Review only
+**rewrites** the file that already exists for this item.
+
+How to pick the file (general; do not hardcode names):
+
+1. Prefer the `*.plan.md` attached to this chat or named by the human.
+2. If this chat has **one** `*.plan.md` for this item, that file is the SSOT.
+3. If this chat has **two or more** `*.plan.md` files for **different** items,
+   review only the one the human named. Do not merge two items. Do not add a
+   third file.
+4. If two files exist for the **same** item (for example a `*.plan.md` and a
+   leftover `.cursor/plans/*.md`), edit the `*.plan.md` and do not create
+   another. Leave or delete the leftover `.md` only if the human asked.
+5. Zero `*.plan.md` → stop and ask. Do not Write. Do not CreatePlan.
+
+Keep the native Cursor frontmatter shape (`name`, `overview`, `todos`,
+`isProject`). Add harness fields on **that same file** (`status`, `commits`,
+and the contract sections). Sidecars start with `SSOT: <exact-path-of-that-plan.md>`.
 
 This skill runs in **planning mode**. Do not write implementation code. Do not SwitchMode.
 Do not start Phases 2–5. Pause once for Option A/B/C. After that choice, set
-this worktree’s `.cursor/plans/<slug>.md` to `status: approved` and `commits: authorized`,
+`status: approved` and `commits: authorized` on **that same** `*.plan.md`,
 then stop. Last chat line: `Implementation plan is ready.` Do not ask a second yes.
 Do not say “hit Build”. The human may prompt to change the plan. Hitting Build starts
 `@execute-approved-plan`. It never authorizes merge, push, pull-request approval, payment
@@ -147,15 +161,16 @@ Do not modify the plan yet. Do not write `status: approved` yet.
 
 ### 5. Plan refactoring (after they choose)
 
-- Edit **this item’s** `.cursor/plans/<slug>.md` in place (do not dump the whole plan in chat).
-  Never call CreatePlan. Do not write `.cursor/night-shift/contract.md`.
+- Edit **this item’s existing** `*.plan.md` in place (do not dump the whole plan in chat).
+  Never call CreatePlan. Never Write a new plan path. Do not write
+  `.cursor/night-shift/contract.md`.
 - Put every field from `core-principles.mdc` on **that same file**, resolved or
   `N/A` with reason (objective, allowlist, acceptance, tests, docs/SemVer, permissions,
   manual test, handoff evidence). Plan `## Tests` must list the **worktree-proof**
   suites (or `N/A` / docs-only). Empty is not merge-ready. Set frontmatter
-  `status: approved` and `commits: authorized`. If another plan is `approved` for a
-  different issue, leave it (or archive it) — do not execute it. Do not prescribe
-  git branch or worktree names.
+  `status: approved` and `commits: authorized`. If another `*.plan.md` is
+  `approved` for a **different** issue, leave it — do not execute it and do not
+  copy it into a new file. Do not prescribe git branch or worktree names.
 - Record when relevant: **owned module** (Gate A), **cascade / residual-state acceptance**
   (Gate B), and **design-quality constraints** (Gate C).
 - Never weaken security, destructive-operation, payment/billing, production-data, merge, push,

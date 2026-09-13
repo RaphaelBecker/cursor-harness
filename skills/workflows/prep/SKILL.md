@@ -28,19 +28,15 @@ Flavor is a plan `kind`, not a second slash command. Agents that hear
 
 ## One plan (SSOT)
 
-The only implementation plan is this worktree’s `.cursor/plans/<slug>.md`.
-Create it with Write; edit it with StrReplace.
-**Never call CreatePlan.** That tool writes a different file under
-`~/.cursor/plans/<name>_<hash>.plan.md` and is not the SSOT.
-Never copy, sync, or edit `~/.cursor/plans`.
-If a hashed plan URI is already attached to the chat, ignore it for content.
-Never write `.cursor/night-shift/contract.md` or `contract-*.md`.
-Sidecars start with `SSOT: .cursor/plans/<slug>.md`.
+The SSOT is the existing Cursor `*.plan.md` for this item (attached / Plan mode
+file, usually `~/.cursor/plans/<name>_<hash>.plan.md`). Rewrite that file.
+Never create a second plan (no extra CreatePlan, no Write of
+`.cursor/plans/<slug>.md`, no `contract.md`). Sidecars start with
+`SSOT: <exact-path-of-that-plan.md>`.
 
-Write the live plan under `.cursor/plans/<slug>.md` in this worktree
-(`status: draft`, `commits: authorized`, `kind:` set, `issue:` this item).
-If a leftover plan is `status: approved` for a **different** `issue`, do not
-execute it — archive it or leave it and Write a new slug file for this item.
+If no `*.plan.md` exists for this item, stop and ask the human to attach or
+create the Cursor plan first. If another `*.plan.md` is `approved` for a
+**different** item, leave it — do not execute it and do not add a third file.
 
 ## Preconditions
 
@@ -78,7 +74,7 @@ execute it — archive it or leave it and Write a new slug file for this item.
 4. **Packet grill** — `@grill-me` in **packet mode** (all material questions at
    once, each with a recommended answer). Not one-question-at-a-time unless the
    human asks for conversational grill.
-5. **Draft plan** — edit this item’s `.cursor/plans/<slug>.md` (`status: draft`,
+5. **Draft plan** — edit this item’s existing `*.plan.md` (`status: draft`,
    `commits: authorized`, `kind:` set, `issue:` this item). Include **Manual test**
    (how to run the app + which acceptance to click). Delete leftover
    `contract.md` / `contract-*.md` if present. Do not write a second plan file.

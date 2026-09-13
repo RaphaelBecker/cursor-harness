@@ -2,9 +2,9 @@
 name: execute-approved-plan
 description: >-
   Autonomously run an approved Cursor plan through Phases 2-5.
-  Auto-activate in a worktree holding exactly one approved `.cursor/plans/`
-  file, including unattended `night-shift fire` and Cursor Build after approval.
-  Never push, merge, or deploy.
+  Auto-activate from the attached approved Cursor `*.plan.md` (Build) or
+  exactly one approved `*.plan.md` in that tree (`night-shift fire`).
+  Never create a second plan. Never push, merge, or deploy.
 ---
 
 # Execute an approved plan
@@ -23,26 +23,23 @@ Skipping `/night-shift` is fine.
 
 ## One plan (SSOT)
 
-The only implementation plan is this worktree’s `.cursor/plans/<slug>.md`.
-Create it with Write; edit it with StrReplace.
-**Never call CreatePlan.** That tool writes a different file under
-`~/.cursor/plans/<name>_<hash>.plan.md` and is not the SSOT.
-Never copy, sync, or edit `~/.cursor/plans`.
-If a hashed plan URI is already attached to the chat, ignore it for content.
-Never write `.cursor/night-shift/contract.md` or `contract-*.md`.
-Sidecars start with `SSOT: .cursor/plans/<slug>.md`.
+The SSOT is the **existing** Cursor `*.plan.md` for this item (attached to
+this chat / Build, or `~/.cursor/plans/<name>_<hash>.plan.md`). Rewrite that
+file if the plan text must change. **Never create a new plan** (no CreatePlan,
+no Write of `.cursor/plans/<slug>.md`, no `contract.md`).
+Sidecars start with `SSOT: <exact-path-of-that-plan.md>`.
 
 ## Activation gate
 
-Activate when the current worktree has **exactly one** `.cursor/plans/*.md` with
-`status: approved`, **and** that file is this chat’s item (`issue` / objective
-matches), or the conversation contains that plan plus explicit approval.
-Edit that repo plan. Never read or edit `~/.cursor/plans`.
+Activate when this chat has **exactly one** approved `*.plan.md` for this item,
+or the human named that file. Edit that `*.plan.md`. Do not create a worktree
+`.md` copy.
 
 **This-item only.** If the only approved plan is for a **different** issue
-(leftover from another tree or an earlier land) → treat it as foreign. Do not
-execute it. If more than one plan is `approved`, park `BLOCKED.md` (do not guess).
-Delete leftover `contract.md` / `contract-*.md` if present.
+→ treat it as foreign. Do not execute it. If more than one `*.plan.md` is
+`approved` for different items, park `BLOCKED.md` (do not guess).
+Delete leftover `contract.md` / `contract-*.md` if present. Ignore leftover
+`.cursor/plans/*.md` from the old process — they are not a second SSOT.
 
 Before editing, restate the plan as a checklist. On material open decisions:
 if unattended → BLOCKED.md; else stop.
@@ -144,7 +141,7 @@ to finish in this sitting — do not background them and stop.
 1. Sync docs (`@sync-spec-docs`); SemVer only if the project versions packages
    you touched.
 2. Write `HANDOFF.md` (working artifact; do not commit). First line:
-   `SSOT: .cursor/plans/<slug>.md`. Then the long evidence:
+   `SSOT: <exact-path-of-the-*.plan.md>`. Then the long evidence:
    Manual test, verification commands/results, Phase 4b/4c, blast radius when
    required, `## Lessons learned` (3–7 short actionable bullets), cycle status,
    commit SHAs, `ready-for-manual-test` when the worktree proof is green (or
@@ -165,7 +162,7 @@ to finish in this sitting — do not background them and stop.
 ## Park (unattended hard stop)
 
 Write `.cursor/night-shift/BLOCKED.md` with first line
-`SSOT: .cursor/plans/<slug>.md`, then: reason, last command, what the
+`SSOT: <exact-path-of-the-*.plan.md>`, then: reason, last command, what the
 human should decide. Append a `decisions.tsv` row (`phase=park`). Exit the
 run. Do not ping. Do not ask.
 

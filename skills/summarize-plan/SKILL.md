@@ -17,22 +17,13 @@ start Nightshift.
 
 ## One plan (SSOT)
 
-The only implementation plan is this worktree’s `.cursor/plans/<slug>.md`.
-Create it with Write; edit it with StrReplace.
-**Never call CreatePlan.** That tool writes a different file under
-`~/.cursor/plans/<name>_<hash>.plan.md` and is not the SSOT.
-Never copy, sync, or edit `~/.cursor/plans`.
-If a hashed plan URI is already attached to the chat, ignore it for content.
-Never write `.cursor/night-shift/contract.md` or `contract-*.md`.
-Sidecars start with `SSOT: .cursor/plans/<slug>.md`.
-
-This skill is read-only — do not edit the plan.
+The SSOT is the existing Cursor `*.plan.md` for this item. This skill is
+read-only — do not edit the plan and do not create a second file.
 
 ## Find the plan
 
-1. Use the plan the developer attached or named.
-2. Else this item’s live plan under `.cursor/plans/` (`status: draft` or
-   `approved`, matching `issue`).
+1. Use the `*.plan.md` the developer attached or named.
+2. Else this item’s live `*.plan.md` (`status: draft` or `approved`).
 3. If none: ask for the plan file or a paste. Stop.
 
 Never pick “the newest file” when more than one plan exists. Ignore

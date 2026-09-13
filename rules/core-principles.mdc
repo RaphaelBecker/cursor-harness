@@ -51,11 +51,12 @@ invokes them.
 
 ### Prep (HIL — `/prep`)
 
-- Human creates worktrees, then `/prep`: packet grill → one Cursor plan under
- `.cursor/plans/<slug>.md` (Write that file if none exists; never CreatePlan;
- never `contract.md`; never a second plan) → human `/implementation-plan-review` →
- Option A/B/C → ready (`status: approved`, `commits: authorized`) on **that
- same file**. Review does not ask a second yes. Hitting Build starts
+- Human creates worktrees, then `/prep`: packet grill → the **existing** Cursor
+ `*.plan.md` (Plan mode / attached plan; native `~/.cursor/plans/<name>_<hash>.plan.md`)
+ → human `/implementation-plan-review` rewrites **that same file** → Option A/B/C
+ → ready (`status: approved`, `commits: authorized`) on that file. Never write a
+ second plan (no `.cursor/plans/<slug>.md` copy, no extra CreatePlan, no
+ `contract.md`). Review does not ask a second yes. Hitting Build starts
  Phases 2–5. Ready does not authorize merge, push, or production. Prep on
  default is valid when the human opened the chat there.
 - Conversational one-at-a-time grill only if the human asks for that escape hatch.
@@ -103,7 +104,8 @@ invokes them.
 Executable plan fields live on the one Cursor plan: objective, allowlist, non-goals,
 acceptance, tests, docs/SemVer, permissions, **manual test**, handoff evidence — each
 resolved or `N/A` with reason. Do not prescribe branch or worktree names.
-Never write `.cursor/night-shift/contract.md`. Never call CreatePlan.
+Never write `.cursor/night-shift/contract.md`. After a `*.plan.md` exists for
+this item, never CreatePlan and never Write `.cursor/plans/<slug>.md`.
 
 **Safe defaults:** smallest reversible change, refactor before add, mock externals, stay in scope.
 **Dirty leftovers on this checkout:** run `ship.leftovers` from `harness.project.yaml`
