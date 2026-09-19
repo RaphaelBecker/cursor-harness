@@ -77,7 +77,7 @@ tracks harness contents. Optional: tracked **submodule** that pins a SHA.
 1. Clone (or submodule-add) into `vendor/cursor-harness`.
 2. **Copy** `templates/harness.project.yaml` to the repo root and fill it.
 3. **`install.sh`** checks that file (fail closed), then materializes packs into `.cursor/`:
-   - `symlink` (default) — consumer always sees the vendor contents
+   - `symlink` (default) — consumer always sees the vendor contents via **relative** links (so a worktree reinstall matches git HEAD)
    - `copy` — snapshots files (better for environments that break symlinks)
    - `--packs` or `packs:` in the YAML selects `core` plus optional sets
    - writes a managed block in `.cursor/.gitignore` for harness paths

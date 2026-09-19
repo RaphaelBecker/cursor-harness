@@ -4,13 +4,14 @@
 set -euo pipefail
 
 usage() {
-  echo "usage: cleanup-worktree.sh --main-root PATH --worktree PATH [--branch NAME]" >&2
+  echo "usage: cleanup-worktree.sh --main-root PATH --worktree PATH [--branch NAME] [--force-unmerged-branch]" >&2
   exit 2
 }
 
 MAIN_ROOT=""
 WORKTREE=""
 BRANCH=""
+FORCE_UNMERGED_BRANCH=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -28,6 +29,10 @@ while [[ $# -gt 0 ]]; do
       [[ $# -ge 2 ]] || usage
       BRANCH="$2"
       shift 2
+      ;;
+    --force-unmerged-branch)
+      FORCE_UNMERGED_BRANCH=1
+      shift
       ;;
     -h|--help)
       usage
@@ -196,6 +201,12 @@ fi
 if git merge-base --is-ancestor "$BRANCH" HEAD; then
   git branch -d "$BRANCH"
   echo "branch: deleted $BRANCH"
+  exit 0
+fi
+
+if [[ "$FORCE_UNMERGED_BRANCH" -eq 1 ]]; then
+  git branch -D "$BRANCH"
+  echo "branch: discarded unmerged $BRANCH"
   exit 0
 fi
 

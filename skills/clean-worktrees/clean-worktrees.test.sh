@@ -136,6 +136,57 @@ fi
 git -C "$MAIN" worktree remove --force "$ROOT/dirty" >/dev/null
 git -C "$MAIN" branch -d dirty >/dev/null
 
+# --- vendor-symlink retarget on a landed tree is not project dirt ---
+mkdir -p "$MAIN/.cursor/skills" "$MAIN/vendor/cursor-harness/skills"
+echo skill >"$MAIN/vendor/cursor-harness/skills/clean-worktrees"
+ln -s "$MAIN/vendor/cursor-harness/skills/clean-worktrees" "$MAIN/.cursor/skills/clean-worktrees"
+git -C "$MAIN" add .cursor vendor
+git -C "$MAIN" commit -m 'track harness skill link' >/dev/null
+git -C "$MAIN" worktree add -b slink "$FARM/slink" >/dev/null
+rm "$FARM/slink/.cursor/skills/clean-worktrees"
+ln -s "$FARM/slink/vendor/cursor-harness/skills/clean-worktrees" "$FARM/slink/.cursor/skills/clean-worktrees"
+if run_script >/tmp/clean-worktrees-slink.out; then
+  if [[ ! -e "$FARM/slink" ]]; then
+    pass "vendor-symlink retarget is ignored and landed tree is removed"
+  else
+    fail "symlink-retarget tree was kept"
+    cat /tmp/clean-worktrees-slink.out >&2 || true
+  fi
+else
+  fail "symlink-retarget run should exit 0"
+  cat /tmp/clean-worktrees-slink.out >&2 || true
+fi
+git -C "$MAIN" branch -d slink >/dev/null 2>&1 || true
+
+# --- symlink retarget plus real project dirt is still skipped ---
+git -C "$MAIN" worktree add -b mixed "$ROOT/mixed" >/dev/null
+rm "$ROOT/mixed/.cursor/skills/clean-worktrees"
+ln -s "$ROOT/mixed/vendor/cursor-harness/skills/clean-worktrees" "$ROOT/mixed/.cursor/skills/clean-worktrees"
+echo mixed >>"$ROOT/mixed/file"
+assert_exit 1 "mixed symlink+project dirt is skipped" run_script
+if [[ -d "$ROOT/mixed" ]]; then
+  pass "mixed dirty worktree still exists"
+else
+  fail "mixed dirty worktree was deleted"
+fi
+git -C "$MAIN" worktree remove --force "$ROOT/mixed" >/dev/null
+git -C "$MAIN" branch -d mixed >/dev/null
+
+# --- --discard removes a dirty tree after human confirmation ---
+git -C "$MAIN" worktree add -b tossdirty "$ROOT/tossdirty" >/dev/null
+echo toss >>"$ROOT/tossdirty/file"
+if run_script --discard "$ROOT/tossdirty" >/tmp/clean-worktrees-discard-dirty.out; then
+  if [[ ! -e "$ROOT/tossdirty" ]] && ! git -C "$MAIN" show-ref --verify --quiet refs/heads/tossdirty; then
+    pass "discard removes dirty landed tree and branch"
+  else
+    fail "discard left dirty tree or branch"
+    cat /tmp/clean-worktrees-discard-dirty.out >&2 || true
+  fi
+else
+  fail "discard dirty run failed"
+  cat /tmp/clean-worktrees-discard-dirty.out >&2 || true
+fi
+
 # --- unmerged unique commits are skipped ---
 git -C "$MAIN" worktree add -b unique "$ROOT/unique" >/dev/null
 echo unique >>"$ROOT/unique/file"
@@ -149,6 +200,23 @@ else
 fi
 git -C "$MAIN" worktree remove --force "$ROOT/unique" >/dev/null
 git -C "$MAIN" branch -D unique >/dev/null
+
+# --- --discard removes unique unmerged commits after human confirmation ---
+git -C "$MAIN" worktree add -b tossunique "$ROOT/tossunique" >/dev/null
+echo unique2 >>"$ROOT/tossunique/file"
+git -C "$ROOT/tossunique" add file
+git -C "$ROOT/tossunique" commit -m unique2 >/dev/null
+if run_script --discard "$ROOT/tossunique" >/tmp/clean-worktrees-discard-unique.out; then
+  if [[ ! -e "$ROOT/tossunique" ]] && ! git -C "$MAIN" show-ref --verify --quiet refs/heads/tossunique; then
+    pass "discard removes unmerged unique worktree and branch"
+  else
+    fail "discard left unique tree or branch"
+    cat /tmp/clean-worktrees-discard-unique.out >&2 || true
+  fi
+else
+  fail "discard unique run failed"
+  cat /tmp/clean-worktrees-discard-unique.out >&2 || true
+fi
 
 # --- keep spares a clean merged tree ---
 git -C "$MAIN" worktree add -b kept "$ROOT/kept" >/dev/null

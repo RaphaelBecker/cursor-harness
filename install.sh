@@ -211,10 +211,19 @@ install_path() {
   ensure_dir "$(dirname "$dest")"
 
   if [[ "$MODE" == "symlink" ]]; then
+    # Prefer TARGET/vendor/cursor-harness so every worktree stores the same
+    # relative text even when that vendor path is a symlink to another clone.
+    local link_src="$src"
+    local rel_in_harness="${src#"$HARNESS_ROOT"/}"
+    if [[ "$rel_in_harness" != "$src" ]] && [[ -e "$TARGET/vendor/cursor-harness" || -L "$TARGET/vendor/cursor-harness" ]]; then
+      link_src="$TARGET/vendor/cursor-harness/$rel_in_harness"
+    fi
+    local rel
+    rel="$(python3 -c 'import os,sys; print(os.path.relpath(sys.argv[1], os.path.dirname(sys.argv[2])))' "$link_src" "$dest")"
     if [[ "$DRY_RUN" -eq 1 ]]; then
-      log "DRY-RUN: ln -s $src $dest"
+      log "DRY-RUN: ln -s $rel $dest"
     else
-      ln -s "$src" "$dest"
+      ln -s "$rel" "$dest"
     fi
   else
     if [[ "$kind" == "dir" ]]; then

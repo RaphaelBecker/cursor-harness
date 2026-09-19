@@ -159,4 +159,7 @@ checkout or the standalone cursor-harness repo).
 - [ ] No product names, private paths, or one-repo scripts in shared packs
 - [ ] Hook scripts executable and paths match `hooks.json`
 - [ ] Docs updated if install or layout behavior changed
+- [ ] `bash install-symlink.test.sh` (relative vendor links)
+- [ ] `bash skills/clean-worktrees/clean-worktrees.test.sh`
+- [ ] `bash skills/ship-local/cleanup-worktree.test.sh`
 - [ ] `mkdir -p /tmp/harness-smoke && cp templates/harness.project.yaml /tmp/harness-smoke/ && ./install.sh --target /tmp/harness-smoke --mode symlink --with-agents` succeeds

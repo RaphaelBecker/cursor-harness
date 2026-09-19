@@ -109,6 +109,36 @@ fi
 git -C "$ROOT/main" worktree remove --force "$ROOT/other" >/dev/null 2>&1 || rm -rf "$ROOT/other"
 git -C "$ROOT/main" branch -d other >/dev/null 2>&1 || true
 
+# --- unmerged branch is left without --force-unmerged-branch ---
+git -C "$ROOT/main" worktree add -b unique "$ROOT/unique" >/dev/null
+echo unique >>"$ROOT/unique/file"
+git -C "$ROOT/unique" add file
+git -C "$ROOT/unique" commit -m unique >/dev/null
+assert_exit 1 "refuse unmerged branch without force flag" \
+  "$SCRIPT" --main-root "$ROOT/main" --worktree "$ROOT/unique" --branch unique
+if git -C "$ROOT/main" show-ref --verify --quiet refs/heads/unique; then
+  pass "unmerged branch still exists without force flag"
+else
+  fail "unmerged branch was deleted without force flag"
+fi
+# worktree may already be gone; force-clean leftovers
+git -C "$ROOT/main" worktree remove --force "$ROOT/unique" >/dev/null 2>&1 || rm -rf "$ROOT/unique"
+
+# --- --force-unmerged-branch discards unique commits ---
+git -C "$ROOT/main" worktree add -b toss "$ROOT/toss" >/dev/null
+echo toss >>"$ROOT/toss/file"
+git -C "$ROOT/toss" add file
+git -C "$ROOT/toss" commit -m toss >/dev/null
+if "$SCRIPT" --main-root "$ROOT/main" --worktree "$ROOT/toss" --branch toss --force-unmerged-branch >/dev/null; then
+  if [[ ! -e "$ROOT/toss" ]] && ! git -C "$ROOT/main" show-ref --verify --quiet refs/heads/toss; then
+    pass "force-unmerged-branch deletes worktree and unique branch"
+  else
+    fail "force-unmerged-branch left worktree or branch"
+  fi
+else
+  fail "force-unmerged-branch script failed"
+fi
+
 # --- refuse standalone clone ---
 git init -b main "$ROOT/other-repo" >/dev/null
 git -C "$ROOT/other-repo" config user.email "test@example.com"

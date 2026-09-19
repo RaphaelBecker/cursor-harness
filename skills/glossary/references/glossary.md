@@ -45,7 +45,7 @@ lives in the consumer project.
 | **BLOCKED.md** | `.cursor/night-shift/BLOCKED.md` — unattended hard stop. Night does not ping. Gitignored working artifact. |
 | **decisions.tsv** | Append-only night log (what, why, evidence pointer, result). Working artifact; do not commit. |
 | **Ship local** | `/ship-local` — land a feature tree onto local default, or leftover-commit when already on default. |
-| **Clean worktrees** | `/clean-worktrees` — reset leftover feature trees, ghost farm folders, and stale Cursor workspace artifacts so a new parallel batch can start. Does not merge or push. |
+| **Clean worktrees** | `/clean-worktrees` — reset leftover feature trees, ghost farm folders, and stale Cursor workspace artifacts so a new parallel batch can start. Vendor-symlink retargets are not dirt. Asks before dropping unshipped project work. Does not merge or push. |
 | **Blast radius** | The one fact a change is safe because of, proven by running code. Unproven stays labeled unproven. |
 | **Tight red loop** | One named command already run that goes red on this bug. Required before hypothesising. |
 | **harness.project.yaml** | Required consumer interface (issue source, tests, optional slots, packs). |

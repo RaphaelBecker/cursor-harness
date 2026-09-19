@@ -82,6 +82,10 @@ git add vendor/cursor-harness
 
 ## What gets installed
 
+Symlink mode writes **relative** targets through `vendor/cursor-harness/`
+(`../../vendor/cursor-harness/…`), not absolute paths and not a resolved clone
+outside the project. A worktree that re-runs install then matches git HEAD.
+
 | Source | Destination |
 |--------|-------------|
 | `HARNESS.md` | `.cursor/HARNESS.md` |

@@ -5,13 +5,14 @@
 set -euo pipefail
 
 usage() {
-  echo "usage: clean-worktrees.sh --main-root PATH [--dry-run] [--keep PATH]... [--cursor-worktrees-root PATH] [--cursor-projects-root PATH] [--workspace-storage-root PATH]" >&2
+  echo "usage: clean-worktrees.sh --main-root PATH [--dry-run] [--keep PATH]... [--discard PATH]... [--cursor-worktrees-root PATH] [--cursor-projects-root PATH] [--workspace-storage-root PATH]" >&2
   exit 2
 }
 
 MAIN_ROOT=""
 DRY_RUN=0
 KEEP_IN=()
+DISCARD_IN=()
 FARM_ROOT=""
 PROJECTS_ROOT=""
 STORAGE_ROOT=""
@@ -30,6 +31,11 @@ while [[ $# -gt 0 ]]; do
     --keep)
       [[ $# -ge 2 ]] || usage
       KEEP_IN+=("$2")
+      shift 2
+      ;;
+    --discard)
+      [[ $# -ge 2 ]] || usage
+      DISCARD_IN+=("$2")
       shift 2
       ;;
     --cursor-worktrees-root)
@@ -215,10 +221,25 @@ for k in "${KEEP_IN[@]:-}"; do
   KEEP+=("$(resolve_path "$k")")
 done
 
+DISCARD=()
+for k in "${DISCARD_IN[@]:-}"; do
+  [[ -z "$k" ]] && continue
+  DISCARD+=("$(resolve_path "$k")")
+done
+
 is_kept() {
   local want="$1"
   local k
   for k in "${KEEP[@]:-}"; do
+    [[ "$k" == "$want" ]] && return 0
+  done
+  return 1
+}
+
+is_discarded() {
+  local want="$1"
+  local k
+  for k in "${DISCARD[@]:-}"; do
     [[ "$k" == "$want" ]] && return 0
   done
   return 1
@@ -285,9 +306,103 @@ is_listed() {
   return 1
 }
 
-tree_is_dirty() {
+tree_has_project_dirt() {
   local wt="$1"
-  [[ -n "$(git -C "$wt" status --porcelain 2>/dev/null || true)" ]]
+  local rc=0
+  python3 - "$wt" "$MAIN_ROOT" <<'PY' || rc=$?
+import os, subprocess, sys
+
+wt, main = sys.argv[1], sys.argv[2]
+
+
+def git_bytes(args, cwd):
+    return subprocess.check_output(["git"] + args, cwd=cwd, stderr=subprocess.DEVNULL)
+
+
+def porcelain_paths(cwd):
+    raw = git_bytes(["status", "--porcelain", "-z"], cwd)
+    out = []
+    i = 0
+    parts = raw.split(b"\0")
+    while i < len(parts) and parts[i]:
+        entry = parts[i].decode("utf-8", "surrogateescape")
+        status = entry[:2]
+        path = entry[3:]
+        if "R" in status or "C" in status:
+            i += 1
+            if i < len(parts):
+                path = parts[i].decode("utf-8", "surrogateescape")
+        out.append(path)
+        i += 1
+    return out
+
+
+def head_symlink_text(cwd, rel):
+    try:
+        raw = git_bytes(["ls-tree", "HEAD", "--", rel], cwd).decode()
+    except subprocess.CalledProcessError:
+        return None
+    if not raw.startswith("120000 "):
+        return None
+    try:
+        return git_bytes(["show", f"HEAD:{rel}"], cwd).decode().rstrip("\n")
+    except subprocess.CalledProcessError:
+        return None
+
+
+def dest_rel(target, link_abs, roots):
+    if not target:
+        return None
+    if os.path.isabs(target):
+        abs_dest = os.path.normpath(target)
+    else:
+        abs_dest = os.path.normpath(os.path.join(os.path.dirname(link_abs), target))
+
+    def variants(p):
+        p = os.path.abspath(p).rstrip("/")
+        out = {p}
+        if p.startswith("/private/var/"):
+            out.add("/var/" + p[len("/private/var/"):])
+        elif p.startswith("/var/"):
+            out.add("/private/var/" + p[len("/var/"):])
+        if p.startswith("/private/tmp"):
+            out.add("/tmp" + p[len("/private/tmp"):])
+        elif p.startswith("/tmp"):
+            out.add("/private/tmp" + p[len("/tmp"):])
+        return out
+
+    dests = variants(abs_dest)
+    for root in roots:
+        for r in variants(root):
+            for d in dests:
+                if d == r or d.startswith(r + os.sep):
+                    return os.path.relpath(d, r)
+    return None
+
+
+roots = [os.path.abspath(wt), os.path.abspath(main)]
+try:
+    paths = porcelain_paths(wt)
+except subprocess.CalledProcessError:
+    sys.exit(0)
+
+for rel in paths:
+    wt_abs = os.path.join(wt, rel)
+    head = head_symlink_text(wt, rel)
+    if head is None or not os.path.islink(wt_abs):
+        sys.exit(0)
+    live = os.readlink(wt_abs)
+    a = dest_rel(head, wt_abs, roots)
+    b = dest_rel(live, wt_abs, roots)
+    if not a or not b or a != b:
+        sys.exit(0)
+
+sys.exit(1)
+PY
+  if [[ "$rc" -eq 1 ]]; then
+    return 1
+  fi
+  return 0
 }
 
 tree_is_merging() {
@@ -363,6 +478,9 @@ run_cleanup() {
   if [[ -n "$branch" && "$branch" != "main" && "$branch" != "master" ]]; then
     args+=(--branch "$branch")
   fi
+  if is_discarded "$wt"; then
+    args+=(--force-unmerged-branch)
+  fi
   if [[ "$DRY_RUN" -eq 1 ]]; then
     return 0
   fi
@@ -373,6 +491,9 @@ echo "main-root: $MAIN_ROOT"
 echo "dry-run: $([[ "$DRY_RUN" -eq 1 ]] && echo yes || echo no)"
 if ((${#KEEP[@]})); then
   echo "keep: ${KEEP[*]}"
+fi
+if ((${#DISCARD[@]})); then
+  echo "discard: ${DISCARD[*]}"
 fi
 
 if [[ "$LOCK_STATE" == "stale" ]]; then
@@ -396,20 +517,26 @@ while IFS= read -r raw; do
     continue
   fi
   branch="$(worktree_branch "$raw")"
-  if tree_is_dirty "$wt"; then
+  discarded=0
+  is_discarded "$wt" && discarded=1
+  if [[ "$discarded" -eq 0 ]] && tree_has_project_dirt "$wt"; then
     record skip worktree "$wt" dirty
     continue
   fi
-  if tree_is_merging "$wt"; then
+  if [[ "$discarded" -eq 0 ]] && tree_is_merging "$wt"; then
     record skip worktree "$wt" merge-in-progress
     continue
   fi
-  if tip_unmerged "$wt"; then
+  if [[ "$discarded" -eq 0 ]] && tip_unmerged "$wt"; then
     record skip worktree "$wt" "unmerged${branch:+ $branch}"
     continue
   fi
   if run_cleanup "$wt" "$branch"; then
-    record remove worktree "$wt"
+    if [[ "$discarded" -eq 1 ]]; then
+      record remove worktree "$wt" discard
+    else
+      record remove worktree "$wt"
+    fi
   else
     record skip worktree "$wt" cleanup-failed
   fi

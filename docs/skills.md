@@ -20,7 +20,7 @@ Default install is **`core`**. Optional pack sets: `bdd`, `vitest`, `playwright`
 | `diagnose-bug` | `/prep` (`kind: bug`), or idle-main complete isolate-red / `/ship-prod` unnamed seam: tight red command | [diagnose-bug](../skills/diagnose-bug/SKILL.md) |
 | `sync-spec-docs` | Phase 5 product-story / acceptance updates | [sync-spec-docs](../skills/sync-spec-docs/SKILL.md) |
 | `ship-local` | Human `/ship-local` — land feature, or leftover-commit when already on default | [ship-local](../skills/ship-local/SKILL.md) |
-| `clean-worktrees` | Human `/clean-worktrees` — reset leftover trees and stale Cursor workspace artifacts | [clean-worktrees](../skills/clean-worktrees/SKILL.md) |
+| `clean-worktrees` | Human `/clean-worktrees` — reset leftover trees; vendor-symlink retargets are not dirt; ask before discarding unshipped work | [clean-worktrees](../skills/clean-worktrees/SKILL.md) |
 
 ## Workflow orchestrators
 
