@@ -12,7 +12,7 @@ Default install is **`core`**. Optional pack sets: `bdd`, `vitest`, `playwright`
 | Skill | When | File |
 | --- | --- | --- |
 | `grill-me` | Prep packet (conversational grill is an escape hatch) | [grill-me](../skills/grill-me/SKILL.md) |
-| `implementation-plan-review` | Human `/implementation-plan-review` after reading the draft plan | [implementation-plan-review](../skills/implementation-plan-review/SKILL.md) |
+| `implementation-plan-review` | Human `/implementation-plan-review` after reading the draft plan; A/B/C names the issue and payoff, not plumbing | [implementation-plan-review](../skills/implementation-plan-review/SKILL.md) |
 | `execute-approved-plan` | Nightshift / Build after explicit contract approval; honors `kind`; compact chat last line | [execute-approved-plan](../skills/execute-approved-plan/SKILL.md) |
 | `project-memory` | Phase 1 load; Phase 5 Candidates; Phase 7 promote ask | [project-memory](../skills/project-memory/SKILL.md) |
 | `review-code` | Phase 4b after a green worktree proof | [review-code](../skills/review-code/SKILL.md) |

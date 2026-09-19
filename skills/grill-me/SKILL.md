@@ -36,6 +36,16 @@ no `contract.md`). Sidecars start with `SSOT: <exact-path-of-that-plan.md>`.
    `core-principles.mdc` plan fields, including **Manual test**.
 6. Update that same plan file. Do **not** auto-run `@implementation-plan-review`.
 
+Each packet item must be founder-readable (same bar as
+`implementation-plan-review` Step 4):
+
+- **Issue:** what is wrong or at stake — what the user notices
+- **Recommended:** what to do, in one sentence, plus why it helps
+- **Trade-off:** what you give up, in product terms
+
+Do not ask how to wire a function. If the human cannot see the difference
+without reading code, pick the safer default and do not list it.
+
 Immaterial implementation choices belong to the safe defaults in
 `core-principles.mdc`; do not spend developer attention on them.
 

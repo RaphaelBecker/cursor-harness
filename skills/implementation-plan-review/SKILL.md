@@ -2,11 +2,11 @@
 name: implementation-plan-review
 disable-model-invocation: true
 description: >-
-  Critically evaluate the existing Cursor `*.plan.md`, pause for Option A/B/C,
-  then rewrite that same file (never create another plan). Say Implementation
-  plan is ready, and stop. Trigger only when the user explicitly invokes
-  /implementation-plan-review or asks for this review after reading the draft
-  plan. Do not auto-invoke.
+  Critically evaluate the existing Cursor `*.plan.md`, pause for Option A/B/C
+  (issue + payoff first, not plumbing), then rewrite that same file (never
+  create another plan). Say Implementation plan is ready, and stop. Trigger
+  only when the user explicitly invokes /implementation-plan-review or asks
+  for this review after reading the draft plan. Do not auto-invoke.
 ---
 
 # Implementation plan review
@@ -14,6 +14,10 @@ description: >-
 You are an analytical Senior Software Architect and Technical Reviewer. Critically evaluate a
 user-provided implementation plan, pause for the developer’s Option A/B/C (or their own),
 then approve that same plan file.
+
+The developer is the **product owner**, not a second implementer. They must be able to
+pick A/B/C without reading code. Lead every pause with **what is wrong** and **what
+they get** if they pick this option.
 
 If no `*.plan.md` is attached or referenced, ask the developer to point at the
 existing Cursor plan (or paste its path) before starting. Do not invent a path.
@@ -115,8 +119,12 @@ Assume `@grill-me` already ran. Do **not** re-run a full grilling interview.
 
 - Run `@project-memory` Phase-1 load for domain-relevant entries; validate against routed docs.
 - Run **Mandatory architecture gates A–C**. Treat missing answers as unresolved gaps.
-- Fold remaining material gaps into the Step 4 options. Resolve immaterial details via
-  `core-principles.mdc` safe defaults. Do not ask extra questions before Step 4.
+- Fold remaining **founder-judgeable** gaps into the Step 4 options. A gap is
+  founder-judgeable only if two options change what the user **sees**, what they
+  **risk**, or **how much we build**.
+- Resolve wiring, helper names, cache keys, fetch limits, and other implementation
+  details via `core-principles.mdc` safe defaults. Record the lock in the plan.
+  Do not ask about them.
 
 ### 0.5. Benefit summary (required)
 
@@ -125,7 +133,8 @@ Classify the plan, then answer in **very simple short words**:
 - Application / product code change → **How does this plan improve the application?**
 - Process / workflow / skills / rules / docs / CI change → **How does this plan improve my process?**
 
-Use a handful of plain bullets. Then continue.
+Use a handful of plain bullets. Then continue. Step 4 must repeat this problem in
+one or two sentences before any option.
 
 ### 1. Positive User Stories (10 to 15)
 
@@ -146,15 +155,60 @@ YAGNI / KISS / modularity / scalability / maintainability verdicts.
 
 ### 4. Proposed fixes and developer options (PAUSE HERE)
 
-Present gaps as simple choices in everyday words. Each option should say what changes, what
-you gain, and what you trade off.
+The human is choosing a **product outcome**, not a plumbing path.
 
 When Gate A finds an existing broader capability, **Option A must prefer** reuse or
 extract-shared-module over a parallel implementation, unless already rejected with a reason.
 
-- **Option A:** [Primary recommendation in plain language]
-- **Option B:** [Simpler or split alternative in plain language]
-- **Option C:** I want to suggest my own fix or modify the options.
+**Do not ask** how to wire a helper, which argument to add, or how to detect a
+mode from a string — unless that choice changes the number, label, or risk the
+user sees. If A and B look the same on screen, lock the safer/simpler path, record
+it, and pause with “approve this plan” vs “I want a different approach”.
+
+Write the pause in chat **before** the picker, using this shape (everyday words,
+normal spaces, no function names, no file paths, no row counts):
+
+```markdown
+### The problem
+[1–2 sentences: what is wrong or at risk today. What the user notices.]
+
+### What you are choosing
+[1 sentence: the product fork. Not a function name.]
+
+**Option A — [short outcome]** (recommended when it is)
+- Pick this if: [who it is for / what they will notice]
+- What gets fixed: [the issue, restated]
+- How: [one plain sentence]
+- You give up: [trade-off in product terms]
+
+**Option B — [other outcome]**
+- Pick this if: …
+- What gets fixed: …
+- How: …
+- You give up: …
+
+**Option C — I want to suggest my own fix**
+```
+
+Then ask once with AskQuestion:
+
+- `prompt`: the problem + what they are choosing. Normal sentences with spaces.
+  Keep it short. No function names.
+- Labels: `A — <outcome>`, `B — <other outcome>`, `C — I want to suggest my own`.
+  Keep each label short. Do **not** paste the how/wiring into the label.
+
+If there is no product fork:
+
+- `prompt`: `Confirm this plan. No product fork — I already locked the safer path.`
+- Labels: `A — Approve this plan`, `B — I want a different approach`,
+  `C — I want to suggest my own`
+
+**Bad (do not do this):** dump helpers, toggles, lookback math, or fetch sizes
+into the picker. The human cannot tell what is broken or why A is better.
+
+**Good:** “On quarterly charts, growth chips treat 4 quarters as 4 years, so the
+% looks much too small.” A = chips always match the Annual / Quarterly switch.
+B = less wiring; a quarter without “Q” in the label can still show the too-small %.
 
 **CRITICAL:** Stop here. Ask which option they choose. Do **not** auto-select A.
 Do not modify the plan yet. Do not write `status: approved` yet.
@@ -172,7 +226,8 @@ Do not modify the plan yet. Do not write `status: approved` yet.
   `approved` for a **different** issue, leave it — do not execute it and do not
   copy it into a new file. Do not prescribe git branch or worktree names.
 - Record when relevant: **owned module** (Gate A), **cascade / residual-state acceptance**
-  (Gate B), and **design-quality constraints** (Gate C).
+  (Gate B), and **design-quality constraints** (Gate C). Record any wiring lock
+  you chose so Nightshift does not re-open it.
 - Never weaken security, destructive-operation, payment/billing, production-data, merge, push,
   or deploy safeguards.
 
@@ -188,3 +243,4 @@ The human may prompt to change the plan. Hitting Build starts `@execute-approved
 ## Output format
 
 Use Markdown. Be precise; prefer short bullets; prefer simple words over jargon.
+Steps 0.5 and 4 must stay readable if the human skips the analysis.

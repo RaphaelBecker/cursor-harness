@@ -79,7 +79,7 @@ only.
 | Skill | What it does |
 | --- | --- |
 | `grill-me` | Packet of hard questions (conversational grill is an escape hatch) |
-| `implementation-plan-review` | Review the existing `*.plan.md`, pause for A/B/C, rewrite that same file, say ready |
+| `implementation-plan-review` | Review the existing `*.plan.md`, pause for A/B/C (issue + payoff first), rewrite that same file, say ready |
 | `execute-approved-plan` | Nightshift / Build: honor `kind`, worktree proof, 4b/4c, docs, lessons → Candidates, compact chat last line, HANDOFF.md |
 | `project-memory` | Phase 1 load; Phase 5 scored Candidates (commit with feature); Phase 7 Architecture; list staged ids without waiting |
 | `ship-local` | Human-triggered local merge, or leftover-commit when already on default; run `ship.leftovers` when set; release lock, move to default checkout, then bundled cleanup from main |
