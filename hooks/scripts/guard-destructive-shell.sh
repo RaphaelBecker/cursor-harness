@@ -7,6 +7,36 @@ set -uo pipefail
 input=$(cat)
 command=$(printf '%s' "$input" | python3 -c 'import json,sys; data=json.load(sys.stdin); print(data.get("command") or "")' 2>/dev/null || true)
 
+# A removed worktree (e.g. after /ship-local) otherwise surfaces as an opaque
+# `spawn /bin/zsh ENOENT`. Deny with the missing path instead.
+missing_workspace=$(printf '%s' "$input" | python3 -c '
+import json, os, sys
+try:
+    data = json.load(sys.stdin)
+except Exception:
+    raise SystemExit(0)
+cwd = data.get("cwd") or ""
+roots = [r for r in (data.get("workspace_roots") or []) if isinstance(r, str) and r]
+if cwd:
+    if not os.path.isdir(cwd):
+        print(cwd)
+elif roots and not any(os.path.isdir(r) for r in roots):
+    print(roots[0])
+' 2>/dev/null || true)
+
+if [[ -n "$missing_workspace" ]]; then
+  python3 -c '
+import json, sys
+path = sys.argv[1]
+print(json.dumps({
+    "permission": "deny",
+    "user_message": f"Workspace missing: {path} no longer exists (worktree removed?). Reopen the primary checkout.",
+    "agent_message": f"Workspace missing: {path} was deleted, so the shell cannot start there. Re-run with working_directory set to an existing checkout (the primary checkout after /ship-local), or move the agent to the repo root. Do not recreate files in the deleted path.",
+}))
+' "$missing_workspace"
+  exit 0
+fi
+
 # Heartbeat: ship-prod preflight reads this to prove the hook fired for its own
 # command in this session type. Append-only so parallel agents sharing one
 # checkout cannot overwrite each other's line. Best effort; never blocks the guard.

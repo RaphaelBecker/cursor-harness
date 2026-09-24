@@ -60,7 +60,8 @@ Agents that hear “new feature” point at `/prep` only.
 
 - **Prep** = short HIL sitting, anytime. **Nightshift** = unattended build in those trees
   (`/night-shift` fire) **or** Cursor Build in the prep chat — same skill.
-- Humans create worktrees. Agents and `night-shift` never run `git worktree add`.
+- Humans create worktrees, or a task agent runs `ship-local/worktree-new.sh <slug>`;
+  `/ship-local` removes it. `night-shift` never runs `git worktree add`.
 - One Cursor `*.plan.md` per item. Rewrite that file. Never a second plan
   or `contract.md`. Ship archives the plan (`status: archived`).
 - Chat after implement/ship ends with `DONE` or `PARTIAL: <exact leftover>`.

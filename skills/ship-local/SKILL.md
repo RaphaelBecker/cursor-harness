@@ -22,6 +22,20 @@ Never auto-run at the end of `@execute-approved-plan`.
 **Do not drop out.** Commit, `move_agent_to_root`, and `land.sh` run as Shell calls
 in the same turn as their announcement. Exit 3/4 means fix and re-run in this turn.
 
+## Task worktree (create → land → gone)
+
+A coordinator's task agent creates its tree from the primary checkout:
+
+```bash
+bash .cursor/skills/ship-local/worktree-new.sh <slug>   # wt-<slug>, feat/<slug> off default
+```
+
+It runs the repo's create-time setup (`.cursor/worktrees.json`, as Cursor does)
+and prints the path. Work only inside it (`cd` into it in every command). The
+agent's Cursor workspace stays on the primary checkout, so removing the tree
+never strands its shell or hooks. `/ship-local` lands it with `land.sh` below
+(`--worktree` = that path) and must end at exit 0: folder and branch gone.
+
 ## Already on default (fast path)
 
 1. `ship.lock acquire` (portable: `.git/ship-local.lock`). Busy → **STOP**.
@@ -115,7 +129,7 @@ tree, do not force-push. The script already released the lock.
 
 ## Non-goals
 
-No push, deploy, PR approval, prod secrets, Phase 7, extra worktrees, `reset
+No push, deploy, PR approval, prod secrets, Phase 7, extra worktrees beyond the one task tree, `reset
 --hard`, or deleting unrelated branches. Do not claim tests you did not run.
 
 ## Handoff

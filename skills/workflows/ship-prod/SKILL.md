@@ -50,12 +50,11 @@ Required moving commands (skip only when already proven for this `HEAD`):
 1. Leftovers classify (`ship.leftovers` + `-- --apply` when set)
 2. Wait until the test-pool lease is idle (project wait-idle, else harness
    `slots-status` poll)
-3. Idle-main complete (`test.full`) on a test-relevant tip — wait for it.
-   If the Shell tool has a wait budget, set it above the gate (often
-   15–45+ minutes). If the tool backgrounds the process, keep polling
-   until it exits. Do not read the test runner instead of running it.
+3. Idle-main complete (`test.full`) on a test-relevant tip — run it through
+   the gate helper (below), never inline. Do not read the test runner
+   instead of running it.
 4. Project ship/push command (watch until terminal if the project wraps
-   watch into that command). Same wait rule as complete.
+   watch into that command). Long ship commands use the gate helper too.
 5. Phase 7 `@project-memory` only after watched green — prune built-in fixes
    (`prune-candidates.py`, rows before → after), list staged ids; do not stop to ask
 
@@ -64,6 +63,19 @@ Never run `/summarize` mid-ship.
 
 Between "pool is idle" / "starting complete" and the `test.full` Shell
 call, there must be no text-only turn.
+
+## Gate helper (long gates never block one shell)
+
+```bash
+G=.cursor/skills/workflows/ship-prod/gate-run.sh
+bash $G start --name complete -- <test.full command>   # returns at once
+bash $G wait-step --name complete                      # ≤ 90 s, repeat
+```
+
+Each `wait-step` / `status` is its own short Shell call. Exit `3` = still
+running → call again; `0` green; `1` red (`exit:` + log tail); `4` died
+without an exit code → read the log, re-start once. Never write your own
+`until …; do sleep; done` loop, `nohup`/`setsid` wrapper, or tmux session.
 
 ## Dirt classifier (run first; do not ask)
 

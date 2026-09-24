@@ -164,6 +164,7 @@ checkout or the standalone cursor-harness repo).
 - [ ] `bash scripts/leak-check.test.sh`
 - [ ] `bash hooks/scripts/guard-destructive-shell.test.sh`
 - [ ] `bash skills/clean-worktrees/clean-worktrees.test.sh`
-- [ ] `bash skills/ship-local/cleanup-worktree.test.sh` and `bash skills/ship-local/land.test.sh`
+- [ ] `bash skills/ship-local/cleanup-worktree.test.sh`, `bash skills/ship-local/land.test.sh`, and `bash skills/ship-local/worktree-new.test.sh`
+- [ ] `bash skills/workflows/ship-prod/gate-run.test.sh` and `bash skills/workflows/ship-prod/preflight.test.sh`
 - [ ] `python3 runtime/night_shift_test.py`
 - [ ] `mkdir -p /tmp/harness-smoke && cp templates/harness.project.yaml /tmp/harness-smoke/ && ./install.sh --target /tmp/harness-smoke --mode symlink --with-agents` succeeds

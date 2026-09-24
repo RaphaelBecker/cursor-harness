@@ -24,7 +24,10 @@ Follow `core-principles`:
 - **After:** `/ship-local` on a feature tree (or leftover-commit if already on default)
   → one **idle-main complete** (wait live leases, bounded) → `/ship-prod`
 - Chat after implement/ship ends with `DONE` or `PARTIAL: <exact leftover>`
-- Agents do not create or manage git worktrees except during human-triggered `/ship-local` or `/clean-worktrees`
+- Worktrees: human-created, or a coordinator's task agent runs
+  `bash .cursor/skills/ship-local/worktree-new.sh <slug>` from the primary checkout and works
+  only in `wt-<slug>`; `/ship-local` removes it after landing. No other worktree management
+  except human-triggered `/clean-worktrees`
 - Remote push and deploy stay human-owned unless you explicitly ask via `/ship-prod`
 
 Thin orchestrators: `/prep`, `/night-shift`, `/ship-prod`.

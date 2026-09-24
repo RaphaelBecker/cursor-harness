@@ -82,7 +82,7 @@ only.
 | `implementation-plan-review` | Review the existing `*.plan.md`, pause for A/B/C (issue + payoff first), rewrite that same file, say ready |
 | `execute-approved-plan` | Nightshift / Build: honor `kind`, worktree proof, 4b/4c, docs, lessons → Candidates, compact chat last line, HANDOFF.md |
 | `project-memory` | Phase 1 load; Phase 5 scored Candidates (commit with feature); Phase 7 prune built-in fixes (`prune-candidates.py`) + Architecture; list staged ids without waiting |
-| `ship-local` | Human-triggered local land via `land.sh` (lock, leftovers, merge, land, release, tree cleanup; exit 3/4 resume, 5 → `/clean-worktrees`), or leftover-commit when already on default |
+| `ship-local` | Human-triggered local land via `land.sh` (lock, leftovers, merge, land, release, tree cleanup; exit 3/4 resume, 5 → `/clean-worktrees`), or leftover-commit when already on default. `worktree-new.sh <slug>`: task agent's own `wt-<slug>` tree + create-time setup |
 | `clean-worktrees` | Human-triggered farm reset: landed trees whose dirt is noise (night-shift, on-default, `ship.leftovers` reset rows, vendor links), ghost folders, stale Cursor artifacts; spares live night agents; asks before discarding unshipped work |
 | `sync-spec-docs` | Update product acceptance / thin contracts after code changes |
 | `review-code` | Phase 4b: fix-capable maintainability review after green ladder |
@@ -105,7 +105,7 @@ only.
 | `dependency-direction-fix` | One cycle or wrong-way dependency per run (`kind: architecture`) |
 | `wait-what` | Re-pitch the last message in plain words |
 | `summarize-plan` | Restate a written plan in simple bullets (bugs + tests, or feature + pain) |
-| `ship-prod` | Human-triggered prod delivery: `preflight.sh` (capabilities, fail loud) → `ship.leftovers` → wait live lease → idle-main complete → diagnose+Bugbot if isolate-red → project ship → watch CI → Phase 7 |
+| `ship-prod` | Human-triggered prod delivery: `preflight.sh` (capabilities, fail loud) → `ship.leftovers` → wait live lease → idle-main complete via `gate-run.sh` (detached start, ≤90 s `wait-step` polls, no tmux) → diagnose+Bugbot if isolate-red → project ship → watch CI → Phase 7 |
 | `review-docs` | Doc drift audit (report default) |
 | `test-harness-optimize` | Faster/less flaky tests without weaker asserts |
 
@@ -174,7 +174,7 @@ Stack- or domain-specific agents belong in the consumer project (not this portab
 | --- | --- |
 | `sessionStart` → `session-bootstrap.sh` | Lifecycle/skills reminder |
 | `beforeSubmitPrompt` → `protect-secrets-prompt.sh` | Secret-pattern guard |
-| `beforeShellExecution` → `guard-destructive-shell.sh` | Confirm destructive DB / force-push / `gh issue edit`; deny scans from `/`, `/Users`, `/Volumes`, `/home` (macOS network-volume prompt) |
+| `beforeShellExecution` → `guard-destructive-shell.sh` | Confirm destructive DB / force-push / `gh issue edit`; deny scans from `/`, `/Users`, `/Volumes`, `/home` (macOS network-volume prompt); deny with `Workspace missing: <path>` when the shell cwd / workspace was deleted |
 | `postToolUse` / `preCompact` / `stop` → `context-governor.sh` | At 60% of the context ring, warn and continue the skill; never auto-submit `/summarize` (that aborts long gates). Silent if Cursor omits token fields |
 
 ---

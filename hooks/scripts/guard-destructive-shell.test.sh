@@ -42,6 +42,27 @@ expect allow 'echo "find / is blocked"'
 
 expect ask 'supabase db reset'
 
+permission_for_payload() {
+  printf '%s' "$1" | bash "$HOOK" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d["permission"], d.get("agent_message", ""))'
+}
+
+gone="$HOOK_HEARTBEAT_DIR/removed-worktree"
+got="$(permission_for_payload "{\"command\": \"ls\", \"cwd\": \"$gone\"}")"
+if [[ "$got" != deny*"Workspace missing: $gone"* ]]; then
+  echo "FAIL: missing cwd must deny with 'Workspace missing': $got"
+  failures=$((failures + 1))
+fi
+got="$(permission_for_payload "{\"command\": \"ls\", \"workspace_roots\": [\"$gone\"]}")"
+if [[ "$got" != deny*"Workspace missing"* ]]; then
+  echo "FAIL: missing workspace root must deny: $got"
+  failures=$((failures + 1))
+fi
+got="$(permission_for_payload "{\"command\": \"ls\", \"cwd\": \"$HOOK_HEARTBEAT_DIR\", \"workspace_roots\": [\"$gone\"]}")"
+if [[ "$got" != allow* ]]; then
+  echo "FAIL: existing cwd must allow even if the workspace root is gone: $got"
+  failures=$((failures + 1))
+fi
+
 heartbeat_file="$HOOK_HEARTBEAT_DIR/beforeShellExecution.heartbeat"
 permission_for 'echo heartbeat-probe' >/dev/null
 permission_for 'echo other-agent' >/dev/null

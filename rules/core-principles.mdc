@@ -26,10 +26,13 @@ not restate them.
  current required command has been invoked. The context-governor hook **warns** at
  60% and must **not** auto-submit `/summarize` (that aborts long skills). Do not
  park BLOCKED for context size. Do not write a substitute brief in place of
- `/summarize`.
+ `/summarize`. Past the smart zone — delegated task agents included — run
+ `/summarize` and **continue**; never stop, report PARTIAL, or write a handoff file
+ for context size.
 - A turn that only promises the next command is incomplete. Invoke that tool/Shell
  call in the same turn. Wait for long gates (complete, CI watch, merge) to finish
- in this sitting — do not background them and stop.
+ in this sitting — start them with `ship-prod/gate-run.sh` and poll in short
+ `wait-step` calls; never one long blocking loop, never background and stop.
 - Phase 1: load domain-relevant `project_memory.md` via `@project-memory` (overlay only).
 - Shared terms: `@glossary`. Plain talk with the developer: `developer-communication` rule.
 
@@ -45,9 +48,12 @@ not restate them.
 Two stages. **Not a clock.** Prep runs any time of day and stays short (about **2h max**).
 Once the workpack is approved, Nightshift runs fully autonomously in the worktrees.
 
-Humans create Cursor worktrees (one tree, one agent, one feature). Agents must not create,
-switch, or manage worktrees except `/ship-local` or `/clean-worktrees` when the human
-invokes them.
+One tree, one agent, one feature. Humans create Cursor worktrees, **or** a coordinator's
+task agent creates its own from the primary checkout with
+`bash .cursor/skills/ship-local/worktree-new.sh <slug>` (`wt-<slug>`, `feat/<slug>` off
+default, create-time setup) and works only inside it. `/ship-local` removes it after
+landing. Otherwise agents never create, switch, or remove worktrees (`/clean-worktrees`
+only when the human invokes it). Never touch another agent's `wt-*` tree.
 
 ### Prep (HIL — `/prep`)
 
@@ -68,7 +74,7 @@ invokes them.
 - `night-shift fire` launches one local `agent -p` per approved worktree. Cursor
  **Build** in the prep chat runs the same `@execute-approved-plan` skill. Skipping
  fire is fine for one-tree attended work. Do not prepend `&` (cloud handoff).
- Do not create worktrees.
+ Nightshift never creates worktrees.
 - On a hard stop: write `.cursor/night-shift/BLOCKED.md`, exit, leave other trees running.
  Never wait for the human.
 - Local verification and local commits are plan-default authorized when
