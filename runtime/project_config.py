@@ -247,6 +247,10 @@ def check_project(target: Path, *, harness_root: Path | None = None) -> list[str
         if "core" not in packs:
             errors.append("packs must include core")
 
+    denylist = str(data.get("leak_denylist") or "").strip()
+    if denylist and not (target / denylist).is_file():
+        errors.append(f"leak_denylist does not exist: {denylist}")
+
     docs = data.get("docs")
     if docs is not None and not isinstance(docs, dict):
         errors.append("docs must be a mapping when present")

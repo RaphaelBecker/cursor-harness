@@ -16,10 +16,10 @@ issue_source: none
 
 test:
   discover: true
-  # worktree: npm run test:affected --   # optional dispatcher; types + contract list
+  # worktree: npm run test:changed --    # optional dispatcher; types + contract list
   # targeted: npm test --                # implement RED/GREEN
   # fast: npm run test:fast              # FULL coverage/lint/types slice — not worktree proof
-  # full: npm run test:complete          # idle-main complete only
+  # full: npm run test:all               # idle-main complete only
 
 # Scarce test resource (golden DB pool, device farm). Custom lease is acquired
 # at worktree proof only when a listed suite needs the pool — not at fire.
@@ -35,6 +35,10 @@ test:
 docs:
   routing: .cursor/rules/doc-routing.local.mdc
 memory: project_memory.md
+
+# Optional: regexes (one per line, # comments) that must never appear in the
+# harness. `scripts/leak-check.sh --project .` greps for them; install warns.
+# leak_denylist: .cursor/harness-leak-denylist.txt
 
 # Optional exclusive lock for /ship-local (one land at a time). The command
 # must accept acquire / release / status (status prints `held` when busy). If

@@ -288,7 +288,7 @@ cursor-harness/
 ├── CONTRIBUTING.md
 ├── install.sh
 ├── manifest.yaml       # pack_sets registry
-├── scripts/            # render-diagrams.sh (docs only)
+├── scripts/            # render-diagrams.sh, leak-check.sh (maintainer tools)
 ├── runtime/            # night-shift CLI (not copied into .cursor/)
 ├── rules/              # *.mdc
 ├── skills/             # SKILL.md packs + workflows/

@@ -157,9 +157,11 @@ checkout or the standalone cursor-harness repo).
 - [ ] Charts: edit `.mmd`, run `scripts/render-diagrams.sh`, commit SVG (no live mermaid in README)
 - [ ] Rule/skill/agent frontmatter valid
 - [ ] No product names, private paths, or one-repo scripts in shared packs
+  (`scripts/leak-check.sh --project <consumer>` with its `leak_denylist`)
 - [ ] Hook scripts executable and paths match `hooks.json`
 - [ ] Docs updated if install or layout behavior changed
-- [ ] `bash install-symlink.test.sh` (relative vendor links)
+- [ ] `bash install-symlink.test.sh` (relative vendor links) and `bash install-idempotent.test.sh`
+- [ ] `bash scripts/leak-check.test.sh`
 - [ ] `bash hooks/scripts/guard-destructive-shell.test.sh`
 - [ ] `bash skills/clean-worktrees/clean-worktrees.test.sh`
 - [ ] `bash skills/ship-local/cleanup-worktree.test.sh` and `bash skills/ship-local/land.test.sh`

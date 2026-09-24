@@ -499,4 +499,9 @@ if [[ "$WITH_AGENTS" -eq 1 ]]; then
   fi
 fi
 
+if [[ "$DRY_RUN" -eq 0 ]] \
+  && ! "${HARNESS_ROOT}/scripts/leak-check.sh" --project "$TARGET" >/dev/null; then
+  log "warning: harness contains terms from this project's leak_denylist (listed above)"
+fi
+
 log "done."
