@@ -118,6 +118,12 @@ At activation, output this exact message first:
 Then:
 
 1. Retrospect the cycle: architectural shifts, friction, recurring bugs, CI fixes.
+   **Prune built-in fixes:** run `python3 .cursor/skills/project-memory/prune-candidates.py`.
+   It lists each Candidates row with the owner, commit, or file that resolved it.
+   Check that evidence, then delete every row whose fix now lives in code, a
+   script, a test, a skill, or a doc (it cannot recur). Keep lessons that still
+   guide future work. Report rows before → after in the ship handoff. Fix
+   commits should name the row id (`resolves <id>`) so the script finds them.
 2. For soft Architecture tips: draft at most one bullet per durable lesson.
    Purge Architecture process bullets that a leftover classifier or idle-main
    gate now owns. Product tips stay. For each remaining tip:

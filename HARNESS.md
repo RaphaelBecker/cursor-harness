@@ -81,7 +81,7 @@ only.
 | `grill-me` | Packet of hard questions (conversational grill is an escape hatch) |
 | `implementation-plan-review` | Review the existing `*.plan.md`, pause for A/B/C (issue + payoff first), rewrite that same file, say ready |
 | `execute-approved-plan` | Nightshift / Build: honor `kind`, worktree proof, 4b/4c, docs, lessons → Candidates, compact chat last line, HANDOFF.md |
-| `project-memory` | Phase 1 load; Phase 5 scored Candidates (commit with feature); Phase 7 Architecture; list staged ids without waiting |
+| `project-memory` | Phase 1 load; Phase 5 scored Candidates (commit with feature); Phase 7 prune built-in fixes (`prune-candidates.py`) + Architecture; list staged ids without waiting |
 | `ship-local` | Human-triggered local land via `land.sh` (lock, leftovers, merge, land, release, tree cleanup; exit 3/4 resume, 5 → `/clean-worktrees`), or leftover-commit when already on default |
 | `clean-worktrees` | Human-triggered farm reset: landed trees whose dirt is noise (night-shift, on-default, `ship.leftovers` reset rows, vendor links), ghost folders, stale Cursor artifacts; spares live night agents; asks before discarding unshipped work |
 | `sync-spec-docs` | Update product acceptance / thin contracts after code changes |
