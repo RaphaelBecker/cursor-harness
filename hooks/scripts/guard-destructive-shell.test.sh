@@ -44,8 +44,9 @@ expect ask 'supabase db reset'
 
 heartbeat_file="$HOOK_HEARTBEAT_DIR/beforeShellExecution.heartbeat"
 permission_for 'echo heartbeat-probe' >/dev/null
-if ! grep -qx 'echo heartbeat-probe' "$heartbeat_file" 2>/dev/null; then
-  echo "FAIL: heartbeat missing the last command: $heartbeat_file"
+permission_for 'echo other-agent' >/dev/null
+if ! grep -qE $'^[0-9]+\techo heartbeat-probe$' "$heartbeat_file" 2>/dev/null; then
+  echo "FAIL: heartbeat lost an earlier command: $heartbeat_file"
   failures=$((failures + 1))
 fi
 

@@ -8,10 +8,17 @@ input=$(cat)
 command=$(printf '%s' "$input" | python3 -c 'import json,sys; data=json.load(sys.stdin); print(data.get("command") or "")' 2>/dev/null || true)
 
 # Heartbeat: ship-prod preflight reads this to prove the hook fired for its own
-# command in this session type. Best effort; never blocks the guard.
+# command in this session type. Append-only so parallel agents sharing one
+# checkout cannot overwrite each other's line. Best effort; never blocks the guard.
 heartbeat_dir="${HOOK_HEARTBEAT_DIR:-$(dirname "${BASH_SOURCE[0]}")/.cache}"
-{ mkdir -p "$heartbeat_dir" && printf '%s\n%s\n' "$(date +%s)" "$command" \
-    >"$heartbeat_dir/beforeShellExecution.heartbeat"; } 2>/dev/null || true
+heartbeat="$heartbeat_dir/beforeShellExecution.heartbeat"
+{
+  mkdir -p "$heartbeat_dir"
+  printf '%s\t%s\n' "$(date +%s)" "$(printf '%s' "$command" | tr '\n\t' '  ' | cut -c1-300)" >>"$heartbeat"
+  if [[ $(wc -l <"$heartbeat") -gt 400 ]]; then
+    tail -n 100 "$heartbeat" >"$heartbeat.tmp.$$" && mv "$heartbeat.tmp.$$" "$heartbeat"
+  fi
+} 2>/dev/null || true
 
 # Patterns that must never run silently.
 ask=0

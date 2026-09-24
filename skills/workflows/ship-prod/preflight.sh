@@ -73,12 +73,10 @@ PY
   fi
   if grep -q 'guard-destructive-shell' "$hooks_json"; then
     fired=0
-    if [[ -f "$HEARTBEAT" ]]; then
-      stamp=$(head -1 "$HEARTBEAT")
-      if [[ "$stamp" =~ ^[0-9]+$ ]] && (( $(date +%s) - stamp <= 120 )) \
-        && tail -n +2 "$HEARTBEAT" | grep -q 'preflight\.sh'; then
-        fired=1
-      fi
+    if [[ -f "$HEARTBEAT" ]] && awk -F'\t' -v now="$(date +%s)" \
+        '$1 ~ /^[0-9]+$/ && now - $1 <= 120 && $2 ~ /preflight\.sh/ { hit = 1 } END { exit !hit }' \
+        "$HEARTBEAT"; then
+      fired=1
     fi
     if [[ "$fired" -eq 1 ]]; then
       row "shell guard hook" "fired" "beforeShellExecution saw this preflight command"

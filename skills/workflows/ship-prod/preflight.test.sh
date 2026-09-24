@@ -13,7 +13,10 @@ printf 'test:\n  full: npm run test:complete\nship:\n  leftovers: npm run leftov
 printf '{"hooks":{"beforeShellExecution":[{"command":"bash .cursor/hooks/guard-destructive-shell.sh"}]}}\n' >"$tmp/.cursor/hooks.json"
 touch "$tmp/.cursor/hooks/guard-destructive-shell.sh" "$tmp/.cursor/agents/diff-review.md"
 
-beat() { printf '%s\nbash .cursor/skills/workflows/ship-prod/preflight.sh --subagents x\n' "$1" >"$HOOK_HEARTBEAT_DIR/beforeShellExecution.heartbeat"; }
+beat() {
+  printf '%s\tbash .cursor/skills/workflows/ship-prod/preflight.sh --subagents x\n%s\tcd other-tree && rg foo\n' \
+    "$1" "$(date +%s)" >"$HOOK_HEARTBEAT_DIR/beforeShellExecution.heartbeat"
+}
 
 check() {
   local name="$1" want_exit="$2" want_text="$3"; shift 3
