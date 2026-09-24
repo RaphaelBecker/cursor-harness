@@ -16,8 +16,8 @@ The SSOT is the existing Cursor `*.plan.md` for this item. Never create a
 second plan. Never write `.cursor/night-shift/contract.md`.
 Sidecars start with `SSOT: <exact-path-of-that-plan.md>`.
 
-Read that `*.plan.md`. Write scenarios only — this file is not a second plan.
-Put `SSOT: <exact-path-of-that-plan.md>` on the first line of the spec.
+Read that `*.plan.md`. Write scenarios only to `.cursor/night-shift/bdd-spec.md`
+(a sidecar, not a second plan); first line `SSOT: <exact-path-of-that-plan.md>`.
 
 Act as a senior QA engineer. Analyze the attached implementation plan.
 Produce a structured list of test scenarios in Gherkin format (Given/When/Then) for the
@@ -36,7 +36,7 @@ assume a specific framework.
 2. **Assign scope** — Per feature, decide: pure logic → unit; end-to-end flow → E2E/integration.
 3. **Write scenarios** — Happy path, error handling, and boundary conditions per feature.
 4. **Check for gaps** — Authorization, empty states, invalid inputs, network/DB failures.
-5. **Deliver** — Specifications only; no test code, no implementation.
+5. **Deliver** — The spec sidecar only. No test code, no implementation.
 
 ## Output structure
 

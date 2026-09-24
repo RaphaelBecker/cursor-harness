@@ -26,7 +26,10 @@ Files that miss the configured suffix are silently skipped by Vitest.
 - Import the unit under test the way this repo does (`@/` or relative).
 - Mock external boundaries (DB client, `fetch`, network). Never hit live services.
 - Reuse `tests/fixtures/` and `tests/setup/` when they exist.
-- UI: Testing Library; assert rendered output, not internals.
+- UI: Testing Library; assert rendered output, not internals. Anchor full
+  accessible names (`{ name: /^Label$/ }`) so a longer label cannot match.
+- Wrap mounted components in the providers the app shell supplies. The project
+  test overlay (local testing rule or `HARNESS.local.md`) lists them.
 - Cover the changed behavior plus at least one edge case. Exact expected values
   for math / mapper / validator tests.
 
@@ -51,4 +54,4 @@ describe('subjectUnderTest', () => {
 
 Local tests are agent-allowed. Narrowest targeted command first, then the
 `testing` rule ladder (`harness.project.yaml` `test.*` / discovered scripts).
-Never invent `test:fast` / `test:complete` as required names.
+Never invent script names another repo uses.

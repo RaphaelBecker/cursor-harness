@@ -30,7 +30,7 @@ Rewrite rules when porting:
 | Kind | Examples |
 | --- | --- |
 | Product brand / UI | Corporate design tokens, product data-design, marketing tone |
-| Stack domain | Product-specific DB/SQL pipelines, MDS/ingest, ticker universe, chart vendors |
+| Stack domain | Product-specific DB/SQL pipelines, data-ingest services, domain datasets, chart vendors |
 | Framework globs tied to one app layout | App-router-only rules, one-service Python trees |
 | Domain agents | Finance-math, community, product DB architects, brand auditors |
 | Domain skills | Migrations against a named pool, RLS scanners, regen-types for one ORM layout |
@@ -42,11 +42,11 @@ Optional: mention in the sync report that the consumer should keep these locally
 
 ## Leak denylist (must not remain in shared packs)
 
-Search and remove/rewrite:
+Search and remove/rewrite (`scripts/leak-check.sh` greps the consumer's own list):
 
 - Product or brand names (e.g. project codenames)
-- One-repo scripts used as hard requirements: `push:main`, `push:docs`, `test:fast`,
-  `test:complete`, `db:test:*`, product CI policy paths
+- One-repo scripts used as hard requirements (named push / gate / DB scripts),
+  product CI policy paths
 - Private infra: hostnames, vault paths, self-hosted runner names, prod project IDs
 - Absolute personal paths inside pack bodies (`/Users/...`)
 - Stack-private folders presented as universal SSOT (`services/<product>-*`, brand JSON)

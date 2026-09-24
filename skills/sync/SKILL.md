@@ -57,9 +57,9 @@ Shared packs must stay project-agnostic:
 - No product/brand names
 - No private hosts, vault paths, or personal absolute paths (except ephemeral SOURCE
   for this run — never commit them into pack bodies)
-- No one-repo npm/make script names as requirements (`test:fast`, `push:main`, …)
-- No stack-only paths (`services/<product>-*`, brand token files, MDS/TWR/Stripe
-  product policy, etc.) unless rewritten as discoverable/generic guidance
+- No one-repo npm/make script names as requirements
+- No stack-only paths (`services/<product>-*`, brand token files, product
+  vendor or metric policy) unless rewritten as discoverable/generic guidance
 - Prefer “discover from README / package scripts / CI” over hardcoded commands
 
 Leak patterns and PORT/SKIP tables: [`references/portability.md`](references/portability.md).
@@ -113,14 +113,14 @@ For each PORT item:
 
 ### 4) Leak scan (mandatory)
 
-After edits, search the portable tree (exclude `.git`, smoke temps):
+After edits, grep the portable tree for the SOURCE project's own denylist
+(`leak_denylist` in its `harness.project.yaml`; one regex per line):
 
 ```bash
-rg -i 'ratiofolio|push:main|push:docs|test:fast|test:complete|polestar|hetzner|mds-pipeline|supabase-prod|knip|twr|klinechart|golden ticker|uf-' \
-  --glob '!.git/**' --glob '!.smoke-tmp/**' .
+scripts/leak-check.sh --project <SOURCE project root>
 ```
 
-Also spot-check for other product brands, private URLs, vault paths, and absolute
+Add new product terms to that consumer file, never to this repo. Also spot-check for other product brands, private URLs, vault paths, and absolute
 user home paths inside pack bodies.
 
 Fix every hit in shared packs before finishing. Personal SOURCE path in chat is fine;

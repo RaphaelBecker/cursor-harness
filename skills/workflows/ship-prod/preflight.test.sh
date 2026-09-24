@@ -9,7 +9,7 @@ failures=0
 
 export PREFLIGHT_ROOT="$tmp" PREFLIGHT_SKIP_GH=1 HOOK_HEARTBEAT_DIR="$tmp/hb"
 mkdir -p "$tmp/.cursor/hooks" "$tmp/.cursor/agents" "$HOOK_HEARTBEAT_DIR"
-printf 'test:\n  full: npm run test:complete\nship:\n  leftovers: npm run leftovers\n' >"$tmp/harness.project.yaml"
+printf 'test:\n  full: npm run test:all\nship:\n  leftovers: npm run leftovers\n' >"$tmp/harness.project.yaml"
 printf '{"hooks":{"beforeShellExecution":[{"command":"bash .cursor/hooks/guard-destructive-shell.sh"}]}}\n' >"$tmp/.cursor/hooks.json"
 touch "$tmp/.cursor/hooks/guard-destructive-shell.sh" "$tmp/.cursor/agents/diff-review.md"
 
