@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # /ship-local steps 2-6 in one resumable run: lock, refresh default, merge default
-# into the feature, land on default, integrity + leftovers, release, remove the tree.
+# into the feature, land on default, integrity + leftovers, release, ship.after_land
+# (e.g. sync local DB state to the new default), remove the tree.
 # Exit: 0 landed+cleaned, 2 refused (STOP), 3 conflicts in the feature tree (resolve,
 # commit, re-run), 4 dirty tree (commit ship-scoped paths, re-run), 5 landed but the
 # tree is still on disk (run /clean-worktrees). Never pushes.
@@ -42,6 +43,7 @@ project_get() {
 }
 LOCK_CMD="$(project_get ship.lock)"
 LEFTOVERS_CMD="$(project_get ship.leftovers)"
+AFTER_LAND_CMD="$(project_get ship.after_land)"
 PORTABLE_LOCK="$MAIN/.git/ship-local.lock"
 LOCK_HELD=0
 
@@ -130,6 +132,9 @@ run_leftovers "$MAIN"
 require_clean "$MAIN"
 say "$DEFAULT at $(git rev-parse --short HEAD) (was ${PRE:0:8})"
 release_lock
+if [[ -n "$AFTER_LAND_CMD" ]]; then
+  bash -c "$AFTER_LAND_CMD" || echo "land: warning: ship.after_land failed (land is done)" >&2
+fi
 
 if bash "$HERE/cleanup-worktree.sh" --main-root "$MAIN" --worktree "$WT" --branch "$BRANCH" &&
   [[ ! -e "$WT" ]]; then

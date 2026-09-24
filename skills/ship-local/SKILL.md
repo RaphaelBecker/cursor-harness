@@ -72,7 +72,8 @@ the authorization; if Auto-review blocks, retry with `request_smart_mode_approva
 The script holds the exclusive lock (`ship.lock` or `.git/ship-local.lock`) for
 its own run only, runs leftovers on both trees, FFs default from origin (notes
 divergence, never resets), merges default into the feature, lands FF or
-`--no-ff`, checks conflict markers, releases the lock, then removes the tree and
+`--no-ff`, checks conflict markers, releases the lock, runs `ship.after_land`
+(project hook, e.g. sync local DB state to default), then removes the tree and
 merged branch via `cleanup-worktree.sh`.
 
 | Exit | Meaning | Do |

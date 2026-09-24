@@ -64,6 +64,16 @@ else
   fail "resume after conflict"; cat "$ROOT/out" >&2
 fi
 
+feature hook
+printf 'ship:\n  after_land: touch after-land.ran\n' >"$MAIN/harness.project.yaml"
+echo harness.project.yaml >>"$MAIN/.git/info/exclude"; echo after-land.ran >>"$MAIN/.git/info/exclude"
+if [[ "$(rc_of land hook)" == 0 && -f "$MAIN/after-land.ran" && ! -e "$ROOT/hook" ]]; then
+  pass "ship.after_land runs on default after the land"
+else
+  fail "after_land hook"; cat "$ROOT/out" >&2
+fi
+rm -f "$MAIN/harness.project.yaml" "$MAIN/after-land.ran"
+
 feature four
 printf '1\tx\t%s\t%s\n' "$ROOT/four" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >"$MAIN/.git/ship-local.lock"
 if [[ "$(rc_of land four)" == 2 && -d "$ROOT/four" && -f "$MAIN/.git/ship-local.lock" ]]; then
