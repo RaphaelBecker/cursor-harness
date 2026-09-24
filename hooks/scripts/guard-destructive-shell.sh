@@ -50,6 +50,28 @@ heartbeat="$heartbeat_dir/beforeShellExecution.heartbeat"
   fi
 } 2>/dev/null || true
 
+# Raw git push and gh pr create/merge stay closed unless /ship-prod preflight
+# armed a fresh marker. Configured direct push scripts are allowed only from
+# the primary checkout on main; the git push inside those scripts is a child
+# process, not this command, so it is not denied here.
+hook_dir="$(python3 -c 'import os,sys; print(os.path.dirname(os.path.realpath(sys.argv[1])))' "${BASH_SOURCE[0]}")"
+push_gate="$hook_dir/ship-prod-push-gate.sh"
+push_msg='Pushes/PRs only via /ship-prod; land with /ship-local.'
+if [[ -f "$push_gate" ]]; then
+  push_decision="$(printf '%s' "$input" | bash "$push_gate" classify 2>/dev/null)" || push_decision=""
+else
+  push_decision=""
+fi
+if [[ -z "$push_decision" ]] && printf '%s' "$command" | grep -Eq 'git[[:space:]]+push|gh[[:space:]]+pr[[:space:]]+(create|merge)|night-shift/ship-prod-push-gate'; then
+  push_decision=$'deny\t'"$push_msg"
+fi
+if [[ "$push_decision" == deny* ]]; then
+  push_text="${push_decision#deny$'\t'}"
+  [[ -n "$push_text" ]] || push_text="$push_msg"
+  python3 -c 'import json,sys; print(json.dumps({"permission":"deny","user_message":sys.argv[1],"agent_message":sys.argv[1]}))' "$push_text"
+  exit 0
+fi
+
 # Patterns that must never run silently.
 ask=0
 if printf '%s' "$command" | grep -Eiq \

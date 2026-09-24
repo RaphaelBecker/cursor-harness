@@ -235,6 +235,7 @@ CLI: [runtime/night-shift](runtime/night-shift)
 ### Ship — `/ship-local` then `/ship-prod`
 
 Shipping is always **your** call. The agent never pushes or deploys on its own.
+Task agents never open pull requests. Raw `git push` and `gh pr create` / `gh pr merge` stay blocked unless `/ship-prod` armed its push gate.
 
 Orchestrators: [ship-local](skills/ship-local/SKILL.md) ·
 [ship-prod](skills/workflows/ship-prod/SKILL.md) ·

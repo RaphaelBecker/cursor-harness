@@ -47,6 +47,11 @@ Required moving commands (skip only when already proven for this `HEAD`):
    this session runs each capability (Bugbot, Security Review, hooks, gh). Use
    those resolutions for the whole ship. Exit 1 → stop with its `PARTIAL:` line.
    Never skip a reviewer because its built-in subagent is missing.
+   On success, preflight arms a push-gate marker for 6 hours
+   (`.cursor/night-shift/ship-prod-push-gate`). Only this preflight may arm it.
+   Raw `git push` and `gh pr create` / `gh pr merge` stay blocked without a
+   fresh marker. On every exit (DONE, PARTIAL, or STOP) run
+   `bash .cursor/skills/workflows/ship-prod/preflight.sh --clear-push-gate`.
 1. Leftovers classify (`ship.leftovers` + `-- --apply` when set)
 2. Wait until the test-pool lease is idle (project wait-idle, else harness
    `slots-status` poll)
@@ -194,6 +199,7 @@ Leftover-container / slot-unhealthy infra: recover via the project path, then
 | Gate | Rule |
 | --- | --- |
 | Human trigger | Required — this skill never self-starts |
+| Push gate | Preflight arms it; clear it on every exit. Raw `git push` and `gh pr create` / `gh pr merge` stay blocked otherwise. Do not write the marker yourself |
 | Local green | Idle-main complete for test-relevant `HEAD` before first push. Complete red + isolate red → diagnose-bug + Bugbot, then re-prove complete |
 | Live test-pool lease | Wait (bounded), then STOP only if still held |
 | Secrets / vault | Do not invent or copy local env to prod; stop if vault/auth unclear |
@@ -213,6 +219,8 @@ Leftover-container / slot-unhealthy infra: recover via the project path, then
 
 8–12 short lines. Local default SHA; ship command; complete evidence; CI run id +
 status; fix commits (or none); Phase 7 done/skipped; staged ids if any.
+
+Before the handoff, run `preflight.sh --clear-push-gate` (success, PARTIAL, or STOP).
 
 **Required last line:**
 

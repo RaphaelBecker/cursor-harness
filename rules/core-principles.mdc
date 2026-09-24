@@ -117,6 +117,7 @@ Secrets / `.env*` / vault / other worktree / live merge → STOP. Never stash.
 credentials, destructive ops, payments, production, push, deploy — **park BLOCKED.md**.
 Local merge and one-tree cleanup only via explicit `/ship-local`. Leftover farm
 reset via explicit `/clean-worktrees`.
+Task agents never open pull requests, ever. Land with `/ship-local`. Remote push is `/ship-prod` only.
 
 ### Harness sync
 

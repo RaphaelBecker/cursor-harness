@@ -14,7 +14,7 @@ Hygiene prompts: [automations](automations.md).
 | --- | --- |
 | Model / agent loop | Cursor (usage pools: Cursor Models vs Other Models) |
 | Files, shell, tests, local DBs, worktrees | This machine |
-| Merge, remote push, production | Human (`/ship-local`, `/ship-prod`) |
+| Merge, remote push, production | Human (`/ship-local`, `/ship-prod`). Task agents never open pull requests. The shell guard blocks raw `git push` and `gh pr create` / `gh pr merge` unless `/ship-prod` preflight armed a fresh push gate |
 
 You cannot host the model. You **can** refuse Cursor VMs as the default executor
 so a night shift uses idle CPU instead of cloud minutes.

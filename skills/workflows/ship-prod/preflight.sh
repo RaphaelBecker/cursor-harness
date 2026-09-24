@@ -5,6 +5,10 @@
 #
 # Usage: bash .cursor/skills/workflows/ship-prod/preflight.sh \
 #          --subagents "<comma list of subagent types your Task tool offers, or none>"
+#        bash .cursor/skills/workflows/ship-prod/preflight.sh --clear-push-gate
+#
+# On success this arms the push gate (raw git push and gh pr create/merge).
+# Only this script can arm it. Clear it on every ship exit, including STOP.
 #
 # Subagent types are only visible to the agent, so the agent passes them in.
 # Env: PREFLIGHT_SKIP_GH=1 (tests), HOOK_HEARTBEAT_DIR (tests), PREFLIGHT_ROOT.
@@ -12,15 +16,27 @@ set -uo pipefail
 
 SUBAGENTS=""
 HAVE_SUBAGENT_FLAG=0
+CLEAR_PUSH_GATE=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --subagents) SUBAGENTS="${2:-}"; HAVE_SUBAGENT_FLAG=1; shift 2 ;;
-    -h|--help) sed -n '2,10p' "$0"; exit 0 ;;
+    --clear-push-gate) CLEAR_PUSH_GATE=1; shift ;;
+    -h|--help) sed -n '2,12p' "$0"; exit 0 ;;
     *) echo "unknown arg: $1" >&2; exit 2 ;;
   esac
 done
 
 ROOT="${PREFLIGHT_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+PRE_DIR="$(python3 -c 'import os,sys; print(os.path.dirname(os.path.realpath(sys.argv[1])))' "${BASH_SOURCE[0]}")"
+PUSH_GATE="$(python3 -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$PRE_DIR/../../../hooks/scripts/ship-prod-push-gate.sh")"
+
+if [[ "$CLEAR_PUSH_GATE" -eq 1 ]]; then
+  bash "$PUSH_GATE" clear --root "$ROOT"
+  exit 0
+fi
+
+# A failed preflight must not leave an earlier gate open. Arm only after OK.
+bash "$PUSH_GATE" clear --root "$ROOT"
 HEARTBEAT="${HOOK_HEARTBEAT_DIR:-$ROOT/.cursor/hooks/.cache}/beforeShellExecution.heartbeat"
 missing=()
 
@@ -121,4 +137,9 @@ if [[ ${#missing[@]} -gt 0 ]]; then
   printf 'PARTIAL: missing %s\n' "$(IFS=';'; echo "${missing[*]}")"
   exit 1
 fi
+if ! bash "$PUSH_GATE" arm --root "$ROOT"; then
+  echo "PARTIAL: push gate did not arm (only ship-prod preflight may arm it)"
+  exit 1
+fi
 echo "preflight: OK — use the resolutions above; do not skip any row"
+echo "push gate: armed for 6h — clear it with preflight.sh --clear-push-gate on every exit"

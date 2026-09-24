@@ -31,9 +31,35 @@ check() {
 
 beat "$(date +%s)"
 check "builtins present" 0 "subagent bugbot" --subagents "bugbot, security-review, ci-investigator"
+marker="$tmp/.cursor/night-shift/ship-prod-push-gate"
+if [[ ! -f "$marker" ]]; then
+  echo "FAIL: success preflight did not arm the push gate"
+  failures=$((failures + 1))
+else
+  now="$(date +%s)"
+  exp="$(tr -d '[:space:]' <"$marker")"
+  if [[ ! "$exp" =~ ^[0-9]+$ ]] || (( exp <= now || exp > now + 21600 )); then
+    echo "FAIL: push gate expiry is not a fresh 6h window: $exp"
+    failures=$((failures + 1))
+  fi
+fi
+bash "$PREFLIGHT" --clear-push-gate
+if [[ -f "$marker" ]]; then
+  echo "FAIL: --clear-push-gate left the marker in place"
+  failures=$((failures + 1))
+fi
+GATE="$(cd "$(dirname "$PREFLIGHT")/../../../hooks/scripts" && pwd)/ship-prod-push-gate.sh"
+if bash "$GATE" arm --root "$tmp" >/dev/null 2>&1; then
+  echo "FAIL: arm must refuse callers other than preflight.sh"
+  failures=$((failures + 1))
+fi
 check "self-hosted inline fallback" 0 "inline: run .cursor/agents/diff-review.md, Focus: bugs" --subagents "explore,verifier"
 check "diff-review subagent fallback" 0 "subagent diff-review, Focus: security" --subagents "diff-review"
 check "no subagent flag" 1 "PARTIAL: missing subagent list"
+if [[ -f "$tmp/.cursor/night-shift/ship-prod-push-gate" ]]; then
+  echo "FAIL: failed preflight left the push gate armed"
+  failures=$((failures + 1))
+fi
 
 rm "$tmp/.cursor/agents/diff-review.md"
 check "no reviewer at all" 1 "PARTIAL: missing bugbot" --subagents "none"
