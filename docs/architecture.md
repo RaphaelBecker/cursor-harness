@@ -97,9 +97,12 @@ Harness-managed paths may be symlinks. Project-specific guidance should use **ne
 Harness entries are identified by their `command` path (e.g. `.cursor/hooks/session-bootstrap.sh`). On install:
 
 1. Load existing project `hooks.json` if present
-2. Remove entries whose `command` is harness-managed
-3. Append current harness entries
-4. Leave unrelated project hooks untouched
+2. Per event, replace a harness entry in place, or append it when missing
+3. Skip (and drop) a harness entry when a project entry in the same event already
+   runs that script — directly or via a tracked wrapper script that names it
+4. Leave unrelated project hooks untouched; write only when the result changed
+
+Re-running install leaves `hooks.json` byte-identical (`install-idempotent.test.sh`).
 
 ## Pack registry
 

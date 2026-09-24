@@ -364,48 +364,86 @@ if [[ "${HOOKS_ENABLED}" -eq 1 ]]; then
     log "DRY-RUN: merge hooks into $DEST_HOOKS"
   else
     python3 - "$HARNESS_HOOKS" "$DEST_HOOKS" <<'PY'
-import json, sys
+import json, re, sys
 from pathlib import Path
 
 harness_path = Path(sys.argv[1])
 dest_path = Path(sys.argv[2])
+project_root = dest_path.parent.parent
 
 harness = json.loads(harness_path.read_text(encoding="utf-8"))
-if dest_path.exists():
-    project = json.loads(dest_path.read_text(encoding="utf-8"))
-else:
-    project = {"version": 1, "hooks": {}}
+original = dest_path.read_text(encoding="utf-8") if dest_path.exists() else None
+project = json.loads(original) if original else {"version": 1, "hooks": {}}
 
 if "hooks" not in project or not isinstance(project["hooks"], dict):
     project["hooks"] = {}
 project.setdefault("version", harness.get("version", 1))
 
-harness_commands = set()
-for event, entries in harness.get("hooks", {}).items():
-    for entry in entries or []:
-        cmd = entry.get("command")
-        if cmd:
-            harness_commands.add(cmd)
 
-# Drop previous harness-managed entries (same command paths), keep others.
+def script_of(command):
+    for token in reversed(str(command or "").split()):
+        if "/" in token or token.endswith((".sh", ".py")):
+            return token
+    return ""
+
+
+def covers(entry, harness_script):
+    """True when a project entry already runs harness_script itself or via a wrapper."""
+    script = script_of(entry.get("command"))
+    if not script:
+        return False
+    name = Path(harness_script).name
+    if Path(script).name == name:
+        return True
+    path = project_root / script
+    if not path.is_file():
+        return False
+    text = path.read_text(encoding="utf-8", errors="replace")
+    return re.search(r"(^|[/\"'\s])" + re.escape(name) + r"(?![\w.-])", text) is not None
+
+
+harness_hooks = harness.get("hooks", {})
+harness_commands = {
+    e.get("command") for entries in harness_hooks.values() for e in entries or [] if e.get("command")
+}
+
 for event, entries in list(project["hooks"].items()):
-    if not isinstance(entries, list):
-        continue
-    project["hooks"][event] = [
-        e for e in entries
-        if not (isinstance(e, dict) and e.get("command") in harness_commands)
-    ]
+    if event not in harness_hooks and isinstance(entries, list):
+        project["hooks"][event] = [
+            e for e in entries if not (isinstance(e, dict) and e.get("command") in harness_commands)
+        ]
 
-for event, entries in harness.get("hooks", {}).items():
-    project["hooks"].setdefault(event, [])
-    for entry in entries or []:
-        project["hooks"][event].append(entry)
+# Replace harness entries in place (stable order on re-run). Skip one when a
+# project entry in the same event already runs that script (domain wrapper).
+for event, h_entries in harness_hooks.items():
+    current = project["hooks"].get(event) or []
+    for h in h_entries or []:
+        cmd = h.get("command")
+        own = [
+            e for e in current
+            if isinstance(e, dict) and e.get("command") != cmd and covers(e, script_of(cmd))
+        ]
+        merged, placed = [], bool(own)
+        for e in current:
+            if isinstance(e, dict) and e.get("command") == cmd:
+                if not placed:
+                    merged.append(h)
+                    placed = True
+                continue
+            merged.append(e)
+        if not placed:
+            merged.append(h)
+        current = merged
+    project["hooks"][event] = current
 
-# Remove empty event arrays for cleanliness
 project["hooks"] = {k: v for k, v in project["hooks"].items() if v}
 
-dest_path.write_text(json.dumps(project, indent=2) + "\n", encoding="utf-8")
-print(f"merged hooks: {dest_path}")
+rendered = json.dumps(project, indent=2) + "\n"
+if rendered == original:
+    print(f"hooks unchanged: {dest_path}")
+else:
+    dest_path.write_text(rendered, encoding="utf-8")
+    print(f"merged hooks: {dest_path}")
 PY
   fi
 fi
