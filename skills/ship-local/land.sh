@@ -43,7 +43,6 @@ project_get() {
 }
 LOCK_CMD="$(project_get ship.lock)"
 LEFTOVERS_CMD="$(project_get ship.leftovers)"
-AFTER_LAND_CMD="$(project_get ship.after_land)"
 PORTABLE_LOCK="$MAIN/.git/ship-local.lock"
 LOCK_HELD=0
 
@@ -132,6 +131,7 @@ run_leftovers "$MAIN"
 require_clean "$MAIN"
 say "$DEFAULT at $(git rev-parse --short HEAD) (was ${PRE:0:8})"
 release_lock
+AFTER_LAND_CMD="$(project_get ship.after_land)"
 if [[ -n "$AFTER_LAND_CMD" ]]; then
   bash -c "$AFTER_LAND_CMD" || echo "land: warning: ship.after_land failed (land is done)" >&2
 fi
