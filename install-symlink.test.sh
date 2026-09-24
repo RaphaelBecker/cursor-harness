@@ -50,6 +50,22 @@ else
   fail "hook resolved to $resolved want $want"
 fi
 
+if [[ ! -e "$ROOT/a/.cursor/hooks/guard-destructive-shell.test.sh" ]] \
+  && ! grep -q 'test\.sh' "$ROOT/a/.cursor/.gitignore"; then
+  pass "hook tests are not installed"
+else
+  fail "hook test file was installed or ignored"
+fi
+
+ln -s ../../vendor/cursor-harness/hooks/scripts/guard-destructive-shell.test.sh \
+  "$ROOT/b/.cursor/hooks/guard-destructive-shell.test.sh"
+"$HARNESS/install.sh" --target "$ROOT/b" --mode symlink >/dev/null
+if [[ ! -L "$ROOT/b/.cursor/hooks/guard-destructive-shell.test.sh" ]]; then
+  pass "reinstall removes a stale hook test link"
+else
+  fail "stale hook test link survived reinstall"
+fi
+
 if [[ "$fails" -ne 0 ]]; then
   echo "$fails test(s) failed" >&2
   exit 1

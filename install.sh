@@ -345,7 +345,12 @@ if [[ "${HOOKS_ENABLED}" -eq 1 ]]; then
     else
       log "DRY-RUN: chmod +x ${CURSOR_DIR}/hooks/${name}"
     fi
-  done < <(find "${HARNESS_ROOT}/hooks/scripts" -type f -print0 2>/dev/null || true)
+  done < <(find "${HARNESS_ROOT}/hooks/scripts" -type f ! -name '*.test.sh' -print0 2>/dev/null || true)
+
+  # Earlier installs linked hook tests too; outside the managed ignore they look like product.
+  if [[ "$DRY_RUN" -eq 0 ]]; then
+    find "${CURSOR_DIR}/hooks" -maxdepth 1 -type l -name '*.test.sh' -lname '*hooks/scripts/*' -delete 2>/dev/null || true
+  fi
 
   # Merge harness hooks.json into project hooks.json (namespace by command path).
   HARNESS_HOOKS="${HARNESS_ROOT}/hooks/hooks.json"
@@ -430,7 +435,7 @@ else
   if [[ "${HOOKS_ENABLED}" -eq 1 ]]; then
     while IFS= read -r -d '' script; do
       GITIGNORE_PATHS+=("hooks/$(basename "$script")")
-    done < <(find "${HARNESS_ROOT}/hooks/scripts" -type f -print0 2>/dev/null || true)
+    done < <(find "${HARNESS_ROOT}/hooks/scripts" -type f ! -name '*.test.sh' -print0 2>/dev/null || true)
   fi
   python3 - "${CURSOR_DIR}/.gitignore" "${GITIGNORE_PATHS[@]}" <<'PY'
 import re
