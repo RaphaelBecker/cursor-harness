@@ -160,6 +160,7 @@ checkout or the standalone cursor-harness repo).
 - [ ] Hook scripts executable and paths match `hooks.json`
 - [ ] Docs updated if install or layout behavior changed
 - [ ] `bash install-symlink.test.sh` (relative vendor links)
+- [ ] `bash hooks/scripts/guard-destructive-shell.test.sh`
 - [ ] `bash skills/clean-worktrees/clean-worktrees.test.sh`
 - [ ] `bash skills/ship-local/cleanup-worktree.test.sh` and `bash skills/ship-local/land.test.sh`
 - [ ] `python3 runtime/night_shift_test.py`

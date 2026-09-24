@@ -173,7 +173,7 @@ Stack- or domain-specific agents belong in the consumer project (not this portab
 | --- | --- |
 | `sessionStart` → `session-bootstrap.sh` | Lifecycle/skills reminder |
 | `beforeSubmitPrompt` → `protect-secrets-prompt.sh` | Secret-pattern guard |
-| `beforeShellExecution` → `guard-destructive-shell.sh` | Confirm destructive DB / force-push / `gh issue edit` |
+| `beforeShellExecution` → `guard-destructive-shell.sh` | Confirm destructive DB / force-push / `gh issue edit`; deny scans from `/`, `/Users`, `/Volumes`, `/home` (macOS network-volume prompt) |
 | `postToolUse` / `preCompact` / `stop` → `context-governor.sh` | At 60% of the context ring, warn and continue the skill; never auto-submit `/summarize` (that aborts long gates). Silent if Cursor omits token fields |
 
 ---
