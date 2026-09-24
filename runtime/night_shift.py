@@ -57,19 +57,33 @@ def log_path(worktree: Path) -> Path:
     return night_dir(worktree) / LOG_NAME
 
 
+def split_frontmatter(text: str) -> tuple[list[str], str] | None:
+    """Return (frontmatter lines, rest after the closing fence) or None."""
+    lines = text.split("\n")
+    if not lines or lines[0].rstrip() != "---":
+        return None
+    for i in range(1, len(lines)):
+        if lines[i].rstrip() == "---":
+            return lines[1:i], "\n".join(lines[i + 1 :])
+    return None
+
+
+def top_level_key(raw: str) -> str | None:
+    # Cursor plans nest `status:` under each todo; only column-0 keys belong to the plan.
+    if not raw or raw[:1] in (" ", "\t", "-", "#") or ":" not in raw:
+        return None
+    return raw.split(":", 1)[0].strip().lower()
+
+
 def parse_frontmatter(text: str) -> dict[str, str]:
-    if not text.startswith("---"):
-        return {}
-    parts = text.split("---", 2)
-    if len(parts) < 3:
+    split = split_frontmatter(text)
+    if split is None:
         return {}
     meta: dict[str, str] = {}
-    for raw in parts[1].splitlines():
-        line = raw.strip()
-        if not line or line.startswith("#") or ":" not in line:
-            continue
-        key, value = line.split(":", 1)
-        meta[key.strip().lower()] = value.strip().strip("\"'")
+    for raw in split[0]:
+        key = top_level_key(raw)
+        if key and key not in meta:
+            meta[key] = raw.split(":", 1)[1].strip().strip("\"'")
     return meta
 
 
@@ -108,30 +122,21 @@ def plan_status(worktree: Path) -> str:
 
 
 def replace_frontmatter_status(text: str, status: str) -> str:
-    if not text.startswith("---"):
+    split = split_frontmatter(text)
+    if split is None:
         return f"---\nstatus: {status}\n---\n\n{text}"
-    parts = text.split("---", 2)
-    if len(parts) < 3:
-        return f"---\nstatus: {status}\n---\n\n{text}"
+    front, rest = split
     lines: list[str] = []
     found = False
-    for raw in parts[1].splitlines():
-        stripped = raw.strip()
-        if stripped.lower().startswith("status:") and not found:
-            indent = raw[: len(raw) - len(raw.lstrip())]
-            lines.append(f"{indent}status: {status}")
+    for raw in front:
+        if not found and top_level_key(raw) == "status":
+            lines.append(f"status: {status}")
             found = True
         else:
             lines.append(raw)
     if not found:
-        body = [line for line in lines if line.strip()]
-        lines = ["", f"status: {status}", *body]
-    inner = "\n".join(lines)
-    if not inner.startswith("\n"):
-        inner = "\n" + inner
-    if not inner.endswith("\n"):
-        inner += "\n"
-    return f"---{inner}---{parts[2]}"
+        lines.append(f"status: {status}")
+    return "\n".join(["---", *lines, "---", rest])
 
 
 def archive_approved_plans(worktree: Path) -> list[Path]:
