@@ -42,6 +42,11 @@ implementation files. Do not load `@project-memory` until watched green
 
 Required moving commands (skip only when already proven for this `HEAD`):
 
+0. **Preflight (always first):** `bash .cursor/skills/workflows/ship-prod/preflight.sh
+   --subagents "<every subagent type your Task tool lists, or none>"`. It prints how
+   this session runs each capability (Bugbot, Security Review, hooks, gh). Use
+   those resolutions for the whole ship. Exit 1 → stop with its `PARTIAL:` line.
+   Never skip a reviewer because its built-in subagent is missing.
 1. Leftovers classify (`ship.leftovers` + `-- --apply` when set)
 2. Wait until the test-pool lease is idle (project wait-idle, else harness
    `slots-status` poll)
@@ -51,8 +56,8 @@ Required moving commands (skip only when already proven for this `HEAD`):
    until it exits. Do not read the test runner instead of running it.
 4. Project ship/push command (watch until terminal if the project wraps
    watch into that command). Same wait rule as complete.
-5. Phase 7 `@project-memory` only after watched green — list staged ids;
-   do not stop to ask
+5. Phase 7 `@project-memory` only after watched green — prune built-in fixes
+   (`prune-candidates.py`, rows before → after), list staged ids; do not stop to ask
 
 Ignore compact nags until the current required command has been invoked.
 Never run `/summarize` mid-ship.

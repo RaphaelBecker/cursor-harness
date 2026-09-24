@@ -1,10 +1,8 @@
 ---
 name: verifier
 description: >-
-  Verifies project changes by discovering and running typecheck and
-  contract-listed test commands from the consumer repo, then reporting results.
-  Use after implementing code changes. Follow the `testing` rule: worktree proof
-  on a feature worktree; idle-main complete only on idle local default.
+  Runs the project's worktree proof (types, lint, listed suites) after code
+  changes and reports results. Report only.
 model: inherit
 readonly: true
 ---
@@ -19,8 +17,8 @@ documented local gates.
 
 **Ladder SSOT:** the `testing` rule. Do not invent a second numbered ladder here.
 
-On a **feature worktree**, run **worktree proof only**: typecheck (when the project
-has it) plus the contract-listed suites. Prefer `test.worktree` when declared.
+On a **feature worktree**, run **worktree proof only**: typecheck and lint of the
+changed files (when the project has them) plus the contract-listed suites. Prefer `test.worktree` when declared.
 Never run the fast/local coverage slice or idle-main complete from a feature
 worktree. Empty contract list is not merge-ready unless the contract is
 docs/harness N/A.

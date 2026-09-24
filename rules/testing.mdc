@@ -59,8 +59,9 @@ test engine (no reimplemented Playwright, Vitest, or DB bootstrap).
 
 1. During implement: dedicated/targeted RED/GREEN for the changed surface (project's
    existing runners).
-2. Feature-worktree merge-ready proof: **one worktree proof**. Always typecheck when
-   the project has it. Then only the contract-listed suites. If the project declares
+2. Feature-worktree merge-ready proof: **one worktree proof**. Always typecheck and
+   lint the changed files when the project has them (types alone let lint errors
+   surface first in the full gate). Then only the contract-listed suites. If the project declares
    `test.worktree`, exec that with the list. Otherwise compose typecheck + listed
    suites via existing runners. Do **not** re-run the same files as a second required
    gate. Docs/harness-only may be N/A.
@@ -100,6 +101,10 @@ Also:
 - After runtime-affecting Phase 4b review fixes, re-run the worktree proof — not
   idle-main complete.
 - Optional report-only helper: `verifier` agent.
+- Phase 4c reviewers (`/review-bugbot`, `/review-security`) must run in every
+  session type. When the `bugbot` / `security-review` subagent type is not
+  listed, run the `diff-review` agent (Focus `bugs` / `security`) as a subagent,
+  or inline from `.cursor/agents/diff-review.md`. Never skip silently.
 - At most **one** retry for a clearly transient infrastructure failure (does not consume a
   code-repair attempt).
 

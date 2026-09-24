@@ -127,7 +127,8 @@ to finish in this sitting — do not background them and stop.
    maintainability review. Sensitive allowlists also run `@blast-radius`
    (shared modules, lifecycle, money, auth, wire formats). Skip copy/docs.
 5. **Phase 4c — Cursor second opinion (report only):**
-   1. Run `/review-bugbot` (or the Bugbot subagent) on branch changes.
+   1. Run `/review-bugbot` (or the Bugbot subagent) on branch changes. No
+      `bugbot` subagent type in this session → `diff-review` fallback (`testing` rule).
    2. If the allowlist touches auth, access control, billing/payments, admin,
       secrets, or other sensitive surfaces, also run `/review-security`.
    3. Put findings in `HANDOFF.md`. **Run 4c in this sitting** — do not skip

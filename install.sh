@@ -436,6 +436,7 @@ else
     while IFS= read -r -d '' script; do
       GITIGNORE_PATHS+=("hooks/$(basename "$script")")
     done < <(find "${HARNESS_ROOT}/hooks/scripts" -type f ! -name '*.test.sh' -print0 2>/dev/null || true)
+    GITIGNORE_PATHS+=("hooks/.cache/")
   fi
   python3 - "${CURSOR_DIR}/.gitignore" "${GITIGNORE_PATHS[@]}" <<'PY'
 import re

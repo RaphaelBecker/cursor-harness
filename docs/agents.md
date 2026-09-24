@@ -8,6 +8,7 @@
 | `architecture-health-auditor` | Hotspots + boundary leaks; **report only** (`quality-audit`) | [architecture-health-auditor.md](../agents/architecture-health-auditor.md) |
 | `supabase-architect` | SQL/RLS/view design; **report only** (`supabase`) | [supabase-architect.md](../agents/supabase-architect.md) |
 | `db-schema-auditor` | Dead/orphan DB objects; **report only** (`supabase`) | [db-schema-auditor.md](../agents/db-schema-auditor.md) |
+| `diff-review` | Phase 4c checklist SSOT (Focus `bugs` / `security`) when the built-in `bugbot` / `security-review` subagent type is missing; subagent or inline; **report only** | [diff-review.md](../agents/diff-review.md) |
 
 Installed to `.cursor/agents/` when listed in `manifest.yaml`. Readonly. Does not edit code.
 

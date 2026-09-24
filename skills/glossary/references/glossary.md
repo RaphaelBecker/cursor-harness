@@ -17,7 +17,8 @@ lives in the consumer project.
 | **Nightshift** | Unattended execute in those trees (`night-shift fire`). Park BLOCKED.md; never wait. |
 | **Packet** | All material questions at once, each with a recommended answer. |
 | **Phase 4b** | Fix-capable maintainability review (`@review-code`) after a green ladder. |
-| **Phase 4c** | Report-only second opinion (`/review-bugbot`, optional `/review-security`). |
+| **Phase 4c** | Report-only second opinion (`/review-bugbot`, optional `/review-security`). Built-in subagent missing → `diff-review` agent (same job, subagent or inline). Never skipped. |
+| **Preflight** | `ship-prod/preflight.sh`: lists what this session can run (reviewers, hooks, gh) and fails loud with `PARTIAL` instead of skipping. |
 | **Autonomous quality** | Scheduled **local** CLI/SDK jobs that improve tests/lint/security reports without a feature plan. Cloud `/automate` is overflow when the machine is off. |
 | **Allowlist** | Files/actions the agent may change or open as draft PRs. |
 | **Deny list** | Areas auto agents must not change (auth, billing, secrets, migrations, …). |

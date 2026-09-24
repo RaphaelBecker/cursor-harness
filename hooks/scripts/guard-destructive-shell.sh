@@ -7,6 +7,12 @@ set -uo pipefail
 input=$(cat)
 command=$(printf '%s' "$input" | python3 -c 'import json,sys; data=json.load(sys.stdin); print(data.get("command") or "")' 2>/dev/null || true)
 
+# Heartbeat: ship-prod preflight reads this to prove the hook fired for its own
+# command in this session type. Best effort; never blocks the guard.
+heartbeat_dir="${HOOK_HEARTBEAT_DIR:-$(dirname "${BASH_SOURCE[0]}")/.cache}"
+{ mkdir -p "$heartbeat_dir" && printf '%s\n%s\n' "$(date +%s)" "$command" \
+    >"$heartbeat_dir/beforeShellExecution.heartbeat"; } 2>/dev/null || true
+
 # Patterns that must never run silently.
 ask=0
 if printf '%s' "$command" | grep -Eiq \

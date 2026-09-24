@@ -41,6 +41,7 @@ pack_sets:
       - workflows/night-shift
     agents:
       - verifier.md
+      - diff-review.md
     automations: true
     hooks:
       enabled: true

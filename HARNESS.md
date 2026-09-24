@@ -105,7 +105,7 @@ only.
 | `dependency-direction-fix` | One cycle or wrong-way dependency per run (`kind: architecture`) |
 | `wait-what` | Re-pitch the last message in plain words |
 | `summarize-plan` | Restate a written plan in simple bullets (bugs + tests, or feature + pain) |
-| `ship-prod` | Human-triggered prod delivery: `ship.leftovers` → wait live lease → idle-main complete → diagnose+Bugbot if isolate-red → project ship → watch CI → Phase 7 |
+| `ship-prod` | Human-triggered prod delivery: `preflight.sh` (capabilities, fail loud) → `ship.leftovers` → wait live lease → idle-main complete → diagnose+Bugbot if isolate-red → project ship → watch CI → Phase 7 |
 | `review-docs` | Doc drift audit (report default) |
 | `test-harness-optimize` | Faster/less flaky tests without weaker asserts |
 
@@ -159,6 +159,7 @@ only.
 | `architecture-health-auditor` | `quality-audit`: hotspots + boundary leaks; report only |
 | `supabase-architect` | `supabase`: SQL/RLS/view design; report only |
 | `db-schema-auditor` | `supabase`: dead/orphan DB objects; report only |
+| `diff-review` | Phase 4c fallback checklist (bugs / security) when the built-in reviewer subagent is missing; report only |
 | Bugbot / Security Review | Built-in Cursor reviewers (Phase 4c) |
 | `ci-investigator` | Built-in: short root-cause of one failed CI check |
 | `explore` | Built-in: fast codebase map |

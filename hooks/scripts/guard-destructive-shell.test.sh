@@ -4,6 +4,9 @@ set -euo pipefail
 
 HOOK="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/guard-destructive-shell.sh"
 failures=0
+HOOK_HEARTBEAT_DIR="$(mktemp -d)"
+export HOOK_HEARTBEAT_DIR
+trap 'rm -rf "$HOOK_HEARTBEAT_DIR"' EXIT
 
 permission_for() {
   python3 -c 'import json,sys; print(json.dumps({"command": sys.argv[1]}))' "$1" \
@@ -38,6 +41,13 @@ expect allow 'rg -n "a|b" src/'
 expect allow 'echo "find / is blocked"'
 
 expect ask 'supabase db reset'
+
+heartbeat_file="$HOOK_HEARTBEAT_DIR/beforeShellExecution.heartbeat"
+permission_for 'echo heartbeat-probe' >/dev/null
+if ! grep -qx 'echo heartbeat-probe' "$heartbeat_file" 2>/dev/null; then
+  echo "FAIL: heartbeat missing the last command: $heartbeat_file"
+  failures=$((failures + 1))
+fi
 
 if [[ "$failures" -gt 0 ]]; then
   echo "$failures failure(s)"
