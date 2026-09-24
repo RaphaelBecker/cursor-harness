@@ -22,11 +22,11 @@ not restate them.
 - Targeted search + ranged reads. Never bulk-read. Never re-read unchanged files.
 - Stay in the smart zone (~160k, or ~60% of the model's window). **Trust Cursor's
  context ring** (click the % next to the prompt) — do not guess and do not use a
- homemade byte estimate. Compact with Cursor's built-in `/summarize` **after** the
- current required command has been invoked. The context-governor hook **warns** at
- 60% and must **not** auto-submit `/summarize` (that aborts long skills). Past the
- smart zone (task agents too): `/summarize`, then **continue** — never stop, PARTIAL,
- BLOCKED, or a handoff file for context size.
+ homemade byte estimate. `/summarize` is a prompt-box command only the user can
+ send; agents and hooks cannot run it (the governor hook only **warns**). Past the
+ smart zone (task agents too): finish the current step to a clean point, tell the
+ user in one line `context ~X k — please send /summarize in this chat`, and keep
+ working — never stop, PARTIAL, BLOCKED, or a handoff file for context size.
 - A turn that only promises the next command is incomplete. Invoke that tool/Shell
  call in the same turn. Wait for long gates (complete, CI watch, merge) to finish
  in this sitting via `gate-run.sh` + short `wait-step` polls — never one blocking

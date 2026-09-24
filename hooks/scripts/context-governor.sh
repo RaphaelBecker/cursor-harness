@@ -143,7 +143,7 @@ if event == "stop":
     write_state()
     emit({
         "followup_message": (
-            "Continue the in-progress skill. Do not run /summarize. "
+            "Continue the in-progress skill. Only the user can send /summarize. "
             "If you announced a command, invoke it as a tool/Shell call now. "
             "Wait for long gates to finish in this sitting."
         )
@@ -159,8 +159,9 @@ if event == "postToolUse":
         "additional_context": (
             f"Context governor: Cursor's context ring is at {ring_label()}. "
             f"Do not compact and do not end this turn. Invoke the next "
-            f"required tool/Shell call now. Compact with /summarize only "
-            f"after that command has started or the skill has finished."
+            f"required tool/Shell call now. At the next clean point tell the "
+            f"user in one line: context ~{tokens // 1000 if tokens else 'X '}k - please send /summarize in this "
+            f"chat. Then keep working; never stop for context size."
         )
     })
 
