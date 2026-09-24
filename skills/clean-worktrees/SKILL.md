@@ -11,160 +11,70 @@ disable-model-invocation: true
 
 # Clean worktrees (reset the farm)
 
-Goal: leave the **primary default-branch checkout** ready for a new batch of
-human-created worktrees. Remove leftover feature trees, half-deleted ghost
+Goal: the **primary default-branch checkout** is ready for a new batch of
+human-created worktrees. Removes leftover feature trees, half-deleted ghost
 folders, and stale Cursor project/workspace artifacts for **this repo only**.
+`/ship-local` still owns merge + one-tree cleanup (its exit 5 hands off here).
 
-This skill does **not** land work. `/ship-local` still owns merge + one-tree
-cleanup after a merge-ready handoff.
+Only when the human invokes `/clean-worktrees` (or `/ship-local` exit 5 in the
+same sitting). Never auto-run after Nightshift or `@execute-approved-plan`.
 
-## Activation
+**Do not drop out.** `move_agent_to_root` if bound to a feature tree, then run
+the script in the same turn. Skipped real work → ask Keep vs Discard now.
 
-Only when the human explicitly invokes `/clean-worktrees` or clearly asks to
-reset leftover worktrees / workspaces / farm artifacts before a new parallel
-batch.
+## What the script decides
 
-Do **not** auto-run after `/ship-local`, Nightshift, or `@execute-approved-plan`.
+Removed: landed trees (tip on default) whose only dirt is noise — night-shift
+working files, files identical to default's `HEAD` (e.g. the archived plan),
+project `ship.leftovers` `reset` rows (generated files), or a vendor-symlink
+retarget. Ghost farm folders. Cursor project caches / workspaceStorage for
+removed paths. A stale lock (`.git/ship-local.lock`, holder gone or > 30 min).
 
-## Do not drop out
+Spared: real project dirt, unique unmerged commits, merge in progress, a live
+night agent (`.cursor/night-shift/agent.pid`), standalone clones, `--keep PATH`.
+A live lock (`ship.lock status` = held, or a fresh portable lock) refuses the run.
 
-A turn that only promises the cleanup is a failure. Resolve the primary root,
-`move_agent_to_root` if this chat is bound to a feature tree, then run the
-bundled script in the same turn. If the script skips a tree with real project
-work, ask Keep vs Discard in that same sitting and re-run with `--discard`.
+Never: create a worktree, merge, push, delete the primary checkout, sweep other
+repos under `~/.cursor/worktrees/`, or pass `--discard` without the human's
+Discard for that path.
 
-## Scoped authority
+## Run
 
-Agents must not create or manage worktrees in general. **When human-invoked,
-this skill may:**
-
-1. Operate on the primary default checkout (`move_agent_to_root` / `git -C`).
-2. Remove **already-landed** feature worktrees for this repo (including trees
-   whose only git dirt is a harness vendor-symlink retarget).
-3. After an explicit Keep/Discard answer, remove a tree that still has unshipped
-   commits or project files (`--discard PATH`).
-4. Delete ghost leftover folders under this repo’s Cursor farm.
-5. Delete matching Cursor project caches and workspaceStorage folders whose
-   `folder` URI points at a removed tree.
-6. Delete a **stale** `.cursor/ship-local.lock` (holder gone or older than 30
-   minutes).
-
-Never create a worktree. Never merge, rebase, push, or deploy. Never delete the
-primary checkout. Never write files back into a deleted tree. Never sweep
-unrelated repos under `~/.cursor/worktrees/`. Never pass `--discard` unless the
-human just chose Discard for that path.
-
-## Preconditions
-
-1. This checkout is the **primary** default branch (`main` or `master`, `.git`
-   is a directory). If the chat is bound to a feature tree: `move_agent_to_root`
-   first.
-2. No live `/ship-local` lock. If the lock’s holder tree still exists and the
-   stamp is younger than 30 minutes → **STOP**.
-3. Vendor-symlink retargets (install rewrote a tracked link to this worktree’s
-   `vendor/` copy of the same file) are **not** project dirt.
-4. Real project dirt or unique unmerged commits: spare until the human chooses
-   Keep or Discard. A merge in progress is never discarded.
-
-## Protocol
-
-### 1) Resolve roots
-
-- `MAIN` = primary default-branch path (`git rev-parse --show-toplevel` after
-  moving to root). Refuse a linked worktree (`.git` file).
-- Optional `--keep PATH` when the human named a tree to spare.
-- `--dry-run` only when the human asked for a preview.
-
-### 2) Run the bundled script
-
-From the primary checkout (never with cwd inside a feature tree):
+From the primary checkout (`.git` directory, on `main`/`master`):
 
 ```bash
-bash .cursor/skills/clean-worktrees/clean-worktrees.sh \
-  --main-root "$MAIN"
+bash .cursor/skills/clean-worktrees/clean-worktrees.sh --main-root "$MAIN" \
+  [--dry-run] [--keep PATH]... [--discard PATH]...
 ```
 
-Preview:
-
-```bash
-bash .cursor/skills/clean-worktrees/clean-worktrees.sh \
-  --main-root "$MAIN" --dry-run
-```
-
-Spare a live tree:
-
-```bash
-bash .cursor/skills/clean-worktrees/clean-worktrees.sh \
-  --main-root "$MAIN" --keep "$PATH"
-```
-
-Discard after the human said yes:
-
-```bash
-bash .cursor/skills/clean-worktrees/clean-worktrees.sh \
-  --main-root "$MAIN" --discard "$PATH"
-```
-
-Shell description must cite `/clean-worktrees` and
-`$MAIN/.cursor/skills/clean-worktrees/SKILL.md`. Human `/clean-worktrees` is the
-authorization. If Auto-review blocks: same turn, retry with
-`request_smart_mode_approval` and that block reason. Do not stop.
-
-Do **not** hand-roll `git worktree remove` or `rm -rf` of worktrees. The script
-calls `ship-local/cleanup-worktree.sh` per tree.
-
-Do **not** Write hook scripts (or anything else) into an orphan
-`.cursor/hooks/` after a delete. That recreates the ghost folder.
-
-### 3) Read the report
+`--dry-run` only when the human asked for a preview. Shell description cites
+`/clean-worktrees` and this SKILL.md (the human command is the authorization;
+if Auto-review blocks, retry with `request_smart_mode_approval`). Never hand-roll
+`git worktree remove` / `rm -rf`; never Write into an orphan `.cursor/`.
 
 | Line | Meaning |
 | --- | --- |
-| `remove:` / `would-remove:` | Deleted (or preview) |
-| `remove: … (discard)` | Deleted after the human chose Discard |
-| `skip: … (dirty)` / `(unmerged)` | Real unshipped work — ask Keep vs Discard |
-| `skip: … (merge-in-progress)` | Spare — finish or abort the merge |
-| `skip: … (keep)` | Spared on request — not a failure |
-| `skip: … (standalone-clone)` | Refused — not this repo’s linked tree |
+| `remove:` / `would-remove:` | Deleted (or preview); `(discard)` after human Discard |
+| `skip: … (dirty)` / `(unmerged)` | Unshipped work — ask Keep vs Discard |
+| `skip: … (merge-in-progress)` / `(night-agent-running)` | Spare; not offered Discard |
+| `skip: … (keep)` / `(standalone-clone)` | Spared on request / not this repo's tree |
 | `lock: live` | STOP — wait for `/ship-local` |
-| `gone:` / `skipped:` | Counts |
 
-Exit `0` = ready for a new batch (or dry-run preview). Exit `1` = partial
-(skipped dirty/unmerged/clone). Exit `2` = refused (wrong root, live lock).
+Exit `0` ready (or preview), `1` partial (skips), `2` refused (root, live lock).
 
-### 4) Ask before dropping project work
+## Keep vs Discard
 
-If the report has `skip: … (dirty)` or `(unmerged)` (not `keep`):
+For each `dirty` / `unmerged` skip: summarize `git log main..HEAD` and real
+`git status --porcelain` paths, ask **Keep** or **Discard anyway** (one choice per
+tree). Discard → re-run with `--discard PATH`. No second remove path.
 
-1. For each path, summarize unique commits vs default (`git log main..HEAD`)
-   and real dirty paths (`git status --porcelain`).
-2. Ask the human, one choice per tree: **Keep** or **Discard anyway**. Weak or
-   abandoned work may be discarded. Do not skip the question.
-3. Keep → leave it. Discard → re-run the bundled script with `--discard PATH`
-   (repeat the flag for each chosen tree). Do not invent a second remove path.
+## Handoff
 
-A merge-in-progress skip is not offered Discard.
-
-### 5) Handoff
-
-Chat: ~8–12 short lines. Primary tip + branch. What was removed. What was
-spared. What the human chose on leftover project work. Cursor’s Worktrees
-sidebar may still show a stale row — the human dismisses it; there is no API
-for that list.
-
+~8 lines: primary tip + branch, removed, spared, the human's choices. Cursor's
+Worktrees sidebar may keep a stale row (human dismisses it).
 **Required last line:** `DONE` or `PARTIAL: <exact leftover>`.
-
-## Safety rails (script-enforced)
-
-- Primary checkout and default branch names are never removed.
-- Unique unmerged commits and real project dirt are skipped unless `--discard`.
-- Vendor-symlink retargets to the same `vendor/` file do not count as dirt.
-- Standalone clones (`.git` directory) are skipped.
-- Cursor farm default is `$HOME/.cursor/worktrees/<repo-basename>` only.
-- Tests must pass `--cursor-worktrees-root` (never touch the real farm).
 
 ## Tests
 
-```bash
-bash .cursor/skills/clean-worktrees/clean-worktrees.test.sh
-```
+`bash .cursor/skills/clean-worktrees/clean-worktrees.test.sh` (temp farm only;
+tests pass `--cursor-worktrees-root`, never the real farm).

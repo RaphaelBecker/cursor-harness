@@ -50,5 +50,5 @@ lives in the consumer project.
 | **Tight red loop** | One named command already run that goes red on this bug. Required before hypothesising. |
 | **harness.project.yaml** | Required consumer interface (issue source, tests, optional slots, packs). |
 | **Ship prod** | `/ship-prod` — classify leftovers, wait live lease, watched remote ship + CI fix + Phase 7. Chat last line `DONE`/`PARTIAL`. |
-| **Exclusive lock** | One `/ship-local` at a time. `ship.lock` in YAML, or `.cursor/ship-local.lock`. |
+| **Exclusive lock** | One `/ship-local` at a time. `ship.lock` in YAML, or `.git/ship-local.lock`. |
 | **Project memory** | Root `project_memory.md` summary: Architecture tips + scored Candidates (`help_count`). Not stronger than code or docs. |

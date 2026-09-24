@@ -79,22 +79,27 @@ git -C "$MAIN" branch -d linked >/dev/null
 # --- live lock stops ---
 git -C "$MAIN" worktree add -b locked "$ROOT/locked" >/dev/null
 mkdir -p "$MAIN/.cursor"
-printf '123\tlocked\t%s\t%s\n' "$ROOT/locked" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >"$MAIN/.cursor/ship-local.lock"
+printf '123\tlocked\t%s\t%s\n' "$ROOT/locked" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >"$MAIN/.git/ship-local.lock"
 assert_exit 2 "live lock refuses to clean" run_script
-if [[ -d "$ROOT/locked" && -f "$MAIN/.cursor/ship-local.lock" ]]; then
+if [[ -d "$ROOT/locked" && -f "$MAIN/.git/ship-local.lock" ]]; then
   pass "live lock left worktree and lock in place"
 else
   fail "live lock deleted worktree or lock"
 fi
-rm -f "$MAIN/.cursor/ship-local.lock"
+rm -f "$MAIN/.git/ship-local.lock"
 git -C "$MAIN" worktree remove --force "$ROOT/locked" >/dev/null
 git -C "$MAIN" branch -d locked >/dev/null
 
+# --- project ship.lock reporting held also stops ---
+printf 'ship:\n  lock: echo held; true\n' >"$MAIN/harness.project.yaml"
+assert_exit 2 "project ship.lock held refuses to clean" run_script
+rm -f "$MAIN/harness.project.yaml"
+
 # --- stale lock is removed, ghost leftover goes ---
 mkdir -p "$FARM/ghost/.cursor/hooks"
-printf '1\told\t%s\t2000-01-01T00:00:00Z\n' "$ROOT/gone-holder" >"$MAIN/.cursor/ship-local.lock"
+printf '1\told\t%s\t2000-01-01T00:00:00Z\n' "$ROOT/gone-holder" >"$MAIN/.git/ship-local.lock"
 if run_script >/tmp/clean-worktrees-stale.out; then
-  if [[ ! -e "$FARM/ghost" && ! -f "$MAIN/.cursor/ship-local.lock" ]]; then
+  if [[ ! -e "$FARM/ghost" && ! -f "$MAIN/.git/ship-local.lock" ]]; then
     pass "stale lock removed and leftover deleted"
   else
     fail "stale lock path still present"
@@ -243,6 +248,39 @@ else
   fail "standalone clone was deleted"
 fi
 rm -rf "$FARM/other-repo"
+
+# --- landed tree whose dirt is night-shift, already-on-main, or project reset rows ---
+mkdir -p "$MAIN/.cursor/plans"
+printf -- '---\nstatus: approved\n---\n' >"$MAIN/.cursor/plans/p.plan.md"
+git -C "$MAIN" add .cursor/plans && git -C "$MAIN" commit -m plan >/dev/null
+git -C "$MAIN" worktree add -b noisy "$ROOT/noisy" >/dev/null
+printf -- '---\nstatus: archived\n---\n' | tee "$MAIN/.cursor/plans/p.plan.md" >"$ROOT/noisy/.cursor/plans/p.plan.md"
+git -C "$MAIN" commit -am 'archive plan' >/dev/null
+mkdir -p "$ROOT/noisy/.cursor/night-shift"
+echo handoff >"$ROOT/noisy/.cursor/night-shift/HANDOFF.md"
+echo generated >"$ROOT/noisy/gen.txt"
+printf 'ship:\n  leftovers: printf "reset\\tgen.txt\\tgenerated\\n"\n' >"$MAIN/harness.project.yaml"
+if run_script >/tmp/clean-worktrees-noisy.out && [[ ! -e "$ROOT/noisy" ]]; then
+  pass "landed noise (night-shift, on-main plan, project reset) is not dirt"
+else
+  fail "noisy landed tree was kept"
+  cat /tmp/clean-worktrees-noisy.out >&2 || true
+fi
+rm -f "$MAIN/harness.project.yaml"
+git -C "$MAIN" branch -d noisy >/dev/null 2>&1 || true
+
+# --- a live night agent spares the tree ---
+git -C "$MAIN" worktree add -b night "$ROOT/night" >/dev/null
+mkdir -p "$ROOT/night/.cursor/night-shift"
+echo "$$" >"$ROOT/night/.cursor/night-shift/agent.pid"
+assert_exit 1 "live night agent tree is skipped" run_script
+if [[ -d "$ROOT/night" ]]; then
+  pass "night agent tree still exists"
+else
+  fail "night agent tree was deleted"
+fi
+git -C "$MAIN" worktree remove --force "$ROOT/night" >/dev/null
+git -C "$MAIN" branch -d night >/dev/null
 
 # --- happy path: merged tree + leftover + project cache + workspace storage ---
 git -C "$MAIN" worktree add -b landed "$FARM/landed" >/dev/null

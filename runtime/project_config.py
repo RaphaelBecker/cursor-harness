@@ -370,7 +370,18 @@ def main(argv: list[str] | None = None) -> int:
     dump.add_argument("--target", required=True)
     dump.add_argument("--packs", default="")
 
+    get = sub.add_parser("get", help="print one dotted key (empty when unset)")
+    get.add_argument("key")
+    get.add_argument("--target", required=True)
+
     args = parser.parse_args(argv)
+    if args.cmd == "get":
+        path = project_yaml_path(Path(args.target).resolve())
+        value: Any = load_yaml_file(path) if path.is_file() else {}
+        for part in args.key.split("."):
+            value = value.get(part) if isinstance(value, dict) else None
+        print("" if value is None else value)
+        return 0
     if args.cmd == "check":
         target = Path(args.target).resolve()
         harness_root = Path(args.harness_root).resolve() if args.harness_root else None

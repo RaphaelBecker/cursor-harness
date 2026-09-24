@@ -66,6 +66,7 @@ done
 [[ -n "$MAIN_ROOT" ]] || usage
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_REAL="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 CLEANUP="$SCRIPT_DIR/../ship-local/cleanup-worktree.sh"
 
 resolve_path() {
@@ -306,13 +307,35 @@ is_listed() {
   return 1
 }
 
+# Project leftovers rows `reset<TAB>path<TAB>reason` mark generated / working
+# files (ship.leftovers in harness.project.yaml). Read-only: never --apply here.
+project_get() {
+  python3 "$SCRIPT_REAL/../../runtime/project_config.py" get "$1" --target "$MAIN_ROOT" 2>/dev/null || true
+}
+LEFTOVERS_CMD="$(project_get ship.leftovers)"
+LOCK_CMD="$(project_get ship.lock)"
+
+project_reset_paths() {
+  local wt="$1"
+  [[ -n "$LEFTOVERS_CMD" && -n "$(git -C "$wt" status --porcelain 2>/dev/null)" ]] || return 0
+  (cd "$wt" && bash -c "$LEFTOVERS_CMD" 2>/dev/null || true) | awk -F'\t' '$1 == "reset" { print $2 }'
+}
+
+night_agent_running() {
+  local pid file="$1/.cursor/night-shift/agent.pid"
+  [[ -f "$file" ]] || return 1
+  pid="$(tr -dc '0-9' <"$file")"
+  [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null
+}
+
 tree_has_project_dirt() {
   local wt="$1"
   local rc=0
-  python3 - "$wt" "$MAIN_ROOT" <<'PY' || rc=$?
+  python3 - "$wt" "$MAIN_ROOT" "$(project_reset_paths "$wt")" <<'PY' || rc=$?
 import os, subprocess, sys
 
 wt, main = sys.argv[1], sys.argv[2]
+project_reset = {line for line in sys.argv[3].splitlines() if line}
 
 
 def git_bytes(args, cwd):
@@ -386,7 +409,29 @@ try:
 except subprocess.CalledProcessError:
     sys.exit(0)
 
+def matches_main(rel):
+    wt_abs = os.path.join(wt, rel)
+    try:
+        on_main = git_bytes(["show", f"HEAD:{rel}"], main)
+    except subprocess.CalledProcessError:
+        on_main = None
+    if os.path.islink(wt_abs) or os.path.isdir(wt_abs):
+        return False
+    if not os.path.exists(wt_abs):
+        return on_main is None
+    with open(wt_abs, "rb") as fh:
+        return on_main == fh.read()
+
+
+def is_noise(rel):
+    if rel.startswith(".cursor/night-shift/") and ".example." not in rel:
+        return True
+    return rel.rstrip("/") in project_reset or matches_main(rel)
+
+
 for rel in paths:
+    if is_noise(rel):
+        continue
     wt_abs = os.path.join(wt, rel)
     head = head_symlink_text(wt, rel)
     if head is None or not os.path.islink(wt_abs):
@@ -418,7 +463,13 @@ tip_unmerged() {
   ! git -C "$MAIN_ROOT" merge-base --is-ancestor "$tip" HEAD
 }
 
-LOCK="$MAIN_ROOT/.cursor/ship-local.lock"
+if [[ -n "$LOCK_CMD" ]] && (cd "$MAIN_ROOT" && bash -c "$LOCK_CMD status" 2>/dev/null) | grep -qx held; then
+  echo "error: live /ship-local lock ($LOCK_CMD status)" >&2
+  echo "lock: live" >&2
+  exit 2
+fi
+
+LOCK="$MAIN_ROOT/.git/ship-local.lock"
 LOCK_STATE="none"
 if [[ -f "$LOCK" ]]; then
   if lock_is_stale "$LOCK"; then
@@ -519,6 +570,10 @@ while IFS= read -r raw; do
   branch="$(worktree_branch "$raw")"
   discarded=0
   is_discarded "$wt" && discarded=1
+  if night_agent_running "$wt"; then
+    record skip worktree "$wt" night-agent-running
+    continue
+  fi
   if [[ "$discarded" -eq 0 ]] && tree_has_project_dirt "$wt"; then
     record skip worktree "$wt" dirty
     continue

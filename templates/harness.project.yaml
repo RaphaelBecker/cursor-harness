@@ -36,7 +36,7 @@ docs:
 memory: project_memory.md
 
 # Optional exclusive lock for /ship-local (one land at a time). The command
-# must accept acquire / release. If omitted, ship-local uses `.cursor/ship-local.lock`.
+# must accept acquire / release. If omitted, ship-local uses `.git/ship-local.lock` (git common dir).
 # leftovers: classify dirty paths; `--apply` (or `-- --apply` for npm) absorbs
 # reset-class only and must not commit.
 # ship:
