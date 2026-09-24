@@ -136,7 +136,8 @@ E2E, domain gates that need the stack). Pure unit/UI must not take a slot. Use t
 project's existing lease/bootstrap — do not reimplement.
 
 Custom `slots.lease` is a test-pool script: acquire at proof time, not when
-`night-shift fire` starts the agent. Built-in `slots.count` without a lease script
+`night-shift fire` starts the agent. `slots.max_leases` caps live DB leases per machine
+(extra agents wait in the lease script, not in the agent). Built-in `slots.count` without a lease script
 is an optional host throttle at fire, not a DB.
 
 ## Honest leftover

@@ -28,6 +28,7 @@ test:
 # comfortable on a laptop; that is experience, not a harness cap.
 # slots:
 #   count: 3
+#   max_leases: 1   # machine-wide live DB leases for agents; the lease script makes extras wait
 #   lease: ./scripts/lease-test-slot.sh  # acquire only when a listed suite needs the pool
 #   status: ./scripts/lease-test-slot.sh # live-lease check: `<script> has-live-leases`
 

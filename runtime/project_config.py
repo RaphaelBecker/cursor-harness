@@ -222,6 +222,9 @@ def check_project(target: Path, *, harness_root: Path | None = None) -> list[str
             count = slots.get("count")
             if not isinstance(count, int) or count < 1:
                 errors.append("slots.count must be an integer >= 1 when slots is set")
+            cap = slots.get("max_leases")
+            if cap is not None and (not isinstance(cap, int) or cap < 1):
+                errors.append("slots.max_leases must be an integer >= 1 when set")
             for key in ("lease", "status"):
                 rel = str(slots.get(key) or "").strip()
                 if not rel:
