@@ -252,6 +252,30 @@ expect_cwd allow "$harness" 'git push origin feature'
 rm -rf "$harness/.cursor"
 expect_cwd deny "$harness" 'git push origin main'
 
+# Symlink: git toplevel follows the link out of vendor/. The command path
+# must still be <consumer>/vendor/cursor-harness. The link target itself is not.
+link_consumer="$push_repo/link-consumer"
+external="$push_repo/external-harness-checkout"
+mkdir -p "$link_consumer"
+git -C "$link_consumer" init -q -b main
+git -C "$link_consumer" config user.email "push-gate@example.com"
+git -C "$link_consumer" config user.name "push-gate"
+git -C "$link_consumer" commit -q --allow-empty -m init
+init_nested "$external"
+mkdir -p "$link_consumer/vendor"
+ln -s "$external" "$link_consumer/vendor/cursor-harness"
+link_marker="$link_consumer/.cursor/night-shift/ship-prod-push-gate"
+mkdir -p "$(dirname "$link_marker")"
+echo $(( $(date +%s) + 3600 )) >"$link_marker"
+expect_cwd allow "$link_consumer" "git -C \"$link_consumer/vendor/cursor-harness\" push origin main"
+expect_cwd allow "$link_consumer/vendor/cursor-harness" 'git push origin main'
+expect_cwd allow "$link_consumer" "cd vendor/cursor-harness && git push origin main"
+expect_cwd deny "$external" 'git push origin main'
+expect_cwd deny "$link_consumer/vendor/cursor-harness" 'git push --force origin main'
+expect_cwd deny "$link_consumer/vendor/cursor-harness" 'git push origin feature'
+rm -f "$link_marker"
+expect_cwd deny "$link_consumer/vendor/cursor-harness" 'git push origin main'
+
 rm -rf "$push_repo"
 
 if [[ "$failures" -gt 0 ]]; then

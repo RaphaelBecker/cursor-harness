@@ -222,8 +222,9 @@ def classify_segment(segment: str, cwd: str, gate: str, depth: int) -> str | Non
 
     is_push, git_target = scan_git(words)
     if is_push:
-        root = toplevel(join_cwd(cwd, git_target) if git_target else cwd)
-        if not push_permitted(words, root, gate):
+        push_path = join_cwd(cwd, git_target) if git_target else cwd
+        root = toplevel(push_path)
+        if not push_permitted(words, root, gate, push_path):
             reason = prefer(reason, MSG_PUSH)
 
     if scan_gh_pr(words) and not marker_fresh(gate, toplevel(cwd)):
@@ -402,7 +403,7 @@ def wrapper_body(words: list[str], where: str) -> str | None:
     return None
 
 
-def push_permitted(words: list[str], repo: str | None, gate: str) -> bool:
+def push_permitted(words: list[str], repo: str | None, gate: str, push_path: str) -> bool:
     """True when this push may run.
 
     A fresh marker on the repo being pushed allows it (force still hits the
@@ -414,7 +415,7 @@ def push_permitted(words: list[str], repo: str | None, gate: str) -> bool:
         return True
     if not origin_main_push(words):
         return False
-    consumer = vendored_harness_consumer(repo)
+    consumer = vendored_harness_consumer(repo, push_path)
     if not consumer or not marker_fresh(gate, consumer):
         return False
     return main_fast_forward(repo)
@@ -483,25 +484,40 @@ def git_subcommand(words: list[str]) -> tuple[str | None, list[str]]:
     return None, []
 
 
-def vendored_harness_consumer(repo: str | None) -> str | None:
-    """Return the consumer toplevel when repo is exactly its vendor/cursor-harness."""
-    if not repo:
+def vendored_harness_consumer(repo: str | None, push_path: str) -> str | None:
+    """Return the consumer toplevel when push_path is its vendor/cursor-harness.
+
+    Match the path the command used (cwd or git -C), not git's toplevel.
+    A vendor symlink makes toplevel follow the link, so the real checkout
+    often lives outside the consumer. The repository being pushed must still
+    be that symlink's checkout.
+    """
+    if not repo or not push_path:
         return None
-    harness = os.path.realpath(repo)
-    vendor_dir = os.path.dirname(harness)
-    consumer = os.path.dirname(vendor_dir)
-    if os.path.basename(harness) != "cursor-harness" or os.path.basename(vendor_dir) != "vendor":
-        return None
+    cur = os.path.abspath(push_path)
+    for _ in range(12):
+        parent = os.path.dirname(cur)
+        if os.path.basename(cur) == "cursor-harness" and os.path.basename(parent) == "vendor":
+            return _consumer_owning_harness(os.path.dirname(parent), repo)
+        if parent == cur:
+            break
+        cur = parent
+    return None
+
+
+def _consumer_owning_harness(consumer: str, repo: str) -> str | None:
     consumer_top = toplevel(consumer)
     if not consumer_top:
         return None
-    consumer_real = os.path.realpath(consumer_top)
-    if consumer_real != os.path.realpath(consumer):
+    if os.path.realpath(consumer_top) != os.path.realpath(consumer):
         return None
-    expected = os.path.realpath(os.path.join(consumer_real, "vendor", "cursor-harness"))
-    if harness != expected:
+    vendored = os.path.join(consumer_top, "vendor", "cursor-harness")
+    if not os.path.isdir(vendored):
         return None
-    return consumer_real
+    vendored_top = toplevel(vendored)
+    if not vendored_top or os.path.realpath(vendored_top) != os.path.realpath(repo):
+        return None
+    return os.path.realpath(consumer_top)
 
 
 def main_fast_forward(repo: str | None) -> bool:
