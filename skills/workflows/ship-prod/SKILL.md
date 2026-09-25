@@ -185,6 +185,15 @@ Treat CI failure as a bug fix (`core-principles` / `@diagnose-bug` when the
 seam is unnamed), scoped to the failing check and this tip:
 
 1. Fetch failed logs via `gh run view --log-failed` (or project equivalent).
+   If one required job is already red, do that for **that job**
+   (`gh run view --job <id> --log-failed`) and start the fix. Do not wait for
+   sibling jobs. A free self-hosted runner may rerun **only that shard of the
+   fix** when the workflow has a shard input. This repo's `deploy-prod.yml`
+   does not: `workflow_dispatch` has no inputs and runs the full suite without
+   deploying, and `gh run rerun --failed` retries the original commit only
+   after that run completes. The workflow concurrency group also holds the
+   next `push:main` until the in-progress run finishes, so the fix cannot
+   take a free runner early. Say that, then push as soon as the run is terminal.
 2. Optional first pass: `ci-investigator` for a short root-cause summary.
    If logs do not name the seam → read `@diagnose-bug`.
 3. **RED first** when the failure reveals an untested path (regression before product fix).
