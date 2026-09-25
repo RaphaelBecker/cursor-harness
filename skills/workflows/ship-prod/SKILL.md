@@ -85,6 +85,17 @@ running → call again; `0` green; `1` red (`exit:` + log tail); `4` died
 without an exit code → read the log, re-start once. Never write your own
 `until …; do sleep; done` loop, `nohup`/`setsid` wrapper, or tmux session.
 
+A single-shard CI check uses the same short-call rule:
+
+```bash
+S=.cursor/skills/workflows/ship-prod/shard-check.sh
+bash $S dispatch --workflow <workflow-file> --shard <job-id> --ref <40-hex-sha> --branch <default-branch>
+bash $S wait-step --run <id>          # ≤90s; exit 3 → call again
+```
+
+Exit `0` shard green, `1` shard red, `3` still queued or running. The
+workflow `run-name` for that input must be `shard-check <shard> <ref>`.
+
 ## Dirt classifier (run first; do not ask)
 
 If `harness.project.yaml` sets `ship.leftovers`, run that command. Add `-- --apply`
@@ -187,13 +198,8 @@ seam is unnamed), scoped to the failing check and this tip:
 1. Fetch failed logs via `gh run view --log-failed` (or project equivalent).
    If one required job is already red, do that for **that job**
    (`gh run view --job <id> --log-failed`) and start the fix. Do not wait for
-   sibling jobs. A free self-hosted runner may rerun **only that shard of the
-   fix** when the workflow has a shard input. This repo's `deploy-prod.yml`
-   does not: `workflow_dispatch` has no inputs and runs the full suite without
-   deploying, and `gh run rerun --failed` retries the original commit only
-   after that run completes. The workflow concurrency group also holds the
-   next `push:main` until the in-progress run finishes, so the fix cannot
-   take a free runner early. Say that, then push as soon as the run is terminal.
+   sibling jobs. `gh run rerun --failed` retries the original commit only
+   after the whole run finishes — do not use it for this early fix.
 2. Optional first pass: `ci-investigator` for a short root-cause summary.
    If logs do not name the seam → read `@diagnose-bug`.
 3. **RED first** when the failure reveals an untested path (regression before product fix).
@@ -204,7 +210,23 @@ seam is unnamed), scoped to the failing check and this tip:
    when the human asks. Also `/review-security` if the failing surface is auth,
    access control, billing, admin, or secrets. Bugbot stays a report-capable
    reasoning aid — apply only sound, in-scope fixes.
-6. Commit on default branch → re-run the project's ship command → return to Watch.
+6. Commit on default branch → re-run the project's ship command. That queues
+   the **normal full run** behind the in-progress workflow. Do not cancel the
+   in-progress run.
+   When the workflow accepts `workflow_dispatch` inputs `shard` and `ref`, and
+   names that run `shard-check <shard> <ref>`, dispatch **only** the red job
+   with `shard-check.sh` in the same turn. A free self-hosted runner can start
+   it while the original run continues, because that check is not in the main
+   concurrency group. Poll it with `wait-step` (exit 3 → call again). If it is
+   red, fix, ship, and dispatch that shard again.
+   A green shard is early evidence only. It never deploys and it never replaces
+   the full run. Prod deploys only when the normal full run on the **fix
+   commit** is green. Do not treat "other jobs green on the parent" plus "this
+   shard green on the fix" as a deploy gate — the fix tree did not run those
+   other jobs.
+   If the workflow has no `shard` input, say so, and wait until the in-progress
+   run is terminal before expecting the fix's full run to start.
+   Then return to Watch for the full run.
 7. Repair budget: follow the `testing` rule. **STOP** only for true hard-stops
    (secrets, live payments, production, vault) or when diagnose cannot name a
    seam. Do not STOP merely because the suite is billing or failures look mixed.
