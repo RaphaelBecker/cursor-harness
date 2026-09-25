@@ -6,6 +6,10 @@ npm scripts listed in harness.project.yaml `ship.direct_push` are allowed
 only from the primary checkout on branch `main`. Their child `git push`
 is not this command, so it is not denied here — only an agent-typed
 `git push` (or an equivalent `bash -c` / `eval` / substitution) is.
+
+A fresh marker on the consumer checkout also allows one push from its
+vendored harness: `git push origin main` inside `<consumer>/vendor/cursor-harness`,
+and only when that updates `main` as a fast-forward (no `--force`).
 """
 
 from __future__ import annotations
@@ -219,7 +223,7 @@ def classify_segment(segment: str, cwd: str, gate: str, depth: int) -> str | Non
     is_push, git_target = scan_git(words)
     if is_push:
         root = toplevel(join_cwd(cwd, git_target) if git_target else cwd)
-        if not marker_fresh(gate, root):
+        if not push_permitted(words, root, gate):
             reason = prefer(reason, MSG_PUSH)
 
     if scan_gh_pr(words) and not marker_fresh(gate, toplevel(cwd)):
@@ -396,6 +400,128 @@ def wrapper_body(words: list[str], where: str) -> str | None:
             if not primary_main(where):
                 return MSG_SCRIPT
     return None
+
+
+def push_permitted(words: list[str], repo: str | None, gate: str) -> bool:
+    """True when this push may run.
+
+    A fresh marker on the repo being pushed allows it (force still hits the
+    shell guard). Otherwise the only extra allow is a fast-forward
+    `git push origin main` of the consumer's vendored cursor-harness while
+    the consumer marker is fresh.
+    """
+    if marker_fresh(gate, repo):
+        return True
+    if not origin_main_push(words):
+        return False
+    consumer = vendored_harness_consumer(repo)
+    if not consumer or not marker_fresh(gate, consumer):
+        return False
+    return main_fast_forward(repo)
+
+
+def origin_main_push(words: list[str]) -> bool:
+    """True only for `git push origin main` (no flags, no other refspec)."""
+    sub, args = git_subcommand(words)
+    if sub != "push":
+        return False
+    remote: str | None = None
+    refspecs: list[str] = []
+    i = 0
+    while i < len(args):
+        arg = args[i]
+        if arg == "--":
+            rest = args[i + 1 :]
+            if remote is None:
+                if not rest:
+                    return False
+                remote = rest[0]
+                refspecs.extend(rest[1:])
+            else:
+                refspecs.extend(rest)
+            break
+        if arg.startswith("-") or arg.startswith("+"):
+            return False
+        if remote is None:
+            remote = arg
+        else:
+            refspecs.append(arg)
+        i += 1
+    return remote == "origin" and refspecs == ["main"]
+
+
+def git_subcommand(words: list[str]) -> tuple[str | None, list[str]]:
+    if not words or os.path.basename(words[0]) != "git":
+        return None, []
+    args = words[1:]
+    i = 0
+    while i < len(args):
+        arg = args[i]
+        if arg in GIT_WITH_ARG:
+            i += 2
+            continue
+        if (
+            arg.startswith("--git-dir=")
+            or arg.startswith("--work-tree=")
+            or arg.startswith("--namespace=")
+            or arg.startswith("--config-env=")
+        ):
+            i += 1
+            continue
+        if arg.startswith("-c") and arg != "-c":
+            i += 1
+            continue
+        if arg.startswith("-") and arg != "--":
+            i += 1
+            continue
+        if arg == "--":
+            rest = args[i + 1 :]
+            if not rest:
+                return None, []
+            return rest[0], rest[1:]
+        return arg, args[i + 1 :]
+    return None, []
+
+
+def vendored_harness_consumer(repo: str | None) -> str | None:
+    """Return the consumer toplevel when repo is exactly its vendor/cursor-harness."""
+    if not repo:
+        return None
+    harness = os.path.realpath(repo)
+    vendor_dir = os.path.dirname(harness)
+    consumer = os.path.dirname(vendor_dir)
+    if os.path.basename(harness) != "cursor-harness" or os.path.basename(vendor_dir) != "vendor":
+        return None
+    consumer_top = toplevel(consumer)
+    if not consumer_top:
+        return None
+    consumer_real = os.path.realpath(consumer_top)
+    if consumer_real != os.path.realpath(consumer):
+        return None
+    expected = os.path.realpath(os.path.join(consumer_real, "vendor", "cursor-harness"))
+    if harness != expected:
+        return None
+    return consumer_real
+
+
+def main_fast_forward(repo: str | None) -> bool:
+    """True when refs/remotes/origin/main is an ancestor of refs/heads/main."""
+    if not repo or not os.path.isdir(repo):
+        return False
+    result = subprocess.run(
+        [
+            "git",
+            "-C",
+            repo,
+            "merge-base",
+            "--is-ancestor",
+            "refs/remotes/origin/main",
+            "refs/heads/main",
+        ],
+        capture_output=True,
+        text=True,
+    )
+    return result.returncode == 0
 
 
 def marker_fresh(gate: str, root: str | None) -> bool:

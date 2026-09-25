@@ -4,6 +4,9 @@
 # only while this marker is unexpired. Direct push scripts named in
 # harness.project.yaml `ship.direct_push` are a separate allow, decided
 # by the classifier — this file only arms, clears, and checks the marker.
+# The classifier also allows `git push origin main` inside this checkout's
+# vendor/cursor-harness while the marker is fresh, when that push
+# fast-forwards main and does not use --force.
 #
 # Marker: <checkout>/.cursor/night-shift/ship-prod-push-gate
 # Contents: one integer, the unix expiry. TTL is 6 hours. A missing,

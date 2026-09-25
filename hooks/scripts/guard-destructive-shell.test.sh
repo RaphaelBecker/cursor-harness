@@ -174,6 +174,84 @@ expect_cwd deny "$primary" 'git push origin main'
 rm -f "$marker"
 expect_cwd deny "$primary" "echo 1 > $primary/.cursor/night-shift/ship-prod-push-gate"
 
+# Vendored harness: a fresh consumer marker allows `git push origin main`
+# only inside <consumer>/vendor/cursor-harness, only as a fast-forward.
+init_nested() {
+  local dir="$1"
+  mkdir -p "$dir"
+  git -C "$dir" init -q -b main
+  git -C "$dir" config user.email "push-gate@example.com"
+  git -C "$dir" config user.name "push-gate"
+  git -C "$dir" commit -q --allow-empty -m init
+  git -C "$dir" update-ref refs/remotes/origin/main HEAD
+  git -C "$dir" commit -q --allow-empty -m ahead
+}
+
+harness="$primary/vendor/cursor-harness"
+other="$primary/vendor/other-tool"
+outside="$push_repo/cursor-harness"
+other_consumer="$push_repo/other-consumer"
+init_nested "$harness"
+init_nested "$other"
+init_nested "$outside"
+mkdir -p "$other_consumer"
+git -C "$other_consumer" init -q -b main
+git -C "$other_consumer" config user.email "push-gate@example.com"
+git -C "$other_consumer" config user.name "push-gate"
+git -C "$other_consumer" commit -q --allow-empty -m init
+init_nested "$other_consumer/vendor/cursor-harness"
+mkdir -p "$harness/hooks"
+
+expect_cwd deny "$harness" 'git push origin main'
+expect_cwd deny "$primary" "git -C \"$harness\" push origin main"
+expect_cwd deny "$primary" "cd \"$harness\" && git push origin main"
+
+echo $(( $(date +%s) + 3600 )) >"$marker"
+expect_cwd allow "$harness" 'git push origin main'
+expect_cwd allow "$harness/hooks" 'git push origin main'
+expect_cwd allow "$primary" "git -C \"$harness\" push origin main"
+expect_cwd allow "$primary" "cd \"$harness\" && git push origin main"
+expect_cwd allow "$harness" 'git -C . push origin main'
+expect_cwd deny "$harness" 'git push --force origin main'
+expect_cwd deny "$harness" 'git push --force-with-lease origin main'
+expect_cwd deny "$harness" 'git push origin +main'
+expect_cwd deny "$harness" 'git push origin feature'
+expect_cwd deny "$harness" 'git push origin HEAD'
+expect_cwd deny "$harness" 'git push origin main:other'
+expect_cwd deny "$harness" 'git push origin main:main'
+expect_cwd deny "$harness" 'git push origin main --force'
+expect_cwd deny "$harness" 'git push upstream main'
+expect_cwd deny "$harness" 'git push origin main extra'
+expect_cwd deny "$other" 'git push origin main'
+expect_cwd deny "$outside" 'git push origin main'
+expect_cwd deny "$other_consumer/vendor/cursor-harness" 'git push origin main'
+expect_cwd deny "$primary" "git -C \"$other\" push origin main"
+expect_cwd deny "$harness" 'gh pr create --fill'
+expect_user_message "$harness" 'git push --force origin main' "$MSG_PUSH"
+
+git -C "$harness" update-ref refs/remotes/origin/main HEAD
+expect_cwd allow "$harness" 'git push origin main'
+side="$(git -C "$harness" commit-tree "$(git -C "$harness" rev-parse 'HEAD^{tree}')" -m side)"
+git -C "$harness" update-ref refs/remotes/origin/main "$side"
+expect_cwd deny "$harness" 'git push origin main'
+git -C "$harness" update-ref refs/remotes/origin/main "$(git -C "$harness" rev-parse 'HEAD^')"
+expect_cwd allow "$harness" 'git push origin main'
+git -C "$harness" update-ref -d refs/remotes/origin/main
+expect_cwd deny "$harness" 'git push origin main'
+
+echo $(( $(date +%s) - 30 )) >"$marker"
+expect_cwd deny "$harness" 'git push origin main'
+echo $(( $(date +%s) + 21600 + 120 )) >"$marker"
+expect_cwd deny "$harness" 'git push origin main'
+
+rm -f "$marker"
+git -C "$harness" update-ref refs/remotes/origin/main "$(git -C "$harness" rev-parse 'HEAD^')"
+mkdir -p "$harness/.cursor/night-shift"
+echo $(( $(date +%s) + 3600 )) >"$harness/.cursor/night-shift/ship-prod-push-gate"
+expect_cwd allow "$harness" 'git push origin feature'
+rm -rf "$harness/.cursor"
+expect_cwd deny "$harness" 'git push origin main'
+
 rm -rf "$push_repo"
 
 if [[ "$failures" -gt 0 ]]; then

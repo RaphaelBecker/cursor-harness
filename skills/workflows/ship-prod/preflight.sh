@@ -8,6 +8,8 @@
 #        bash .cursor/skills/workflows/ship-prod/preflight.sh --clear-push-gate
 #
 # On success this arms the push gate (raw git push and gh pr create/merge).
+# A fresh marker also allows `git push origin main` in vendor/cursor-harness
+# when that push fast-forwards main (classifier; no --force).
 # Only this script can arm it. Clear it on every ship exit, including STOP.
 #
 # Subagent types are only visible to the agent, so the agent passes them in.

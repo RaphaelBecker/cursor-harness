@@ -30,7 +30,7 @@ Thin sequences. Do not duplicate their steps here.
 | --- | --- | --- | --- |
 | `prep` | core | Short workpack HIL into existing worktrees | [prep](../skills/workflows/prep/SKILL.md) |
 | `night-shift` | core | Fire / status; never creates worktrees | [night-shift](../skills/workflows/night-shift/SKILL.md) |
-| `ship-prod` | core | Classify leftovers → wait live lease → idle-main complete → diagnose+Bugbot if isolate-red → watched remote ship + CI fix + Phase 7. Preflight arms a 6h push gate (raw `git push` and `gh pr` stay blocked without it; clear on exit) | [ship-prod](../skills/workflows/ship-prod/SKILL.md) |
+| `ship-prod` | core | Classify leftovers → wait live lease → idle-main complete → diagnose+Bugbot if isolate-red → fast-forward `vendor/cursor-harness` `main` when ahead → watched remote ship + CI fix + Phase 7. Preflight arms a 6h push gate (raw `git push` and `gh pr` stay blocked without it; clear on exit) | [ship-prod](../skills/workflows/ship-prod/SKILL.md) |
 | `codebase-health-audit` | quality-audit | Whole-repo health scorecard | [codebase-health-audit](../skills/workflows/codebase-health-audit/SKILL.md) |
 
 ## Optional pack skills

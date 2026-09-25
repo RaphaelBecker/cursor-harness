@@ -50,7 +50,10 @@ Required moving commands (skip only when already proven for this `HEAD`):
    On success, preflight arms a push-gate marker for 6 hours
    (`.cursor/night-shift/ship-prod-push-gate`). Only this preflight may arm it.
    Raw `git push` and `gh pr create` / `gh pr merge` stay blocked without a
-   fresh marker. On every exit (DONE, PARTIAL, or STOP) run
+   fresh marker. While the marker is fresh, `git push origin main` is also
+   allowed inside this checkout's `vendor/cursor-harness` when that push
+   fast-forwards `main` (no `--force`, no other branch, no other vendored repo).
+   On every exit (DONE, PARTIAL, or STOP) run
    `bash .cursor/skills/workflows/ship-prod/preflight.sh --clear-push-gate`.
 1. Leftovers classify (`ship.leftovers` + `-- --apply` when set)
 2. Wait until the test-pool lease is idle (project wait-idle, else harness
@@ -148,10 +151,25 @@ If idle-main complete is red, do not push. Follow the `testing` rule
 
 ### 1) Classify and push
 
-1. Prefer the project's documented ship/deploy script over bare `git push`.
-2. Discover the correct command from README, Makefile, package scripts, or deploy docs
+1. **Vendored harness, before the project ship command.** If
+   `vendor/cursor-harness` is its own git checkout and `main` is strictly ahead
+   of `origin/main` with behind count 0 (a fast-forward), push that checkout
+   with exactly:
+
+   ```bash
+   git -C vendor/cursor-harness rev-list --left-right --count origin/main...main
+   git -C vendor/cursor-harness push origin main
+   ```
+
+   The count is `behind<TAB>ahead`. Run the push only when behind is `0` and
+   ahead is greater than `0`. Skip when the directory is missing, not a git
+   checkout, or not ahead. Do not add `--force`, `--force-with-lease`, or a
+   different refspec. Do not push any other `vendor/*` repo. The push gate
+   allows this command only while the consumer marker from step 0 is fresh.
+2. Prefer the project's documented ship/deploy script over bare `git push`.
+3. Discover the correct command from README, Makefile, package scripts, or deploy docs
    (test-relevant vs docs-only when the project distinguishes them).
-3. Streamed terminal / CI output is the primary evidence.
+4. Streamed terminal / CI output is the primary evidence.
 
 ### 2) Watch
 
@@ -199,7 +217,7 @@ Leftover-container / slot-unhealthy infra: recover via the project path, then
 | Gate | Rule |
 | --- | --- |
 | Human trigger | Required — this skill never self-starts |
-| Push gate | Preflight arms it; clear it on every exit. Raw `git push` and `gh pr create` / `gh pr merge` stay blocked otherwise. Do not write the marker yourself |
+| Push gate | Preflight arms it; clear it on every exit. Raw `git push` and `gh pr create` / `gh pr merge` stay blocked otherwise. While it is fresh, `git push origin main` inside `vendor/cursor-harness` is allowed only as a fast-forward of `main` (no `--force`). Do not write the marker yourself |
 | Local green | Idle-main complete for test-relevant `HEAD` before first push. Complete red + isolate red → diagnose-bug + Bugbot, then re-prove complete |
 | Live test-pool lease | Wait (bounded), then STOP only if still held |
 | Secrets / vault | Do not invent or copy local env to prod; stop if vault/auth unclear |

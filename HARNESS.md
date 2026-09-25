@@ -105,7 +105,7 @@ only.
 | `dependency-direction-fix` | One cycle or wrong-way dependency per run (`kind: architecture`) |
 | `wait-what` | Re-pitch the last message in plain words |
 | `summarize-plan` | Restate a written plan in simple bullets (bugs + tests, or feature + pain) |
-| `ship-prod` | Human-triggered prod delivery: `preflight.sh` (capabilities, fail loud, arms a 6h push-gate marker; clear it on every exit) → `ship.leftovers` → wait live lease → idle-main complete via `gate-run.sh` (detached start, ≤90 s `wait-step` polls, no tmux) → diagnose+Bugbot if isolate-red → project ship → watch CI → Phase 7. Raw `git push` and `gh pr create` / `gh pr merge` stay blocked without that fresh marker |
+| `ship-prod` | Human-triggered prod delivery: `preflight.sh` (capabilities, fail loud, arms a 6h push-gate marker; clear it on every exit) → `ship.leftovers` → wait live lease → idle-main complete via `gate-run.sh` (detached start, ≤90 s `wait-step` polls, no tmux) → diagnose+Bugbot if isolate-red → when `vendor/cursor-harness` `main` is ahead of `origin/main`, `git -C vendor/cursor-harness push origin main` (fast-forward only) → project ship → watch CI → Phase 7. Raw `git push` and `gh pr create` / `gh pr merge` stay blocked without that fresh marker |
 | `review-docs` | Doc drift audit (report default) |
 | `test-harness-optimize` | Faster/less flaky tests without weaker asserts |
 

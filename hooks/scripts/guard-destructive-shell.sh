@@ -53,7 +53,9 @@ heartbeat="$heartbeat_dir/beforeShellExecution.heartbeat"
 # Raw git push and gh pr create/merge stay closed unless /ship-prod preflight
 # armed a fresh marker. Configured direct push scripts are allowed only from
 # the primary checkout on main; the git push inside those scripts is a child
-# process, not this command, so it is not denied here.
+# process, not this command, so it is not denied here. A fresh consumer
+# marker also allows `git push origin main` in vendor/cursor-harness when
+# that push fast-forwards main (the classifier decides; no --force).
 hook_dir="$(python3 -c 'import os,sys; print(os.path.dirname(os.path.realpath(sys.argv[1])))' "${BASH_SOURCE[0]}")"
 push_gate="$hook_dir/ship-prod-push-gate.sh"
 push_msg='Pushes/PRs only via /ship-prod; land with /ship-local.'

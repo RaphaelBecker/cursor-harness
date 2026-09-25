@@ -235,7 +235,7 @@ CLI: [runtime/night-shift](runtime/night-shift)
 ### Ship — `/ship-local` then `/ship-prod`
 
 Shipping is always **your** call. The agent never pushes or deploys on its own.
-Task agents never open pull requests. Raw `git push` and `gh pr create` / `gh pr merge` stay blocked unless `/ship-prod` armed its push gate.
+Task agents never open pull requests. Raw `git push` and `gh pr create` / `gh pr merge` stay blocked unless `/ship-prod` armed its push gate. While that gate is fresh, `git push origin main` is allowed inside `vendor/cursor-harness` only as a fast-forward of `main`.
 
 Orchestrators: [ship-local](skills/ship-local/SKILL.md) ·
 [ship-prod](skills/workflows/ship-prod/SKILL.md) ·
