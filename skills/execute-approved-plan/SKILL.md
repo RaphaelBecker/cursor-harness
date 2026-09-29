@@ -71,6 +71,24 @@ if unattended → BLOCKED.md; else stop.
   make local commits as you go. Do not ask. If the field is missing in an
   unattended run, treat as authorized for this worktree.
 
+## Remembered state
+
+On every UI feature and bugfix, a choice the user makes stays. Reuse the
+existing persisted UI-state path. Do not add a second store.
+
+- A setting stays after the user leaves the page and comes back, including a
+  reload. Do not reset it to the factory default.
+- Coming back shows the same state: scroll position, selected tab, filter,
+  sort, timeframe, and a panel that is part of reading the page.
+- Restore that state before the first paint of the default, so the page does
+  not flash the default and then jump.
+- An unfinished comment or note stays in the composer the user just left,
+  until they send it or discard it. Do not drop an older draft into a composer
+  they did not just leave.
+- Closing a dialog returns keyboard focus to the control that opened it.
+- A hover, or a menu that closes on an outside click, is not a remembered
+  setting.
+
 ## Do not drop out
 
 A turn that only announces the next ladder or review step is a failure.
@@ -120,7 +138,8 @@ to finish in this sitting — do not background them and stop.
      `@dependency-direction-fix` as the allowlist names. Do not do both. Then
      prove. If the allowlist is neither → park `BLOCKED.md`.
 2. **Phase 3:** Smallest plan-complete change; follow project migration/regen
-   rules when the plan requires them. Architecture `kind` already did the
+   rules when the plan requires them. UI work follows **Remembered state**.
+   Architecture `kind` already did the
    one refactor in Phase 2 — do not add extra extracts.
 3. **Phase 4 — Verify:** Run the verification ladder without asking.
 4. **Phase 4b — `@review-code`:** After green ladder (or N/A), fix-capable
